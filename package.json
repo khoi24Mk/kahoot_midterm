@@ -66,7 +66,5 @@
       "eslint --config ./.eslintrc.json --ext js --ext ts --ext jsx --ext tsx --fix"
     ]
   },
-  "prettier": {
-    "singleQuote": true
-}
+  "prettier": {}
 }
