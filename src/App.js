@@ -1,24 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+/* eslint-disable no-unused-vars */
+/* eslint-disable import/extensions */
+/* eslint-disable import/no-unresolved */
+import { Fragment } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import DefaultLayout from '~/components/Layouts/DefaultLayout';
+import { publicRouters, privateRouters } from '~/router';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          {publicRouters.map((page) => {
+            const Page = page.element;
+            let Layout = DefaultLayout;
+            if (page.layout === null) {
+              Layout = Fragment;
+            } else if (page.layout) {
+              Layout = page.layout;
+            }
+            return (
+              <Route
+                path={page.path}
+                element={
+                  <Layout>
+                    <Page />
+                  </Layout>
+                }
+              />
+            );
+          })}
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
