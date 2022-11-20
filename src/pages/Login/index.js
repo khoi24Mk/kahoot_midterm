@@ -7,8 +7,6 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import styles from './login.module.css';
 
-console.log(styles);
-
 function Login() {
   return (
     <div className={clsx(styles.container)}>
