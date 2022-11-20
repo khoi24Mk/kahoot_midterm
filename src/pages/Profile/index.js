@@ -62,7 +62,7 @@ function Profile() {
 
             <Row className="mb-3">
               <Form.Group as={Col} controlId="formGridCity">
-                <Form.Label>City</Form.Label>
+                <Form.Label>Name</Form.Label>
                 <Form.Control />
               </Form.Group>
 

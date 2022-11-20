@@ -24,8 +24,8 @@
     font-size: 1em;
     height: 10em;
     background:#FFE1E1;
-    border-radius: 0 0 1em 1em;
-    box-shadow: 0 0.188em 0.155em rgb(100,156,156);
+    border-radius: 0.5rem;
+    /* box-shadow: 0 0.188em 0.155em rgb(100,156,156); */
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
