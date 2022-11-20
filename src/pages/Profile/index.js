@@ -18,7 +18,7 @@ import { avt } from '~/img';
 
 function Profile() {
   return (
-    <div className={clsx(styles.containter)}>
+    <div className={clsx(styles.container)}>
       <div className={clsx(styles.header)}>
         <div className={clsx(styles.avt_frame)}>
           <img src={avt} className={clsx(styles.avt)} />
@@ -66,16 +66,8 @@ function Profile() {
                 <Form.Control />
               </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridState">
-                <Form.Label>State</Form.Label>
-                <Form.Select defaultValue="Choose...">
-                  <option>Choose...</option>
-                  <option>...</option>
-                </Form.Select>
-              </Form.Group>
-
               <Form.Group as={Col} controlId="formGridZip">
-                <Form.Label>Zip</Form.Label>
+                <Form.Label>Username</Form.Label>
                 <Form.Control />
               </Form.Group>
             </Row>

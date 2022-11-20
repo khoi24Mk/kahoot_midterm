@@ -34,17 +34,24 @@ function Login() {
           <Form.Label>Password</Form.Label>
           <Form.Control type="password" placeholder="Password" />
         </Form.Group>
-        <Form.Group className="mb-3" controlId="formBasicCheckbox">
+        {/* <Form.Group className="mb-3" controlId="formBasicCheckbox">
           <Form.Check type="checkbox" label="Check me out" />
-        </Form.Group>
-        <Button variant="primary" type="submit">
-          Submit
+        </Form.Group> */}
+        <Button
+          className={clsx(styles.signup_btn)}
+          variant="outline-info"
+          type="submit"
+        >
+          Sign Up
         </Button>
-        <p>Or login with Google</p>
+        <p className={clsx(styles.google_opt)}>Or login with Google</p>
         <div className={clsx(styles.alt_login)}>
           <div className={clsx(styles.google_login)}></div>
         </div>
-        <p>Not a member? Signup now</p>
+        <p className={clsx(styles.signup_opt)}>
+          Not a member?
+          <a href="/register">Sign up now</a>
+        </p>
       </Form>
     </div>
   );

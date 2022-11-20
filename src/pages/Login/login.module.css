@@ -6,13 +6,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    background-image: url("../../img/bg.png");
 }
 
 .content{
     position: relative;
     width: 20em;
     font-size: 1em;
-    height: 25em;
+    height: auto;
     background:white;
     border-radius: 1em;
     box-shadow: 0 0.188em 0.155em rgb(100,156,156);
@@ -23,6 +25,14 @@
 
 }
 
+.google_opt{
+    font-size: 1rem;
+}
+.signup_opt{
+    font-size: 1rem;
+
+}
+
 .alt_login{
     width: 80%;
     height: 3em;
@@ -30,10 +40,10 @@
     justify-content: space-around;
 }
 .google_login{
-    width: 45%;
-    height: 90%;
+    width: 40%;
+    height: 70%;
     border-radius: 0.25em;
-    background-color: black;
+    background-color: red;
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -43,6 +53,18 @@
 
 
 
+
+.error{
+    font-size: 1rem;
+    color: red;
+}
+
 .group{
     width: 15em;
+}
+
+.signup_btn{
+    
+    font-size: 1.5rem;
+    margin: 1rem;
 }
