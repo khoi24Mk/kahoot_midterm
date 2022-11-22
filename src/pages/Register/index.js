@@ -44,10 +44,14 @@ function Register() {
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const submitForm = (data) => {
-    console.log(schema);
-  };
 
+  const onSubmit = (data) => {
+    console.log(schema);
+    console.log('sth');
+    // console.log(e);
+  };
+  // console.log(schema);
+  // onSubmit();
   return (
     <div className={clsx(styles.container)}>
       {' '}
@@ -55,7 +59,7 @@ function Register() {
         animate={{ x: 0, scale: 1 }}
         transition={{ duration: 0.5 }}
         initial={{ x: -100, scale: 0 }}
-        onSubmit={handleSubmit(submitForm)}
+        onSubmit={handleSubmit(onSubmit)}
         className={clsx(styles.content)}
       >
         <h1>Register</h1>
