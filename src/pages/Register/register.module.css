@@ -7,13 +7,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    background-image: url("../../img/bg.png");
 }
 
 .content{
     position: relative;
     width: 20em;
     font-size: 1em;
-    height: 35em;
+    height: auto;
     background:white;
     border-radius: 1em;
     box-shadow: 0 0.188em 0.155em rgb(100,156,156);
@@ -28,6 +30,15 @@
     font-size: 0.9rem;
     line-height: 1.2rem;
     display: block;
+}
+
+.google_opt{ 
+    font-size: 1rem;
+}
+
+
+.login_opt{ 
+    font-size: 1rem;
 }
 
 .alt_login{
@@ -50,6 +61,15 @@
 
 
 
+.error{
+    font-size: 1rem;
+    color: red;
+}
 .group{
     width: 15em;
+}
+
+.login_btn{
+    font-size: 1.5rem;
+    margin: 1rem;
 }

@@ -1,3 +1,9 @@
+/* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable no-useless-escape */
+/* eslint-disable import/extensions */
+/* eslint-disable import/no-unresolved */
+/* eslint-disable import/order */
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable import/order */
@@ -11,14 +17,21 @@ import styles from './register.module.css';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { motion } from 'framer-motion';
 
 const schema = yup
   .object()
   .shape({
     username: yup.string().required(),
-    password: yup.string().required('Please Enter your password'),
-    email: yup.string().email().required('Error'),
-    // retypePassword: yup.string().oneOf([yup.ref('password'), null]),
+    password: yup
+      .string()
+      .required('Please Enter your password')
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+        'Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character'
+      ),
+    email: yup.string().email().required(),
+    retypePassword: yup.string().oneOf([yup.ref('password'), null]),
     displayName: yup.string().required(),
   })
   .required();
@@ -31,15 +44,22 @@ function Register() {
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const submitForm = (data) => {
-    console.log(data);
-  };
 
+  const onSubmit = (data) => {
+    console.log(schema, data);
+    console.log('sth');
+    // console.log(e);
+  };
+  // console.log(schema);
+  // onSubmit();
   return (
     <div className={clsx(styles.container)}>
       {' '}
-      <Form
-        onSubmit={handleSubmit(submitForm)}
+      <motion.Form
+        animate={{ x: 0, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        initial={{ x: -100, scale: 0 }}
+        onSubmit={handleSubmit(onSubmit)}
         className={clsx(styles.content)}
       >
         <h1>Register</h1>
@@ -66,13 +86,35 @@ function Register() {
             type="password"
             placeholder="Password"
           />
-          <Form.Text
-            className={clsx(styles.pass_helper)}
-            id="passwordHelpBlock"
-            muted
-          >
-            Your password must be 8-20 characters long, contain letters and
-            numbers, and must not contain spaces, special characters, or emoji.
+          <Form.Text className="text-muted">
+            <ErrorMessage
+              errors={errors}
+              name="username"
+              render={({ message }) => (
+                <p className={clsx(styles.error)}>{message}</p>
+              )}
+            />
+          </Form.Text>
+        </Form.Group>
+
+        <Form.Group
+          className={clsx(styles.group, 'mb-3')}
+          // controlId="formBasicPassword"
+        >
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            {...register('password')}
+            type="password"
+            placeholder="Password"
+          />
+          <Form.Text className="text-muted">
+            <ErrorMessage
+              errors={errors}
+              name="password"
+              render={({ message }) => (
+                <p className={clsx(styles.error)}>{message}</p>
+              )}
+            />
           </Form.Text>
         </Form.Group>
 
@@ -86,6 +128,16 @@ function Register() {
             type="password"
             placeholder="retype password"
           />
+
+          <Form.Text className="text-muted">
+            <ErrorMessage
+              errors={errors}
+              name="retypePassword"
+              render={({ message }) => (
+                <p className={clsx(styles.error)}>{message}</p>
+              )}
+            />
+          </Form.Text>
         </Form.Group>
 
         <Form.Group
@@ -98,6 +150,16 @@ function Register() {
             type="text"
             placeholder="Enter Name"
           />
+
+          <Form.Text className="text-muted">
+            <ErrorMessage
+              errors={errors}
+              name="displayName"
+              render={({ message }) => (
+                <p className={clsx(styles.error)}>{message}</p>
+              )}
+            />
+          </Form.Text>
         </Form.Group>
         <Form.Group
           className={clsx(styles.group, 'mb-3')}
@@ -109,21 +171,31 @@ function Register() {
             type="email"
             placeholder="Enter email"
           />
-          <ErrorMessage
-            errors={errors}
-            name="username"
-            render={({ message }) => <p>{message}</p>}
-          />
+          <Form.Text className="text-muted">
+            <ErrorMessage
+              errors={errors}
+              name="email"
+              render={({ message }) => (
+                <p className={clsx(styles.error)}>{message}</p>
+              )}
+            />
+          </Form.Text>
         </Form.Group>
-        <Button variant="primary" type="submit">
-          Submit
+        <Button
+          className={clsx(styles.login_btn)}
+          variant="outline-info"
+          type="submit"
+        >
+          Login
         </Button>
-        <p>Or register with Google</p>
+        <p className={clsx(styles.google_opt)}>Or register with Google</p>
         <div className={clsx(styles.alt_login)}>
           <div className={clsx(styles.google_login)}></div>
         </div>
-        <p>Already have account? Login now</p>
-      </Form>
+        <p className={clsx(styles.login_opt)}>
+          Already have account? <a href="/login">Login now</a>
+        </p>
+      </motion.Form>
     </div>
   );
 }

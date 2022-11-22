@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable react/jsx-curly-brace-presence */
@@ -5,6 +6,7 @@
 /* eslint-disable import/order */
 /* eslint-disable react/button-has-type */
 /* eslint-disable react/self-closing-comp */
+import { motion } from 'framer-motion';
 import clsx from 'clsx';
 import styles from './profile.module.css';
 import Col from 'react-bootstrap/Col';
@@ -18,14 +20,24 @@ import { avt } from '~/img';
 
 function Profile() {
   return (
-    <div className={clsx(styles.containter)}>
+    <div className={clsx(styles.container)}>
       <div className={clsx(styles.header)}>
-        <div className={clsx(styles.avt_frame)}>
+        <motion.div
+          animate={{ x: 0 }}
+          transition={{ duration: 0.5 }}
+          initial={{ x: -100 }}
+          className={clsx(styles.avt_frame)}
+        >
           <img src={avt} className={clsx(styles.avt)} />
-        </div>
+        </motion.div>
       </div>
       <div className={clsx(styles.body)}>
-        <div className={clsx(styles.overview)}>
+        <motion.div
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          initial={{ y: -100, opacity: 0 }}
+          className={clsx(styles.overview)}
+        >
           {/* <button className={clsx(styles.edit_btn)}>Edit profile</button> */}
           <Button className={clsx(styles.edit_btn)} variant="outline-primary">
             Edit profile
@@ -45,8 +57,13 @@ function Profile() {
               <p>group</p>
             </div>
           </div>
-        </div>
-        <div className={clsx(styles.info)}>
+        </motion.div>
+        <motion.div
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          initial={{ y: -100, opacity: 0 }}
+          className={clsx(styles.info)}
+        >
           <Form>
             <Row className="mb-3">
               <Form.Group as={Col} controlId="formGridEmail">
@@ -66,34 +83,29 @@ function Profile() {
                 <Form.Control />
               </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridState">
-                <Form.Label>State</Form.Label>
-                <Form.Select defaultValue="Choose...">
-                  <option>Choose...</option>
-                  <option>...</option>
-                </Form.Select>
-              </Form.Group>
-
               <Form.Group as={Col} controlId="formGridZip">
-                <Form.Label>Zip</Form.Label>
+                <Form.Label>Username</Form.Label>
                 <Form.Control />
               </Form.Group>
             </Row>
           </Form>
-        </div>
+        </motion.div>
         <div className={clsx(styles.group)}>
-          <Carousel>
+          <div className={clsx(styles.group_filter)}>
+            <p>Recent group</p>
+            <a href="/home">Show all </a>
+          </div>
+          <Carousel className={styles.gallery}>
             <Carousel.Item>
-              <img className="d-block w-30" src={avt} alt="Second slide" />
+              <img className={styles.img_gr} src={avt} alt="Second slide" />
 
               <Carousel.Caption>
                 <h3>Second slide label</h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
               </Carousel.Caption>
             </Carousel.Item>
-
             <Carousel.Item>
-              <img className="d-block w-30" src={avt} alt="Second slide" />
+              <img className={styles.img_gr} src={avt} alt="Second slide" />
 
               <Carousel.Caption>
                 <h3>Second slide label</h3>
@@ -101,7 +113,7 @@ function Profile() {
               </Carousel.Caption>
             </Carousel.Item>
             <Carousel.Item>
-              <img className="d-block w-30" src={avt} alt="Second slide" />
+              <img className={styles.img_gr} src={avt} alt="Second slide" />
 
               <Carousel.Caption>
                 <h3>Second slide label</h3>
