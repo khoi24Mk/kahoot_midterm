@@ -1,0 +1,78 @@
+
+
+.container{
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-image: url("../../img/bg.png");
+}
+
+.content{
+    position: relative;
+    width: 20em;
+    font-size: 1em;
+    height: auto;
+    background:white;
+    border-radius: 1em;
+    box-shadow: 0 0.188em 0.155em rgb(100,156,156);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+
+}
+
+.google_opt{
+    font-size: 1rem;
+}
+.signup_opt{
+    font-size: 1rem;
+
+}
+
+.alt_login{
+    width: 80%;
+    height: 3em;
+    display: flex;
+    justify-content: space-around;
+}
+.google_login{
+    width: 40%;
+    height: 70%;
+    border-radius: 0.25em;
+    background-color: red;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    background-image: url("../../img/google.png");
+    transition: scale 0.4s ease-in-out;
+}
+
+.google_login:hover{
+    opacity: 0.8;
+    scale: 1.1;
+
+    
+
+}
+
+
+
+.error{
+    font-size: 1rem;
+    color: red;
+}
+
+.group{
+    width: 15em;
+}
+
+.signup_btn{
+    
+    font-size: 1.5rem;
+    margin: 1rem;
+}
