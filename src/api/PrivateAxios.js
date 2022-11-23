@@ -9,7 +9,9 @@ axios.defaults.baseURL = UrlConstant.BackendUrl;
 axios.interceptors.request.use(
   async (config) => {
     const accessToken = localStorage.getItem('access_token');
-
+    // const refreshToken = localStorage.getItem('refresh_token');
+    //   .replaceAll('"', '');
+    console.log(`Access token: ${accessToken}`);
     if (accessToken != null) {
       config.headers = {
         ...config.headers,

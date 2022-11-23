@@ -1,3 +1,6 @@
+/* eslint-disable import/extensions */
+/* eslint-disable import/no-unresolved */
+/* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/self-closing-comp */
@@ -9,9 +12,37 @@ import 'bootstrap/dist/css/bootstrap.css';
 import clsx from 'clsx';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { useForm } from 'react-hook-form';
+import { ErrorMessage } from '@hookform/error-message';
 import styles from './login.module.css';
+import login from '~/api/auth/login';
+
+const schema = yup
+  .object()
+  .shape({
+    username: yup.string().required(),
+    password: yup.string().required('Please Enter your password'),
+  })
+  .required();
 
 function Login() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const onSubmit = (data) => {
+    console.log(schema, data);
+    console.log('sth');
+    login({ username: data.username, password: data.password });
+    // console.log(e);
+  };
   const { loginWithRedirect, isAuthenticated } = useAuth0();
   return (
     <div className={clsx(styles.container)}>
@@ -21,6 +52,7 @@ function Login() {
         transition={{ duration: 0.5 }}
         initial={{ x: -100, scale: 0 }}
         className={clsx(styles.content)}
+        onSubmit={handleSubmit(onSubmit)}
       >
         <h1>Login</h1>
         <Form.Group
@@ -29,10 +61,20 @@ function Login() {
         >
           <Form.Label>Username</Form.Label>
           <Form.Control
+            {...register('username')}
             placeholder="Username"
             aria-label="Username"
             aria-describedby="basic-addon1"
           />
+          <Form.Text className="text-muted">
+            <ErrorMessage
+              errors={errors}
+              name="username"
+              render={({ message }) => (
+                <p className={clsx(styles.error)}>{message}</p>
+              )}
+            />
+          </Form.Text>
         </Form.Group>
         <Form.Group
           className={clsx(styles.group, 'mb-3')}
@@ -40,7 +82,20 @@ function Login() {
         >
           {' '}
           <Form.Label>Password</Form.Label>
-          <Form.Control type="password" placeholder="Password" />{' '}
+          <Form.Control
+            {...register('password')}
+            type="password"
+            placeholder="Password"
+          />{' '}
+          <Form.Text className="text-muted">
+            <ErrorMessage
+              errors={errors}
+              name="password"
+              render={({ message }) => (
+                <p className={clsx(styles.error)}>{message}</p>
+              )}
+            />
+          </Form.Text>
         </Form.Group>
         {/* <Form.Group className="mb-3" controlId="formBasicCheckbox">
         <Form.Check type="checkbox" label="Check me out" /> </Form.Group> */}
@@ -64,7 +119,7 @@ function Login() {
         </div>{' '}
         <p className={clsx(styles.signup_opt)}>
           {' '}
-          Not a member? <a href="/register">Sign up now</a>{' '}
+          Not a member? <a href="/login">Sign up now</a>{' '}
         </p>{' '}
       </motion.Form>{' '}
     </div>
