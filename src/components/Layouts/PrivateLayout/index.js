@@ -9,7 +9,16 @@ import { AuthContext } from '~/Context';
 export default function PrivateLayout() {
   const context = useContext(AuthContext);
   const { profile } = context;
-
+  const pathName = window.location.pathname;
   const unAuthenticated = profile === null || profile === undefined;
-  return unAuthenticated ? <Navigate to="/login" /> : <Outlet />;
+  return unAuthenticated ? (
+    <Navigate
+      to="/login"
+      state={{
+        redirectUrl: pathName,
+      }}
+    />
+  ) : (
+    <Outlet />
+  );
 }

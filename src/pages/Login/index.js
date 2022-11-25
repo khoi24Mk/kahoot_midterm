@@ -15,6 +15,7 @@ import Form from 'react-bootstrap/Form';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import login from '~/api/auth/login';
@@ -39,6 +40,11 @@ function Login() {
   });
 
   const [loginErr, setLoginErr] = useState('');
+  const { state } = useLocation();
+
+  console.log(state.redirectUrl);
+
+  const navigate = useNavigate();
   const onSubmit = async (data) => {
     try {
       const response = await login({
@@ -50,6 +56,7 @@ function Login() {
       if (token?.access_token && token?.refresh_token) {
         localStorage.setItem('access_token', token.access_token);
         localStorage.setItem('refresh_token', token.refresh_token);
+        navigate(state.redirectUrl, { replace: true });
       } else {
         setLoginErr('Token is not found');
       }
@@ -58,7 +65,9 @@ function Login() {
     }
   };
 
-  const { handleGoogle, loading, error } = useGoogleLogin();
+  const { handleGoogle, loading, error } = useGoogleLogin(() => {
+    navigate(state.redirectUrl);
+  });
   useEffect(() => {
     /* global google */
     if (window.google) {

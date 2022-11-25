@@ -24,5 +24,5 @@ export default function ProfileLayout() {
     queryFn: asyncGetProfile,
     enabled: needProfile,
   });
-  return query.isLoading ? <Loading /> : <Outlet />;
+  return query.isFetching ? <Loading /> : <Outlet />;
 }

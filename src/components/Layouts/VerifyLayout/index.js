@@ -9,7 +9,7 @@ import getProfile from '~/api/normal/getProfile';
 import { AuthContext } from '~/Context';
 import Loading from '../../Loading';
 
-export default function ProfileLayout() {
+export default function VerifyLayout() {
   const context = useContext(AuthContext);
   const { setProfile, profile } = context;
 
