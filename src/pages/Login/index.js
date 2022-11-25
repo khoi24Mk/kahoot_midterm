@@ -14,7 +14,7 @@ import Form from 'react-bootstrap/Form';
 
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import login from '~/api/auth/login';
@@ -38,8 +38,24 @@ function Login() {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data) => {
-    login({ username: data.username, password: data.password });
+  const [loginErr, setLoginErr] = useState('');
+  const onSubmit = async (data) => {
+    try {
+      const response = await login({
+        username: data.username,
+        password: data.password,
+      });
+      const token = response?.data?.object;
+
+      if (token?.access_token && token?.refresh_token) {
+        localStorage.setItem('access_token', token.access_token);
+        localStorage.setItem('refresh_token', token.refresh_token);
+      } else {
+        setLoginErr('Token is not found');
+      }
+    } catch (error) {
+      setLoginErr(error?.response?.data?.message);
+    }
   };
 
   const { handleGoogle, loading, error } = useGoogleLogin();
@@ -112,6 +128,12 @@ function Login() {
                 <p className={clsx(styles.error)}>{message}</p>
               )}
             />
+          </Form.Text>
+          <Form.Text className="text-muted">
+            <p className={clsx(styles.error)}>{loginErr}</p>
+          </Form.Text>
+          <Form.Text className="text-muted">
+            <p className={clsx(styles.error)}>{error}</p>
           </Form.Text>
         </Form.Group>
         <Button
