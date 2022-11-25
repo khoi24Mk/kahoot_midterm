@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import publicAxios from '~/api/PublicAxios';
 
-const useGoogleLogin = () => {
+const useGoogleLogin = (redirect) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -36,6 +36,7 @@ const useGoogleLogin = () => {
       } else {
         setError('Not found token');
       }
+      redirect();
     } catch (err) {
       setError(err.response.data.message);
     } finally {
