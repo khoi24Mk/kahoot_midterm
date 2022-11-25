@@ -36,6 +36,7 @@ import * as yup from 'yup';
 
 import { motion } from 'framer-motion';
 import registerAuth from '~/api/auth/register';
+import { useState } from 'react';
 
 const schema = yup
 
@@ -77,22 +78,19 @@ function Register() {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data) => {
-    console.log(schema, data);
-    registerAuth({
-      username: data.username,
-      password: data.password,
-      displayName: data.displayName,
-      email: data.email,
-    });
-    console.log('sth');
-
-    // console.log(e);
+  const [registerErr, setRegisterErr] = useState('');
+  const onSubmit = async (data) => {
+    try {
+      await registerAuth({
+        username: data.username,
+        password: data.password,
+        displayName: data.displayName,
+        email: data.email,
+      });
+    } catch (error) {
+      setRegisterErr(error.response?.data?.message);
+    }
   };
-
-  // console.log(schema);
-
-  // onSubmit();
 
   return (
     <div className={clsx(styles.container)}>
@@ -212,6 +210,10 @@ function Register() {
                 <p className={clsx(styles.error)}>{message}</p>
               )}
             />
+          </Form.Text>
+
+          <Form.Text className="text-muted">
+            <p className={clsx(styles.error)}>{registerErr}</p>
           </Form.Text>
         </Form.Group>
 

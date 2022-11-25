@@ -4,12 +4,12 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { useContext } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import getProfile from '~/api/normal/getProfile';
 import { AuthContext } from '~/Context';
-import Loading from '../Loading';
+import Loading from '../../Loading';
 
-export default function PrivateRoute() {
+export default function ProfileLayout() {
   const context = useContext(AuthContext);
   const { setProfile, profile } = context;
 
@@ -18,12 +18,11 @@ export default function PrivateRoute() {
     setProfile(retProfile);
     return retProfile;
   };
-  const query = useQuery({ queryKey: ['Profile'], queryFn: asyncGetProfile });
-  return query.isLoading ? (
-    <Loading />
-  ) : profile == null ? (
-    <Navigate to="/login" />
-  ) : (
-    <Outlet />
-  );
+  const needProfile = profile === null || profile === undefined;
+  const query = useQuery({
+    queryKey: ['Profile'],
+    queryFn: asyncGetProfile,
+    enabled: needProfile,
+  });
+  return query.isLoading ? <Loading /> : <Outlet />;
 }
