@@ -3,13 +3,12 @@
 /* eslint-disable import/no-unresolved */
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
+import DefaultLayout from './components/Layouts/DefaultLayout';
 import PrivateRoute from './components/PrivateRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Register from './pages/Register';
-import Header from './components/Layouts/components/Header';
-import DefaultLayout from './components/Layouts/DefaultLayout';
 
 function App() {
   return (

@@ -2,16 +2,13 @@
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 import axios from 'axios';
-import UrlConstant from '~/constants/UrlConstant';
+import Constant from '~/constants';
 import memoizedRefreshToken from './normal/refreshToken';
 
-axios.defaults.baseURL = UrlConstant.BackendUrl;
+axios.defaults.baseURL = Constant.BackEnd;
 axios.interceptors.request.use(
   async (config) => {
     const accessToken = localStorage.getItem('access_token');
-    // const refreshToken = localStorage.getItem('refresh_token');
-    //   .replaceAll('"', '');
-    console.log(`Access token: ${accessToken}`);
     if (accessToken != null) {
       config.headers = {
         ...config.headers,
