@@ -6,19 +6,20 @@
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useAuth0 } from '@auth0/auth0-react';
-import { motion } from 'framer-motion';
 import 'bootstrap/dist/css/bootstrap.css';
 import clsx from 'clsx';
-import Form from 'react-bootstrap/Form';
+import { motion } from 'framer-motion';
 import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { useForm } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
-import styles from './login.module.css';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
 import login from '~/api/auth/login';
+import useGoogleLogin from '~/hooks/useGoogleLogin';
+import styles from './login.module.css';
 
 const schema = yup
   .object()
@@ -38,12 +39,28 @@ function Login() {
   });
 
   const onSubmit = (data) => {
-    console.log(schema, data);
-    console.log('sth');
     login({ username: data.username, password: data.password });
-    // console.log(e);
   };
-  const { loginWithRedirect, isAuthenticated } = useAuth0();
+
+  const { handleGoogle, loading, error } = useGoogleLogin();
+  useEffect(() => {
+    /* global google */
+    if (window.google) {
+      google.accounts.id.initialize({
+        client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+        callback: handleGoogle,
+      });
+
+      google.accounts.id.renderButton(
+        document.getElementById('btnLoginGoogle'),
+        {
+          theme: 'filled_black',
+          text: 'signin_with',
+          shape: 'pill',
+        }
+      );
+    }
+  }, [handleGoogle]);
   return (
     <div className={clsx(styles.container)}>
       {' '}
@@ -97,8 +114,6 @@ function Login() {
             />
           </Form.Text>
         </Form.Group>
-        {/* <Form.Group className="mb-3" controlId="formBasicCheckbox">
-        <Form.Check type="checkbox" label="Check me out" /> </Form.Group> */}
         <Button
           className={clsx(styles.signup_btn)}
           variant="outline-info"
@@ -109,14 +124,8 @@ function Login() {
         </Button>{' '}
         <p className={clsx(styles.google_opt)}>Or login with Google</p>{' '}
         <div className={clsx(styles.alt_login)}>
-          {' '}
-          {!isAuthenticated && (
-            <div
-              onClick={() => loginWithRedirect()}
-              className={clsx(styles.google_login)}
-            ></div>
-          )}{' '}
-        </div>{' '}
+          <div id="btnLoginGoogle" />
+        </div>
         <p className={clsx(styles.signup_opt)}>
           {' '}
           Not a member? <a href="/login">Sign up now</a>{' '}

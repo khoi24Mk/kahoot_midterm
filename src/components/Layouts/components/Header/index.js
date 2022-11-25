@@ -8,20 +8,19 @@
 /* eslint-disable no-undef */
 
 import clsx from 'clsx';
+import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
+import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
+import Dropdown from 'react-bootstrap/Dropdown';
 import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Offcanvas from 'react-bootstrap/Offcanvas';
-import React, { useState } from 'react';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import Dropdown from 'react-bootstrap/Dropdown';
-import { FaBeer, FaRegBell } from 'react-icons/fa';
-import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Toast from 'react-bootstrap/Toast';
+import { FaRegBell } from 'react-icons/fa';
 import { avt, menu } from '~/img';
 import styles from './Header.module.css';
 
