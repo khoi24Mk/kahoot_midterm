@@ -8,6 +8,8 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Register from './pages/Register';
+import Header from './components/Layouts/components/Header';
+import DefaultLayout from './components/Layouts/DefaultLayout';
 
 function App() {
   return (
@@ -16,8 +18,10 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<Home />} />
-        <Route element={<PrivateRoute />}>
-          <Route path="/profile" element={<Profile />} />
+        <Route element={<DefaultLayout />}>
+          <Route element={<PrivateRoute />}>
+            <Route path="/profile" element={<Profile />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

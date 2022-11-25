@@ -35,6 +35,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 import { motion } from 'framer-motion';
+import registerAuth from '~/api/auth/register';
 
 const schema = yup
 
@@ -50,7 +51,8 @@ const schema = yup
       .required('Please Enter your password')
 
       .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+        // /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+        /^(?=.{8,})/,
 
         'Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character'
       ),
@@ -77,7 +79,12 @@ function Register() {
 
   const onSubmit = (data) => {
     console.log(schema, data);
-
+    registerAuth({
+      username: data.username,
+      password: data.password,
+      displayName: data.displayName,
+      email: data.email,
+    });
     console.log('sth');
 
     // console.log(e);
@@ -112,29 +119,6 @@ function Register() {
             aria-label="Username"
             aria-describedby="basic-addon1"
           />
-        </Form.Group>
-
-        <Form.Group
-          className={clsx(styles.group, 'mb-3')}
-          controlId="formBasicPassword"
-        >
-          <Form.Label>Password</Form.Label>
-
-          <Form.Control
-            {...register('password')}
-            type="password"
-            placeholder="Password"
-          />
-
-          <Form.Text className="text-muted">
-            <ErrorMessage
-              errors={errors}
-              name="username"
-              render={({ message }) => (
-                <p className={clsx(styles.error)}>{message}</p>
-              )}
-            />
-          </Form.Text>
         </Form.Group>
 
         <Form.Group
