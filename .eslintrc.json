@@ -23,6 +23,7 @@
   },
   "plugins": ["react", "prettier"],
   "rules": {
+    //"indent": ["error", 3],
     // suppress errors for missing 'import React' in files
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/no-var-requires": 0,
