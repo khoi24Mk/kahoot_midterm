@@ -42,8 +42,9 @@ function Login() {
   const [loginErr, setLoginErr] = useState('');
   const { state } = useLocation();
 
-  console.log(state.redirectUrl);
+  const redirectUrl = state?.redirectUrl || '/home';
 
+  console.log(redirectUrl);
   const navigate = useNavigate();
   const onSubmit = async (data) => {
     try {
@@ -56,7 +57,7 @@ function Login() {
       if (token?.access_token && token?.refresh_token) {
         localStorage.setItem('access_token', token.access_token);
         localStorage.setItem('refresh_token', token.refresh_token);
-        navigate(state.redirectUrl, { replace: true });
+        navigate(redirectUrl);
       } else {
         setLoginErr('Token is not found');
       }
@@ -66,7 +67,7 @@ function Login() {
   };
 
   const { handleGoogle, loading, error } = useGoogleLogin(() => {
-    navigate(state.redirectUrl);
+    navigate(redirectUrl);
   });
   useEffect(() => {
     /* global google */
