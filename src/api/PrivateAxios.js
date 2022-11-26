@@ -39,10 +39,9 @@ axios.interceptors.response.use(
         localStorage.setItem('access_token', token?.access_token);
         return axios(config);
       }
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
     }
-
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
     return Promise.reject(error);
   }
 );
