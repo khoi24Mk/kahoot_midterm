@@ -3,14 +3,16 @@
 /* eslint-disable import/no-unresolved */
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import PrivateRoute from './components/PrivateRoute';
 import Group from './pages/Group';
+import DefaultLayout from './components/Layouts/DefaultLayout';
+import PrivateLayout from './components/Layouts/PrivateLayout';
+import ProfileLayout from './components/Layouts/ProfileLayout';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
+import Invitation from './pages/redirections/Invitation';
+import Verification from './pages/redirections/Verification';
 import Register from './pages/Register';
-import Header from './components/Layouts/components/Header';
-import DefaultLayout from './components/Layouts/DefaultLayout';
 
 function App() {
   return (
@@ -18,12 +20,16 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/home" element={<Home />} />
-        <Route element={<DefaultLayout />}>
-          <Route element={<PrivateRoute />}>
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/group" element={<Group />} />
-            <Route path="/group/:id" element={<Group />} />
+        <Route path="/verification" element={<Verification />} />
+        <Route element={<ProfileLayout />}>
+          <Route path="/home" element={<Home />} />
+          <Route element={<DefaultLayout />}>
+            <Route element={<PrivateLayout />}>
+              <Route path="/invitation" element={<Invitation />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/group" element={<Group />} />
+              <Route path="/group/:id" element={<Group />} />
+            </Route>
           </Route>
         </Route>
       </Routes>

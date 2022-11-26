@@ -1,10 +1,10 @@
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 import axios from 'axios';
-import UrlConstant from '~/constants/UrlConstant';
+import Constant from '~/constants';
 
 const publicAxios = axios.create({
-  baseURL: UrlConstant.BackendUrl,
+  baseURL: Constant.BackEnd,
 });
 
 export default publicAxios;

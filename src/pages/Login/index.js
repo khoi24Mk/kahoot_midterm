@@ -6,19 +6,21 @@
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useAuth0 } from '@auth0/auth0-react';
-import { motion } from 'framer-motion';
 import 'bootstrap/dist/css/bootstrap.css';
 import clsx from 'clsx';
-import Form from 'react-bootstrap/Form';
+import { motion } from 'framer-motion';
 import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { useForm } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
-import styles from './login.module.css';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
 import login from '~/api/auth/login';
+import useGoogleLogin from '~/hooks/useGoogleLogin';
+import styles from './login.module.css';
 
 const schema = yup
   .object()
@@ -37,13 +39,54 @@ function Login() {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data) => {
-    console.log(schema, data);
-    console.log('sth');
-    login({ username: data.username, password: data.password });
-    // console.log(e);
+  const [loginErr, setLoginErr] = useState('');
+  const { state } = useLocation();
+
+  const redirectUrl = state?.redirectUrl || '/home';
+
+  console.log(redirectUrl);
+  const navigate = useNavigate();
+  const onSubmit = async (data) => {
+    try {
+      const response = await login({
+        username: data.username,
+        password: data.password,
+      });
+      const token = response?.data?.object;
+
+      if (token?.access_token && token?.refresh_token) {
+        localStorage.setItem('access_token', token.access_token);
+        localStorage.setItem('refresh_token', token.refresh_token);
+        navigate(redirectUrl);
+      } else {
+        setLoginErr('Token is not found');
+      }
+    } catch (error) {
+      setLoginErr(error?.response?.data?.message);
+    }
   };
-  const { loginWithRedirect, isAuthenticated } = useAuth0();
+
+  const { handleGoogle, loading, error } = useGoogleLogin(() => {
+    navigate(redirectUrl);
+  });
+  useEffect(() => {
+    /* global google */
+    if (window.google) {
+      google.accounts.id.initialize({
+        client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+        callback: handleGoogle,
+      });
+
+      google.accounts.id.renderButton(
+        document.getElementById('btnLoginGoogle'),
+        {
+          theme: 'filled_black',
+          text: 'signin_with',
+          shape: 'pill',
+        }
+      );
+    }
+  }, [handleGoogle]);
   return (
     <div className={clsx(styles.container)}>
       {' '}
@@ -96,9 +139,13 @@ function Login() {
               )}
             />
           </Form.Text>
+          <Form.Text className="text-muted">
+            <p className={clsx(styles.error)}>{loginErr}</p>
+          </Form.Text>
+          <Form.Text className="text-muted">
+            <p className={clsx(styles.error)}>{error}</p>
+          </Form.Text>
         </Form.Group>
-        {/* <Form.Group className="mb-3" controlId="formBasicCheckbox">
-        <Form.Check type="checkbox" label="Check me out" /> </Form.Group> */}
         <Button
           className={clsx(styles.signup_btn)}
           variant="outline-info"
@@ -109,14 +156,8 @@ function Login() {
         </Button>{' '}
         <p className={clsx(styles.google_opt)}>Or login with Google</p>{' '}
         <div className={clsx(styles.alt_login)}>
-          {' '}
-          {!isAuthenticated && (
-            <div
-              onClick={() => loginWithRedirect()}
-              className={clsx(styles.google_login)}
-            ></div>
-          )}{' '}
-        </div>{' '}
+          <div id="btnLoginGoogle" />
+        </div>
         <p className={clsx(styles.signup_opt)}>
           {' '}
           Not a member? <a href="/login">Sign up now</a>{' '}
