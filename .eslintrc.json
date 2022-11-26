@@ -23,7 +23,14 @@
   },
   "plugins": ["react", "prettier"],
   "rules": {
-    //"indent": ["error", 3],
+    "indent": [
+      "error",
+      2,
+      {
+        "SwitchCase": 1,
+        "ignoredNodes": ["ConditionalExpression"]
+      }
+    ],
     // suppress errors for missing 'import React' in files
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/no-var-requires": 0,
