@@ -1,6 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable import/extensions */
-/* eslint-disable import/no-unresolved */
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AuthenticationLayout from './components/Layouts/AuthenticationLayout';
 
