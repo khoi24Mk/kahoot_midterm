@@ -1,21 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
-
-/* eslint-disable @typescript-eslint/no-empty-function */
-
-/* eslint-disable no-useless-escape */
-
-/* eslint-disable import/extensions */
-
-/* eslint-disable import/no-unresolved */
-
-/* eslint-disable import/order */
-
-/* eslint-disable react/self-closing-comp */
-
-/* eslint-disable react/jsx-props-no-spreading */
-
-/* eslint-disable import/order */
-
 import 'bootstrap/dist/css/bootstrap.css';
 
 import clsx from 'clsx';
@@ -26,8 +8,6 @@ import Button from 'react-bootstrap/Button';
 
 import { ErrorMessage } from '@hookform/error-message';
 
-import styles from './register.module.css';
-
 import { useForm } from 'react-hook-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -35,8 +15,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 import { motion } from 'framer-motion';
-import registerAuth from '~/api/auth/register';
 import { useState } from 'react';
+import registerAuth from '~/api/auth/register';
+import styles from './register.module.css';
 
 const schema = yup
 
@@ -228,7 +209,7 @@ function Register() {
         <p className={clsx(styles.google_opt)}>Or register with Google</p>
 
         <div className={clsx(styles.alt_login)}>
-          <div className={clsx(styles.google_login)}></div>
+          <div className={clsx(styles.google_login)} />
         </div>
 
         <p className={clsx(styles.login_opt)}>

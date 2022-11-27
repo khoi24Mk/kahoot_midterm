@@ -1,19 +1,14 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/no-unescaped-entities */
-/* eslint-disable import/extensions */
-/* eslint-disable import/no-unresolved */
-/* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-undef */
-
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Form from 'react-bootstrap/Form';
+import Image from 'react-bootstrap/Image';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
@@ -21,10 +16,16 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 import Row from 'react-bootstrap/Row';
 import Toast from 'react-bootstrap/Toast';
 import { FaRegBell } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import logout from '~/api/auth/logout';
+import { AuthContext } from '~/Context';
 import { avt, menu } from '~/img';
 import styles from './Header.module.css';
 
 function Header() {
+  const context = useContext(AuthContext);
+  const { profile, setProfile } = context;
+
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
@@ -34,6 +35,13 @@ function Header() {
 
   const toggleShowA = () => setShowA(!showA);
   const hindeA = () => setShowA(false);
+
+  const handleLogout = async () => {
+    await logout();
+    setProfile(null);
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+  };
 
   return (
     <Navbar bg="light" expand="lg">
@@ -136,12 +144,21 @@ function Header() {
                 variant="success"
                 id="dropdown-split-basic"
               >
-                <img className={clsx(styles.avt)} src={avt} alt="" />
+                <Image
+                  roundedCircle
+                  className={clsx(styles.avt)}
+                  src={profile?.avatar || avt}
+                  alt=""
+                />
               </Dropdown.Toggle>
               <Dropdown.Menu className={clsx(styles.dropInfo)}>
-                <Dropdown.Item href="/profile">My profile</Dropdown.Item>
+                <Dropdown.Item as={Link} to="/profile">
+                  My profile
+                </Dropdown.Item>
                 <Dropdown.Item href="#/action-2">sth</Dropdown.Item>
-                <Dropdown.Item href="/login">Log out</Dropdown.Item>
+                <Dropdown.Item as={Link} to="/login" onClick={handleLogout}>
+                  Log out
+                </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </div>

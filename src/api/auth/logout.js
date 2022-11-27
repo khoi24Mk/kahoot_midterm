@@ -1,3 +1,5 @@
+/* eslint-disable import/extensions */
+/* eslint-disable import/no-unresolved */
 import axiosPublic from '../PublicAxios';
 
 const logout = async () => {
@@ -12,10 +14,7 @@ const logout = async () => {
         },
       }
     );
-    const message = response.data.object;
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    return message;
+    return response;
   } catch (err) {
     return null;
   }
