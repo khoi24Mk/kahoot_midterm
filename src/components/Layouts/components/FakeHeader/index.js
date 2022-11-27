@@ -5,9 +5,10 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
 
 import clsx from 'clsx';
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
@@ -20,33 +21,14 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 import Row from 'react-bootstrap/Row';
 import Toast from 'react-bootstrap/Toast';
 import { FaRegBell } from 'react-icons/fa';
-import Image from 'react-bootstrap/Image';
-import { Link } from 'react-router-dom';
 import { avt, menu } from '~/img';
-import styles from './Header.module.css';
-import { AuthContext } from '~/Context';
-import logout from '~/api/auth/logout';
+import styles from './FakeHeader.module.css';
 
-function Header() {
-  const context = useContext(AuthContext);
-  const { profile, setProfile } = context;
-
+function FakeHeader() {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-
-  const [showA, setShowA] = useState(false);
-
-  const toggleShowA = () => setShowA(!showA);
-  const hindeA = () => setShowA(false);
-
-  const handleLogout = async () => {
-    await logout();
-    setProfile(null);
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-  };
 
   return (
     <Navbar bg="light" expand="lg">
@@ -102,75 +84,10 @@ function Header() {
               Search
             </Button>
           </Form>
-          <Row className={clsx(styles.grNoty)}>
-            <Col md={6} className="">
-              <Button
-                onClick={toggleShowA}
-                className={clsx(styles.bell, 'mb-s')}
-              >
-                <FaRegBell />
-              </Button>
-              <Toast
-                className={clsx(styles.notification)}
-                show={showA}
-                onClose={toggleShowA}
-              >
-                {[1, 2, 3].map(() => {
-                  return (
-                    <Toast>
-                      <Toast.Header closeButton={false}>
-                        <img
-                          src="holder.js/20x20?text=%20"
-                          className="rounded me-2"
-                          alt=""
-                        />
-                        <strong className="me-auto">Bootstrap</strong>
-                        <small>11 mins ago</small>
-                      </Toast.Header>
-                      <Toast.Body>
-                        Woohoo, you're reading this text in a Toast!
-                      </Toast.Body>
-                    </Toast>
-                  );
-                })}
-              </Toast>
-            </Col>
-          </Row>
-          <div
-            onClick={() => {
-              hindeA();
-            }}
-            className={clsx(styles.user)}
-          >
-            <Dropdown className={clsx(styles.avtDropDown)}>
-              <Dropdown.Toggle
-                className={clsx(styles.realAvt)}
-                split
-                variant="success"
-                id="dropdown-split-basic"
-              >
-                <Image
-                  roundedCircle
-                  className={clsx(styles.avt)}
-                  src={profile?.avatar || avt}
-                  alt=""
-                />
-              </Dropdown.Toggle>
-              <Dropdown.Menu className={clsx(styles.dropInfo)}>
-                <Dropdown.Item as={Link} to="/profile">
-                  My profile
-                </Dropdown.Item>
-                <Dropdown.Item href="#/action-2">sth</Dropdown.Item>
-                <Dropdown.Item as={Link} to="/login" onClick={handleLogout}>
-                  Log out
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-          </div>
         </Navbar.Collapse>
       </Container>
     </Navbar>
   );
 }
 
-export default Header;
+export default FakeHeader;

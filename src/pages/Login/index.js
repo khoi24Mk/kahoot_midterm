@@ -44,7 +44,6 @@ function Login() {
 
   const redirectUrl = state?.redirectUrl || '/home';
 
-  console.log(redirectUrl);
   const navigate = useNavigate();
   const onSubmit = async (data) => {
     try {
