@@ -3,9 +3,10 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
 import { useEffect, useState } from 'react';
-import { Button, Card, Container } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import joinGroup from '~/api/normal/joinGroup';
+import Error from '~/components/Error';
 import Loading from '~/components/Loading';
 
 export default function Invitation() {
@@ -35,18 +36,14 @@ export default function Invitation() {
   return error == null ? (
     <Navigate to="/profile" />
   ) : (
-    <Container className="d-flex justify-content-center align-items-center vh-100">
-      <Card className="w-75">
-        <Card.Body>
-          <Card.Title>
-            <h3 className="fw-bold text-uppercase">Invitation error !!!</h3>
-          </Card.Title>
-          <Card.Text className="text-secondary">{error}</Card.Text>
-          <Link to="/">
-            <Button variant="primary">Go Home</Button>
-          </Link>
-        </Card.Body>
-      </Card>
-    </Container>
+    <Error
+      error={error}
+      title="Invitation error !!!"
+      resolveElement={
+        <Link to="/home">
+          <Button variant="primary">Go Home</Button>
+        </Link>
+      }
+    />
   );
 }
