@@ -1,5 +1,6 @@
-import { Button, Card, Container } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
+import Error from '~/components/Error';
 
 export default function Verification() {
   const [searchParams] = useSearchParams();
@@ -13,22 +14,16 @@ export default function Verification() {
   }
 
   return error ? (
-    <Container className="d-flex justify-content-center align-items-center vh-100">
-      <Card className="w-75">
-        <Card.Body>
-          <Card.Title>
-            <h3 className="fw-bold text-uppercase">Verification error !!!</h3>
-          </Card.Title>
-          <Card.Text>
-            <p className="text-secondary">{error}</p>
-          </Card.Text>
-          <Link to="/">
-            <Button variant="primary">Go Home</Button>
-          </Link>
-        </Card.Body>
-      </Card>
-    </Container>
+    <Error
+      error={error}
+      title="Verification error !!!"
+      resolveElement={
+        <Link to="/register">
+          <Button variant="primary">Register again</Button>
+        </Link>
+      }
+    />
   ) : (
-    <Navigate to="/" />
+    <Navigate to="/home" />
   );
 }
