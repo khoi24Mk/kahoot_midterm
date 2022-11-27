@@ -10,10 +10,6 @@
     "plugin:@typescript-eslint/recommended",
     "airbnb",
     "plugin:prettier/recommended"
-
-    // "plugin:import/errors",
-    // "plugin:import/warnings",
-    // "plugin:import/typescript"
   ],
 
   "overrides": [],
@@ -31,7 +27,6 @@
         "ignoredNodes": ["ConditionalExpression"]
       }
     ],
-    // suppress errors for missing 'import React' in files
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/no-var-requires": 0,
     // allow jsx syntax in js files (for next.js project)
@@ -41,7 +36,11 @@
       "error",
       { "singleQuote": true },
       { "endLine": "auto" }
-    ]
+    ],
+    "react/prop-types": "off",
+    "import/extensions": "off",
+    "import/no-unresolved": "off",
+    "react/jsx-props-no-spreading": "off"
   },
   "settings": {
     "import/resolver": {

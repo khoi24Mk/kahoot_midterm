@@ -29,7 +29,7 @@ export default function PrivateLayout() {
 
   return unAuthenticated ? (
     <Navigate
-      to="/login"
+      to="/notAuthentication"
       state={{
         redirectUrl: pathname,
       }}

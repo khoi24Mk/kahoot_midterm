@@ -1,11 +1,3 @@
-/* eslint-disable import/extensions */
-/* eslint-disable import/no-unresolved */
-/* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable react/self-closing-comp */
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import 'bootstrap/dist/css/bootstrap.css';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
@@ -15,8 +7,8 @@ import Form from 'react-bootstrap/Form';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { useLocation, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import login from '~/api/auth/login';
 import useGoogleLogin from '~/hooks/useGoogleLogin';
@@ -44,7 +36,6 @@ function Login() {
 
   const redirectUrl = state?.redirectUrl || '/home';
 
-  console.log(redirectUrl);
   const navigate = useNavigate();
   const onSubmit = async (data) => {
     try {
@@ -66,9 +57,10 @@ function Login() {
     }
   };
 
-  const { handleGoogle, loading, error } = useGoogleLogin(() => {
+  const { handleGoogle, error } = useGoogleLogin(() => {
     navigate(redirectUrl);
   });
+
   useEffect(() => {
     /* global google */
     if (window.google) {
@@ -87,6 +79,7 @@ function Login() {
       );
     }
   }, [handleGoogle]);
+
   return (
     <div className={clsx(styles.container)}>
       {' '}
