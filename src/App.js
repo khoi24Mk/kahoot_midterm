@@ -23,12 +23,12 @@ function App() {
         <Route path="/verification" element={<Verification />} />
         <Route element={<ProfileLayout />}>
           <Route path="/home" element={<Home />} />
+          <Route path="/group" element={<Group />} />
+          <Route path="/group/:id" element={<Group />} />
           <Route element={<DefaultLayout />}>
             <Route element={<PrivateLayout />}>
               <Route path="/invitation" element={<Invitation />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/group" element={<Group />} />
-              <Route path="/group/:id" element={<Group />} />
             </Route>
           </Route>
         </Route>

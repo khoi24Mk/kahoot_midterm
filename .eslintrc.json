@@ -40,7 +40,7 @@
     "prettier/prettier": [
       "error",
       { "singleQuote": true },
-      { "endLine": "auto" }
+      { "endOfLine": "auto" }
     ]
   },
   "settings": {
