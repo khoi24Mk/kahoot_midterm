@@ -110,9 +110,9 @@ function Header() {
                 show={showA}
                 onClose={toggleShowA}
               >
-                {[1, 2, 3].map(() => {
+                {[1, 2, 3].map((i) => {
                   return (
-                    <Toast>
+                    <Toast key={i}>
                       <Toast.Header closeButton={false}>
                         <img
                           src="holder.js/20x20?text=%20"

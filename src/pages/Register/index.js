@@ -12,6 +12,7 @@ import { useForm } from 'react-hook-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 
+import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 
 import { motion } from 'framer-motion';
@@ -73,10 +74,11 @@ function Register() {
     }
   };
 
+  const MotionForm = motion(Form);
   return (
     <div className={clsx(styles.container)}>
       {' '}
-      <motion.Form
+      <MotionForm
         animate={{ x: 0, scale: 1 }}
         transition={{ duration: 0.5 }}
         initial={{ x: -100, scale: 0 }}
@@ -203,19 +205,13 @@ function Register() {
           variant="outline-info"
           type="submit"
         >
-          Login
+          Register
         </Button>
 
-        <p className={clsx(styles.google_opt)}>Or register with Google</p>
-
-        <div className={clsx(styles.alt_login)}>
-          <div className={clsx(styles.google_login)} />
-        </div>
-
         <p className={clsx(styles.login_opt)}>
-          Already have account? <a href="/login">Login now</a>
+          Already have account? <Link to="/login">Login now</Link>
         </p>
-      </motion.Form>
+      </MotionForm>
     </div>
   );
 }

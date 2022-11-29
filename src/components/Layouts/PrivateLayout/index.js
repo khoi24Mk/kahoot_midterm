@@ -1,7 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable import/extensions */
-/* eslint-disable no-nested-ternary */
-
 import { useContext, useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import validate from '~/api/normal/validate';
@@ -11,7 +7,6 @@ export default function PrivateLayout() {
   const context = useContext(AuthContext);
   const { profile, setProfile } = context;
   const unAuthenticated = profile === null || profile === undefined;
-
   const { pathname } = useLocation();
   useEffect(() => {
     const asyncValidate = async () => {

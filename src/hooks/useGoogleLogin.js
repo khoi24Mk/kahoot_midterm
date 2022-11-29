@@ -21,9 +21,11 @@ const useGoogleLogin = (redirect) => {
           },
         }
       );
+
       if (
         loginResponse.data?.object?.access_token &&
-        loginResponse.data?.object?.refresh_token
+        loginResponse.data?.object?.refresh_token &&
+        loginResponse.data?.object?.profile
       ) {
         localStorage.setItem(
           'access_token',
@@ -33,10 +35,10 @@ const useGoogleLogin = (redirect) => {
           'refresh_token',
           loginResponse.data?.object?.refresh_token
         );
+        redirect(loginResponse.data.object.profile);
       } else {
         setError('Not found token');
       }
-      redirect();
     } catch (err) {
       setError(err.response.data.message);
     } finally {
