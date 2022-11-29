@@ -16,8 +16,9 @@ function GroupDetail({ groupId }) {
     console.log(retGroupList);
     return retGroupList;
   };
+
   const query = useQuery({
-    queryKey: ['MemberGroup'],
+    queryKey: ['sth'],
     queryFn: asyncGetMemberGroup,
   });
 
@@ -40,7 +41,7 @@ function GroupDetail({ groupId }) {
               <StreamGroup />
             </Tab>
             <Tab eventKey="people" title="People">
-              <PeopleGroup members={memberList} />
+              <PeopleGroup id={groupId} members={memberList} />
             </Tab>
           </Tabs>
         </Col>
