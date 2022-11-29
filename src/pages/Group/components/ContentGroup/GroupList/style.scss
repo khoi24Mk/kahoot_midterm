@@ -1,13 +1,13 @@
-$font : 'Sofia', sans-serif;
-$font-size:16px;
-$blue : #0a4870;
-$blue2 : #e3ebf1;
+$font: 'Sofia', sans-serif;
+$font-size: 16px;
+$blue: #0a4870;
+$blue2: #e3ebf1;
 $black: #000;
-$grey : #7d7d7d;
-$grey2 : #f0f0f0;
-$grey3 : #e8e7e7;
-$grey4 : #fdfdfd;
-$bluegrey : #49606e;
+$grey: #7d7d7d;
+$grey2: #f0f0f0;
+$grey3: #e8e7e7;
+$grey4: #fdfdfd;
+$bluegrey: #49606e;
 $orange: #ec992c;
 
 @mixin radius($val) {
@@ -17,80 +17,80 @@ $orange: #ec992c;
 }
 
 @mixin cardsOpen() {
-    &::before {
-      background: rgba(10,72,112, 0.6);
-    }
-    .book-container {
-      .content {
-        opacity: 1;
+  &::before {
+    background: rgba(10, 72, 112, 0.6);
+  }
+  .book-container {
+    .content {
+      opacity: 1;
 
-        transform: translateY(15px);
-      }
+      transform: translateY(15px);
     }
+  }
 
-    .informations-container {      
-      transform: translateY(30px);
-      .more-information {
-        opacity: 1;
-      }
+  .informations-container {
+    transform: translateY(30px);
+    .more-information {
+      opacity: 1;
     }
+  }
 }
 
-*{
+* {
   margin: 0;
   padding: 0;
-  
+
   font-family: $font;
 }
 
-h2{
+h2 {
   color: #0a4870;
   font-weight: 500;
 }
 
-ul{
-    display: flex;
-    flex-wrap: wrap;
+ul {
+  display: flex;
+  flex-wrap: wrap;
 
-    list-style: none;
-    padding:0;
-  
-  .booking-card{
+  list-style: none;
+  padding: 0;
+
+  .booking-card {
     position: relative;
-    width: 300px;
-	///////////////////////////////
-	height: 400px;
+    width: 700px;
+    ///////////////////////////////
+    height: 400px;
     display: flex;
     flex: 0 0 300px;
     flex-direction: column;
-    
+
     margin: 20px;
     margin-bottom: 30px;
     @include radius(10px);
-    
+
     overflow: hidden;
-    
+
     background-position: center center;
     background-size: cover;
-    
+
     text-align: center;
     color: $blue;
-    
-    transition: .3s;
-    
-    &::before{
+
+    transition: 0.3s;
+
+    &::before {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      
-      background: rgba(10,72,112, 0);
-      
-      transition: .3s;
+
+      background: rgba(10, 72, 112, 0);
+
+      transition: 0.3s;
     }
-    
+
     .book-container {
       height: 30px;
       .content {
@@ -101,99 +101,99 @@ ul{
         justify-content: center;
         height: 100%;
         width: 100%;
-        
+
         transform: translateY(-200px);
-        
-        transition: .3s;
-        
-        .btn {      
+
+        transition: 0.3s;
+
+        .btn {
           border: 3px solid white;
           padding: 10px 35px;
-          
+
           background: none;
-          
+
           text-transform: uppercase;
           font-weight: bold;
           font-size: 0.7em;
           color: white;
-          
+
           cursor: pointer;
-          
-          transition: .3s;
-          
+
+          transition: 0.3s;
+
           &:hover {
             background: white;
-            
+
             border: 0px solid white;
-            
+
             color: $blue;
           }
         }
       }
     }
-    
-    .informations-container{      
+
+    .informations-container {
       flex: 1 0 auto;
-      
+
       padding: 20px;
       padding-bottom: 0;
 
-	  height: 200px;
-      
+      height: 200px;
+
       background: $grey2;
-      
+
       transform: translateY(206px);
-      
-      transition: .3s;
-	  font-size: 1rem;
-      
+
+      transition: 0.3s;
+      font-size: 1rem;
+
       .title {
         position: relative;
         word-wrap: break-word;
-		height: 3.5rem;
+        height: 3.5rem;
         padding-bottom: 10px;
         margin-bottom: 10px;
-        
+
         font-weight: bold;
         font-size: 1.2em;
-        
-        &::after{
+
+        &::after {
           content: '';
-          
+
           position: absolute;
           bottom: 0;
           left: 0;
           right: 0;
-          
+
           height: 3px;
           width: 50px;
-          
+
           margin: auto;
-          
+
           background: $blue;
         }
       }
-	  .sub-title{
-		height: 2rem;
-	  }
-      
+      .sub-title {
+        height: 2rem;
+      }
+
       .price {
         display: flex;
         align-items: center;
         justify-content: center;
-		margin: 0;
-        
+        margin: 0;
+
         // margin-top: 10px;
-        
+
         .icon {
           margin-right: 10px;
         }
       }
-      
+
       .more-information {
         opacity: 0;
-        
-        transition: .3s;
+
+        transition: 0.3s;
         .info-and-date-container {
           display: flex;
 
@@ -213,7 +213,7 @@ ul{
               margin-bottom: 5px;
             }
 
-            &.info{
+            &.info {
               color: $orange;
 
               margin-right: 10px;
@@ -225,13 +225,13 @@ ul{
 
           font-size: 0.8em;
           color: $grey;
-		  height: 40px;
-		  object-fit: contain;
-		  word-wrap: break-word;
+          height: 40px;
+          object-fit: contain;
+          word-wrap: break-word;
         }
       }
     }
-    
+
     &:hover {
       @include cardsOpen();
     }
@@ -240,30 +240,30 @@ ul{
 
 @media (max-width: 768px) {
   ul {
-    .booking-card{
+    .booking-card {
       @include cardsOpen();
     }
   }
 }
 
-.credits{
+.credits {
   display: table;
   background: $blue;
   color: white;
   line-height: 25px;
-  
+
   margin: 10px auto;
   padding: 20px;
-  
+
   @include radius(10px);
-  
+
   text-align: center;
-  
-  a{
+
+  a {
     color: $blue2;
   }
 }
 
-h1{
+h1 {
   margin: 10px 20px;
 }
