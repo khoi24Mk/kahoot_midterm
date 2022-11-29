@@ -4,6 +4,7 @@
 import Home from '~/pages/Home';
 import Profile from '~/pages/Profile';
 import Login from '~/pages/Login';
+import Group from '~/pages/Group';
 import Register from '~/pages/Register';
 
 const publicRouters = [
@@ -13,6 +14,8 @@ const publicRouters = [
   },
   { path: '/profile', element: Profile },
   { path: '/login', element: Login, layout: null },
+  { path: '/group', element: Group, layout: null },
+  { path: '/group/:id', element: Group, layout: null },
   { path: '/register', element: Register, layout: null },
 ];
 

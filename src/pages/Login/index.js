@@ -24,6 +24,10 @@ const schema = yup
   .required();
 
 function Login() {
+  const context = useContext(AuthContext);
+  const { setProfile } = context;
+  //   const unAuthenticated = profile === null || profile === undefined;
+
   const {
     register,
     handleSubmit,
@@ -34,8 +38,6 @@ function Login() {
 
   const [loginErr, setLoginErr] = useState('');
   const { state } = useLocation();
-  const context = useContext(AuthContext);
-  const { setProfile } = context;
 
   const redirectUrl = state?.redirectUrl || '/home';
 
@@ -46,15 +48,11 @@ function Login() {
         username: data.username,
         password: data.password,
       });
-      const loginResp = response?.data?.object;
-      if (
-        loginResp?.access_token &&
-        loginResp?.refresh_token &&
-        loginResp?.profile
-      ) {
-        localStorage.setItem('access_token', loginResp.access_token);
-        localStorage.setItem('refresh_token', loginResp.refresh_token);
-        setProfile(loginResp.profile);
+      const token = response?.data?.object;
+
+      if (token?.access_token && token?.refresh_token) {
+        localStorage.setItem('access_token', token.access_token);
+        localStorage.setItem('refresh_token', token.refresh_token);
         navigate(redirectUrl);
       } else {
         setLoginErr('Token is not found');
@@ -156,7 +154,7 @@ function Login() {
           type="submit"
         >
           {' '}
-          Sign In{' '}
+          Sign Up{' '}
         </Button>{' '}
         <p className={clsx(styles.google_opt)}>Or login with Google</p>{' '}
         <div className={clsx(styles.alt_login)}>

@@ -12,12 +12,11 @@ import { useForm } from 'react-hook-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import registerAuth from '~/api/auth/register';
+import registerAuth from '~/api/auth/registeUr';
 import styles from './register.module.css';
 
 const schema = yup
@@ -207,10 +206,6 @@ function Register() {
         >
           Register
         </Button>
-
-        <p className={clsx(styles.login_opt)}>
-          Already have account? <Link to="/login">Login now</Link>
-        </p>
       </MotionForm>
     </div>
   );

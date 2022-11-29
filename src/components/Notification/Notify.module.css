@@ -1,0 +1,37 @@
+.toast{
+	position: fixed;
+	z-index: 1000;
+	display: flex;
+	align-self: center;
+	justify-content: center;
+	flex-direction: column;
+	margin: 5% auto;
+	width: 30%;
+	left: 0;
+	right: 0;
+	/* transform: translate(-50%, -50%); */
+	top:3rem;
+	animation: anime 1s forwards ease-in-out alternate;
+}
+
+
+
+@keyframes anime {
+	100%{
+		transform: translateY(20px);
+		box-shadow: 0 40px 10px -18px rgba(248,249,250,0.5), 0 40px 16px -12px rgba(248,249,250,0.3);
+	}
+	
+}
+
+
+.success{
+	background-color: greenyellow;
+}
+.warning{
+	background-color: red;
+}
+.normal{
+	background-color: blue;
+}
+

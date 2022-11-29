@@ -5,10 +5,8 @@ function DefaultLayout() {
   return (
     <div>
       <Header />
-      <div className="container">
-        <div className="content">
-          <Outlet />
-        </div>
+      <div className="">
+        <Outlet />
       </div>
     </div>
   );
