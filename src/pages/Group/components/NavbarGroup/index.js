@@ -1,10 +1,21 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
-import { ButtonGroup, Dropdown, Row, Col, Modal } from 'react-bootstrap';
+import {
+  ButtonGroup,
+  Dropdown,
+  Row,
+  Col,
+  Modal,
+  Image,
+  Toast,
+  ToastContainer,
+} from 'react-bootstrap';
+import clsx from 'clsx';
 import { ErrorMessage } from '@hookform/error-message';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
@@ -13,11 +24,14 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Offcanvas from 'react-bootstrap/Offcanvas';
-import { forwardRef, useState } from 'react';
+import { forwardRef, useState, useContext } from 'react';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import createGroup from '~/api/group/createGroup';
+import styles from './NavbarGroup.module.css';
+import { AuthContext } from '~/Context';
+import { avt } from '~/img';
 
 const CustomToggle = forwardRef(({ children, onClick }, ref) => (
   <a
@@ -49,13 +63,20 @@ const schema = yup
   .object()
   .shape({
     groupName: yup.string().required('Please enter your class name'),
+    description: yup.string(),
   })
   .required();
 
-function NavbarGroup({ id }) {
+function NavbarGroup({ id, groupList }) {
+  const context = useContext(AuthContext);
+  const { profile } = context;
+
   const [showCreate, setShowCreate] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [createResponse, setCreateResponse] = useState('');
   const handleCloseCreate = () => setShowCreate(false);
   const handleShowCreate = () => setShowCreate(true);
+  // console.log(parseInt(id, 10) === parseInt(groupList[14].id, 10));
   const {
     register,
     handleSubmit,
@@ -66,12 +87,15 @@ function NavbarGroup({ id }) {
   const onSubmit = async (data) => {
     try {
       const response = await createGroup({
-        groupName: data.username,
+        groupName: data.groupName,
+        description: data.description,
       });
-      console.log(response);
+      setShowAlert(true);
+      setCreateResponse('success');
       handleCloseCreate();
     } catch (error) {
       // setLoginErr(error?.response?.data?.message);
+      setCreateResponse('danger');
       console.log(error);
     }
   };
@@ -97,8 +121,19 @@ function NavbarGroup({ id }) {
                   title="My classes"
                   id={`offcanvasNavbarDropdown-expand-${false}`}
                 >
-                  <NavDropdown.Item href="/group/1">Class 1</NavDropdown.Item>
-                  <NavDropdown.Item href="/group/2">Class 2</NavDropdown.Item>
+                  {groupList.map((group) => (
+                    <NavDropdown.Item
+                      style={
+                        parseInt(id, 10) === parseInt(group.id, 10)
+                          ? { color: 'blue', fontWeight: 'bold' }
+                          : {}
+                      }
+                      key={group.id}
+                      href={'/group/'.concat(group.id)}
+                    >
+                      {group.groupName}
+                    </NavDropdown.Item>
+                  ))}
                 </NavDropdown>
               </Nav>
               <Form className="d-flex mt-3">
@@ -115,31 +150,40 @@ function NavbarGroup({ id }) {
           <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${false}`} />
           {id ? <span>Class {id} </span> : undefined}
           <Row>
-            <Col>
-              <Dropdown>
-                <Dropdown.Toggle as={CustomToggle} drop="start" />
-                <Dropdown.Menu>
-                  <Dropdown.Item onClick={handleShowCreate}>
-                    Create Class
-                  </Dropdown.Item>
-                  <Dropdown.Divider />
-                  <Dropdown.Item>Join Class</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </Col>
+            {id ? undefined : (
+              <Col>
+                <Dropdown>
+                  <Dropdown.Toggle as={CustomToggle} drop="start" />
+                  <Dropdown.Menu>
+                    <Dropdown.Item onClick={handleShowCreate}>
+                      Create Class
+                    </Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item>Join Class</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Col>
+            )}
             <Col>
               <Dropdown
                 as={ButtonGroup}
                 id="basic-nav-dropdown"
-                className="ml-1"
+                className="ml-1 avtDropDown"
               >
-                <Button variant="info">Username</Button>
                 <Dropdown.Toggle
+                  className={clsx(styles.realAvt)}
                   split
-                  variant="info"
+                  variant="success"
                   id="dropdown-split-basic"
-                />
-                <Dropdown.Menu>
+                >
+                  <Image
+                    roundedCircle
+                    className={clsx(styles.avt)}
+                    src={profile?.avatar || avt}
+                    alt=""
+                  />
+                </Dropdown.Toggle>
+                <Dropdown.Menu className={clsx(styles.dropInfo)}>
                   <Dropdown.Item href="/profile">My profile</Dropdown.Item>
                   <Dropdown.Divider />
                   <Dropdown.Item href="/">Logout</Dropdown.Item>
@@ -180,7 +224,12 @@ function NavbarGroup({ id }) {
               controlId="exampleForm.ControlTextarea1"
             >
               <Form.Label>Description</Form.Label>
-              <Form.Control name="groupDescription" as="textarea" rows={3} />
+              <Form.Control
+                {...register('description')}
+                type="textarea"
+                row={3}
+              />
+              <Form.Text name="desctiption" className="text-muted"></Form.Text>
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -200,6 +249,26 @@ function NavbarGroup({ id }) {
           </Button>
         </Modal.Footer>
       </Modal>
+      <ToastContainer position="top-end" className="p-3">
+        <Toast
+          show={showAlert}
+          bg={createResponse}
+          onClose={() => setShowAlert(false)}
+          delay={3000}
+          autohide
+        >
+          <Toast.Header>
+            <img className="rounded me-2" alt="" />
+            <strong className="me-auto">Create Class Notification</strong>
+            <small className="text-muted">just now</small>
+          </Toast.Header>
+          <Toast.Body>
+            {createResponse === 'success'
+              ? 'Create class successfully!!!'
+              : 'Create class failure!!!'}
+          </Toast.Body>
+        </Toast>
+      </ToastContainer>
     </>
   );
 }

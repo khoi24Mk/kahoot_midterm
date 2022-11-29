@@ -4,6 +4,7 @@
 import Card from 'react-bootstrap/Card';
 import { Dropdown } from 'react-bootstrap';
 import { forwardRef } from 'react';
+import { groupBg } from '~/img';
 
 const CustomToggle = forwardRef(({ children, onClick }, ref) => (
   <a
@@ -29,7 +30,7 @@ function GroupInCard({ groupId, groupName, owner, description }) {
         }}
         role="button"
         variant="top"
-        src="https://gstatic.com/classroom/themes/img_read.jpg"
+        src={groupBg}
       />
       <Card.Body>
         <Card.Header className="d-flex justify-content-between">

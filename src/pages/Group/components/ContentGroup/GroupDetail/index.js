@@ -1,12 +1,29 @@
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Col, Container, Row, Tab, Tabs } from 'react-bootstrap';
+import getUserInGroup from '~/api/group/getUserInGroup';
+import Loading from '~/components/Loading';
 import PeopleGroup from './peopleGroup';
 import StreamGroup from './streamGroup';
 
 /* eslint-disable react/prop-types */
 function GroupDetail({ groupId }) {
   const [keyTabs, setKeyTabs] = useState('people');
-  return (
+  const [memberList, setMemberList] = useState([]);
+  const asyncGetMemberGroup = async () => {
+    const retGroupList = await getUserInGroup({ id: groupId });
+    setMemberList(retGroupList);
+    console.log(retGroupList);
+    return retGroupList;
+  };
+  const query = useQuery({
+    queryKey: ['GroupList'],
+    queryFn: asyncGetMemberGroup,
+  });
+
+  return query.isLoading ? (
+    <Loading />
+  ) : (
     <Container>
       <Row className="justify-content-center">
         <Col xs={4} md={8}>
@@ -23,7 +40,7 @@ function GroupDetail({ groupId }) {
               <StreamGroup />
             </Tab>
             <Tab eventKey="people" title="People">
-              <PeopleGroup />
+              <PeopleGroup members={memberList} />
             </Tab>
           </Tabs>
         </Col>

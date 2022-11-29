@@ -34,7 +34,7 @@
     "prettier/prettier": [
       "error",
       { "singleQuote": true },
-      { "endLine": "auto" }
+      { "endOfLine": "auto" }
     ],
     "react/prop-types": "off",
     "import/extensions": "off",
