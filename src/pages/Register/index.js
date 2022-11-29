@@ -16,7 +16,7 @@ import * as yup from 'yup';
 
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import registerAuth from '~/api/auth/registeUr';
+import registerAuth from '~/api/auth/register';
 import styles from './register.module.css';
 
 const schema = yup

@@ -48,11 +48,16 @@ function Login() {
         username: data.username,
         password: data.password,
       });
-      const token = response?.data?.object;
+      const loginRet = response?.data?.object;
 
-      if (token?.access_token && token?.refresh_token) {
-        localStorage.setItem('access_token', token.access_token);
-        localStorage.setItem('refresh_token', token.refresh_token);
+      if (
+        loginRet?.access_token &&
+        loginRet?.refresh_token &&
+        loginRet?.profile
+      ) {
+        localStorage.setItem('access_token', loginRet.access_token);
+        localStorage.setItem('refresh_token', loginRet.refresh_token);
+        setProfile(loginRet.profile);
         navigate(redirectUrl);
       } else {
         setLoginErr('Token is not found');
@@ -154,7 +159,7 @@ function Login() {
           type="submit"
         >
           {' '}
-          Sign Up{' '}
+          Sign In{' '}
         </Button>{' '}
         <p className={clsx(styles.google_opt)}>Or login with Google</p>{' '}
         <div className={clsx(styles.alt_login)}>

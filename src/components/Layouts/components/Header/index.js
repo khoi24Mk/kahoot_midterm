@@ -25,7 +25,6 @@ import styles from './Header.module.css';
 function Header() {
   const context = useContext(AuthContext);
   const { profile, setProfile } = context;
-  const unAuthenticated = profile === null || profile === undefined;
 
   const [show, setShow] = useState(false);
 
