@@ -1,3 +1,4 @@
+/* eslint-disable import/no-named-as-default */
 /* eslint-disable no-unneeded-ternary */
 /* eslint-disable no-nested-ternary */
 import { useQuery } from '@tanstack/react-query';

@@ -10,6 +10,7 @@ import { forwardRef } from 'react';
 import { Link } from 'react-router-dom';
 import { groupBg } from '~/img';
 import './style.scss';
+import { avt } from '~/img/index';
 
 const CustomToggle = forwardRef(({ children, onClick }, ref) => (
   <button
@@ -86,7 +87,9 @@ function GroupInCard({ groupId, groupName, owner, description }) {
       <ul>
         <div
           className="booking-card"
-          //   style="background-image: url(https://images.unsplash.com/photo-1578944032637-f09897c5233d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ)"
+          style={{
+            backgroundImage: `url(${avt})`,
+          }}
         >
           <div className="book-container">
             <div className="content">
