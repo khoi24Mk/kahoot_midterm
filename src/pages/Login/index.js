@@ -156,7 +156,7 @@ function Login() {
           type="submit"
         >
           {' '}
-          Sign Up{' '}
+          Log in{' '}
         </Button>{' '}
         <p className={clsx(styles.google_opt)}>Or login with Google</p>{' '}
         <div className={clsx(styles.alt_login)}>
@@ -164,7 +164,7 @@ function Login() {
         </div>
         <p className={clsx(styles.signup_opt)}>
           {' '}
-          Not a member? <Link to="/login">Sign up now</Link>{' '}
+          Not a member? <Link to="/register">Sign up now</Link>{' '}
         </p>{' '}
       </motion.Form>{' '}
     </div>

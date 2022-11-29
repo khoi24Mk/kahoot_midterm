@@ -93,10 +93,11 @@ avtDropDown:focus{
 
 .auth_btn{
 	display: flex;
-	justify-content: center;
+	justify-content: space-between;
 	align-items: center;
 	margin: 1rem;
+	width: 10%;
 }
-.auth_btn Button{
+/* .auth_btn Link{
 	margin: 0 0.5rem;
-}
+} */

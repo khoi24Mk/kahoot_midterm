@@ -1,3 +1,5 @@
+/* eslint-disable consistent-return */
+/* eslint-disable array-callback-return */
 /* eslint-disable prefer-const */
 /* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
@@ -9,7 +11,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import imageCompression from 'browser-image-compression';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Carousel from 'react-bootstrap/Carousel';
 import Col from 'react-bootstrap/Col';
@@ -21,12 +23,14 @@ import { useForm } from 'react-hook-form';
 import { BiEdit } from 'react-icons/bi';
 import { MdAddAPhoto, MdConstruction } from 'react-icons/md';
 import * as yup from 'yup';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import privateAxios from '~/api/PrivateAxios';
 import Loading from '~/components/Loading';
 import Notify from '~/components/Notification';
 import { AuthContext } from '~/Context';
 import { avt } from '~/img';
 import styles from './profile.module.css';
+import getGroupList from '~/api/normal/getGroupList';
 
 const schema = yup
   .object()
@@ -42,6 +46,25 @@ const schema = yup
  * @returns Profile
  */
 function Profile() {
+  const [mygroups, setMyGroups] = useState([]);
+  useEffect(() => {
+    const asyncGroup = async () => {
+      try {
+        const reponse = await getGroupList();
+        console.log('ASYNC');
+        console.log(reponse);
+        setMyGroups(reponse);
+      } catch (error) {
+        //
+      }
+    };
+    asyncGroup();
+  }, []);
+
+  console.log('EFFECT');
+  console.log(mygroups);
+
+  const navigate = useNavigate();
   let [notify, setNotify] = useState({
     show: false,
     msg: '',
@@ -60,12 +83,12 @@ function Profile() {
   const binaryData = [];
   const context = useContext(AuthContext);
   const { profile, setProfile } = context;
-  const [loadingavt, setLoadingAvt] = useState({
+  const [loading, setLoading] = useState({
     flag: false,
     msg: '',
   });
   console.log('FIRST');
-  console.log(loadingavt);
+  console.log(loading);
 
   const [show, setShow] = useState(false);
   const [avatar, setAvatar] = useState({
@@ -95,7 +118,7 @@ function Profile() {
     const file = avatar.obj;
     try {
       handleClose();
-      setLoadingAvt({ flag: true, msg: 'Uploading img . . .' });
+      setLoading({ flag: true, msg: 'Uploading img . . .' });
       const compressedFile = await imageCompression(file, options);
       console.log(
         'compressedFile instanceof Blob',
@@ -108,7 +131,7 @@ function Profile() {
       formData.append('image', compressedFile);
       const reponse = await privateAxios.post('/me/uploadAvatar', formData);
       setProfile(reponse?.data.object);
-      setLoadingAvt({ flag: false, msg: 'Uploading image . . .' });
+      setLoading({ flag: false, msg: 'Uploading image . . .' });
       setNotify({ msg: 'Upload success', type: 'success', show: true });
       console.log(notify);
     } catch (e) {
@@ -120,6 +143,7 @@ function Profile() {
   const [registerErr, setRegisterErr] = useState('');
   const onSubmit = async (data) => {
     try {
+      setLoading({ flag: true, msg: 'Update profile . . .' });
       console.log('onSubmit');
       console.log(data);
       const reponse = await privateAxios.put('/me', {
@@ -128,9 +152,13 @@ function Profile() {
         email: data.email,
       });
       setProfile(reponse?.data.object);
+
+      setLoading({ flag: false, msg: 'Update profile . . .' });
+      setNotify({ msg: 'Update profile success', type: 'success', show: true });
     } catch (error) {
       console.log('onSubmit error');
       setRegisterErr(error.response?.data?.message);
+      setNotify({ msg: 'Upload profile failed', type: 'warning', show: true });
     }
   };
 
@@ -139,13 +167,13 @@ function Profile() {
     setEditable(false);
   };
   console.log('PROFILE');
-  console.log(loadingavt);
-  console.log(loadingavt.msg);
+  console.log(loading);
+  console.log(loading.msg);
   return (
     <>
       <Notify notify={notify} setShow={setNotify} />
-      {loadingavt.flag ? (
-        <Loading msg={loadingavt?.msg} className={clsx(styles.loading)} />
+      {loading.flag ? (
+        <Loading msg={loading?.msg} className={clsx(styles.loading)} />
       ) : (
         <div className={clsx('container')}>
           <div className={clsx(styles.header)}>
@@ -223,17 +251,17 @@ function Profile() {
               </Button>{' '}
               <div className={clsx(styles.overview_info)}>
                 <div className={clsx(styles.info_detail)}>
-                  <p>10</p>
+                  <p>{mygroups.length}</p>
                   <p>group</p>
                 </div>
 
                 <div className={clsx(styles.info_detail)}>
                   <p>10</p>
-                  <p>group</p>
+                  <p>group owner</p>
                 </div>
                 <div className={clsx(styles.info_detail)}>
                   <p>10</p>
-                  <p>group</p>
+                  <p>group co-owner</p>
                 </div>
               </div>
             </motion.div>
@@ -255,6 +283,8 @@ function Profile() {
                   defaultValue={!disableEdit}
                   onChange={() => {
                     setEditable(!disableEdit);
+                    setProfile(profile);
+                    console.log('switch selected');
                   }}
                 />
                 <fieldset disabled={disableEdit}>
@@ -270,9 +300,6 @@ function Profile() {
                           aria-label="Recipient's username"
                           aria-describedby="basic-addon1"
                         />
-                        <InputGroup.Text id="basic-addon1">
-                          <BiEdit />
-                        </InputGroup.Text>
                       </InputGroup>
                     </Form.Group>
 
@@ -300,6 +327,8 @@ function Profile() {
                       <Form.Control
                         {...register('username')}
                         defaultValue={profile.username}
+                        // login by email
+                        disabled={profile.username === null}
                       />
                       <Form.Text className="text-muted">
                         <ErrorMessage
@@ -336,36 +365,24 @@ function Profile() {
                 <a href="/home">Show all </a>
               </div>
               <Carousel className={styles.gallery}>
-                <Carousel.Item>
-                  <img className={styles.img_gr} src={avt} alt="Second slide" />
+                {mygroups.map((group) => {
+                  console.log('RENDER');
+                  console.log(mygroups);
+                  return (
+                    <Carousel.Item>
+                      <img
+                        className={styles.img_gr}
+                        src={avt}
+                        alt="Second slide"
+                      />
 
-                  <Carousel.Caption>
-                    <h3>Second slide label</h3>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    </p>
-                  </Carousel.Caption>
-                </Carousel.Item>
-                <Carousel.Item>
-                  <img className={styles.img_gr} src={avt} alt="Second slide" />
-
-                  <Carousel.Caption>
-                    <h3>Second slide label</h3>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    </p>
-                  </Carousel.Caption>
-                </Carousel.Item>
-                <Carousel.Item>
-                  <img className={styles.img_gr} src={avt} alt="Second slide" />
-
-                  <Carousel.Caption>
-                    <h3>Second slide label</h3>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    </p>
-                  </Carousel.Caption>
-                </Carousel.Item>
+                      <Carousel.Caption>
+                        <h3>{group.groupName}</h3>
+                        <p>{group.description}</p>
+                      </Carousel.Caption>
+                    </Carousel.Item>
+                  );
+                })}
               </Carousel>
             </div>
           </div>

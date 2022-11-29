@@ -117,8 +117,12 @@ function Header() {
           </Form>
           {unAuthenticated ? (
             <div className={clsx(styles.auth_btn)}>
-              <Button variant="outline-info">Log in</Button>
-              <Button variant="outline-info">Log up</Button>
+              <Button as={Link} to="/login" variant="outline-info">
+                Log in
+              </Button>
+              <Button as={Link} to="/register" variant="outline-info">
+                Sign up
+              </Button>
             </div>
           ) : (
             <>
