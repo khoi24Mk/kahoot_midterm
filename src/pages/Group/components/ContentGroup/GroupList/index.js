@@ -1,14 +1,20 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/button-has-type */
+/* eslint-disable react/style-prop-object */
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Container from 'react-bootstrap/Container';
+import clsx from 'clsx';
 import GroupInCard from './GroupInCard';
+import styles from './groupList.module.css';
 
 function GroupList({ groupList }) {
   return (
     <Container>
-      <Row xs={1} md={4} className="g-4 align-items-center">
+      {/* g-4 align-items-center */}
+      <Row xs={1} md={4} className={clsx(styles.groupList)}>
         {groupList.map((data) => {
           return (
             <Col key={data.dateCreated} className="justify-items-center">
