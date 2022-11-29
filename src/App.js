@@ -26,11 +26,15 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Route>
-          <Route path="/home" element={<Home />} />
-          <Route path="/group" element={<Group />} />
-          <Route path="/group/:id" element={<Group />} />
+
+          <Route element={<DefaultLayout />}>
+            <Route path="/home" element={<Home />} />
+          </Route>
+
           <Route element={<PrivateLayout />}>
             <Route path="/invitation" element={<Invitation />} />
+            <Route path="/group" element={<Group />} />
+            <Route path="/group/:id" element={<Group />} />
             <Route element={<DefaultLayout />}>
               <Route path="/profile" element={<Profile />} />
             </Route>

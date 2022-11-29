@@ -1,7 +1,3 @@
-/* eslint-disable consistent-return */
-/* eslint-disable no-throw-literal */
-/* eslint-disable import/no-unresolved */
-/* eslint-disable import/extensions */
 import { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';

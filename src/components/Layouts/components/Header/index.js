@@ -56,8 +56,25 @@ function Header() {
               <Offcanvas.Title>Offcanvas</Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
-              Some text as placeholder. In real life you can have the elements
-              you have chosen. Like, text, images, lists, etc.
+              <Nav className="justify-content-start flex-grow-1 pe-3">
+                <Nav.Link href="/home">Home</Nav.Link>
+                <NavDropdown
+                  title="My classes"
+                  id={`offcanvasNavbarDropdown-expand-${false}`}
+                >
+                  <NavDropdown.Item href="/group/1">Class 1</NavDropdown.Item>
+                  <NavDropdown.Item href="/group/2">Class 2</NavDropdown.Item>
+                </NavDropdown>
+              </Nav>
+              <Form className="d-flex mt-3">
+                <Form.Control
+                  type="search"
+                  placeholder="Search"
+                  className="me-2"
+                  aria-label="Search"
+                />
+                <Button variant="outline-success">Search</Button>
+              </Form>
             </Offcanvas.Body>
           </Offcanvas>
         </>

@@ -47,6 +47,7 @@
 .avt {
 	/* border-radius: 50%; */
 	object-fit: cover;
+	border: 2px solid #72edf2;
 	width: 3rem;
 	height: 3rem;
 	/* position: absolute;
@@ -78,8 +79,25 @@ avtDropDown:focus{
 	top: 80px;
 	z-index: 1000;
 	cursor: pointer;
+	background: transparent	;
+
+}
+.notify_item{
+	margin: 0.2rem 0;
 }
 
 .dropInfo{
 	left: -5rem!important;
 }
+
+
+.auth_btn{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin: 1rem;
+	width: 10%;
+}
+/* .auth_btn Link{
+	margin: 0 0.5rem;
+} */
