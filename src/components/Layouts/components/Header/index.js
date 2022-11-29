@@ -3,6 +3,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import clsx from 'clsx';
 import { useContext, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
@@ -16,13 +17,27 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 import Row from 'react-bootstrap/Row';
 import Toast from 'react-bootstrap/Toast';
 import { FaRegBell } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import logout from '~/api/auth/logout';
 import { AuthContext } from '~/Context';
 import { avt, menu } from '~/img';
 import styles from './Header.module.css';
+import getGroupList from '~/api/normal/getGroupList';
+import Loading from '~/components/Loading';
 
 function Header() {
+  const { id } = useParams();
+  const [groupList, setGroupList] = useState([]);
+  const asyncGetGroup = async () => {
+    const retGroupList = await getGroupList();
+    setGroupList(retGroupList);
+    return retGroupList;
+  };
+  const query = useQuery({
+    queryKey: ['Header'],
+    queryFn: asyncGetGroup,
+  });
+
   const context = useContext(AuthContext);
   const { profile, setProfile } = context;
   const unAuthenticated = profile === null || profile === undefined;
@@ -44,7 +59,9 @@ function Header() {
     localStorage.removeItem('refresh_token');
   };
 
-  return (
+  return query.isLoading ? (
+    <Loading />
+  ) : (
     <Navbar bg="light" expand="lg">
       <Container fluid>
         <>
@@ -58,13 +75,24 @@ function Header() {
             </Offcanvas.Header>
             <Offcanvas.Body>
               <Nav className="justify-content-start flex-grow-1 pe-3">
-                <Nav.Link href="/home">Home</Nav.Link>
+                <Nav.Link href="/group">Home</Nav.Link>
                 <NavDropdown
                   title="My classes"
                   id={`offcanvasNavbarDropdown-expand-${false}`}
                 >
-                  <NavDropdown.Item href="/group/1">Class 1</NavDropdown.Item>
-                  <NavDropdown.Item href="/group/2">Class 2</NavDropdown.Item>
+                  {groupList.map((group) => (
+                    <NavDropdown.Item
+                      style={
+                        parseInt(id, 10) === parseInt(group.id, 10)
+                          ? { color: 'blue', fontWeight: 'bold' }
+                          : {}
+                      }
+                      key={group.id}
+                      href={'/group/'.concat(group.id)}
+                    >
+                      {group.groupName}
+                    </NavDropdown.Item>
+                  ))}
                 </NavDropdown>
               </Nav>
               <Form className="d-flex mt-3">
