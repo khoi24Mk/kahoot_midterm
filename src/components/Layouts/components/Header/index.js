@@ -25,7 +25,6 @@ import styles from './Header.module.css';
 function Header() {
   const context = useContext(AuthContext);
   const { profile, setProfile } = context;
-  const unAuthenticated = profile === null || profile === undefined;
 
   const [show, setShow] = useState(false);
 
@@ -115,85 +114,71 @@ function Header() {
               Search
             </Button>
           </Form>
-          {unAuthenticated ? (
-            <div className={clsx(styles.auth_btn)}>
-              <Button as={Link} to="/login" variant="outline-info">
-                Log in
-              </Button>
-              <Button as={Link} to="/register" variant="outline-info">
-                Sign up
-              </Button>
-            </div>
-          ) : (
-            <>
-              <Row className={clsx(styles.grNoty)}>
-                <Col md={6} className="">
-                  <Button
-                    onClick={toggleShowA}
-                    className={clsx(styles.bell, 'mb-s')}
-                  >
-                    <FaRegBell />
-                  </Button>
-                  <Toast
-                    className={clsx(styles.notification)}
-                    show={showA}
-                    onClose={toggleShowA}
-                  >
-                    {[1, 2, 3].map(() => {
-                      return (
-                        <Toast className={clsx(styles.notify_item)}>
-                          <Toast.Header closeButton={false}>
-                            <img
-                              src="holder.js/20x20?text=%20"
-                              className="rounded me-2"
-                              alt=""
-                            />
-                            <strong className="me-auto">Bootstrap</strong>
-                            <small>11 mins ago</small>
-                          </Toast.Header>
-                          <Toast.Body>
-                            Woohoo, you're reading this text in a Toast!
-                          </Toast.Body>
-                        </Toast>
-                      );
-                    })}
-                  </Toast>
-                </Col>
-              </Row>
-
-              <div
-                onClick={() => {
-                  hindeA();
-                }}
-                className={clsx(styles.user)}
+          <Row className={clsx(styles.grNoty)}>
+            <Col md={6} className="">
+              <Button
+                onClick={toggleShowA}
+                className={clsx(styles.bell, 'mb-s')}
               >
-                <Dropdown className={clsx(styles.avtDropDown)}>
-                  <Dropdown.Toggle
-                    className={clsx(styles.realAvt)}
-                    split
-                    variant="success"
-                    id="dropdown-split-basic"
-                  >
-                    <Image
-                      roundedCircle
-                      className={clsx(styles.avt)}
-                      src={profile?.avatar || avt}
-                      alt=""
-                    />
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu className={clsx(styles.dropInfo)}>
-                    <Dropdown.Item as={Link} to="/profile">
-                      My profile
-                    </Dropdown.Item>
-                    <Dropdown.Item href="#/action-2">sth</Dropdown.Item>
-                    <Dropdown.Item as={Link} to="/login" onClick={handleLogout}>
-                      Log out
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div>
-            </>
-          )}
+                <FaRegBell />
+              </Button>
+              <Toast
+                className={clsx(styles.notification)}
+                show={showA}
+                onClose={toggleShowA}
+              >
+                {[1, 2, 3].map(() => {
+                  return (
+                    <Toast>
+                      <Toast.Header closeButton={false}>
+                        <img
+                          src="holder.js/20x20?text=%20"
+                          className="rounded me-2"
+                          alt=""
+                        />
+                        <strong className="me-auto">Bootstrap</strong>
+                        <small>11 mins ago</small>
+                      </Toast.Header>
+                      <Toast.Body>
+                        Woohoo, you're reading this text in a Toast!
+                      </Toast.Body>
+                    </Toast>
+                  );
+                })}
+              </Toast>
+            </Col>
+          </Row>
+          <div
+            onClick={() => {
+              hindeA();
+            }}
+            className={clsx(styles.user)}
+          >
+            <Dropdown className={clsx(styles.avtDropDown)}>
+              <Dropdown.Toggle
+                className={clsx(styles.realAvt)}
+                split
+                variant="success"
+                id="dropdown-split-basic"
+              >
+                <Image
+                  roundedCircle
+                  className={clsx(styles.avt)}
+                  src={profile?.avatar || avt}
+                  alt=""
+                />
+              </Dropdown.Toggle>
+              <Dropdown.Menu className={clsx(styles.dropInfo)}>
+                <Dropdown.Item as={Link} to="/profile">
+                  My profile
+                </Dropdown.Item>
+                <Dropdown.Item href="#/action-2">sth</Dropdown.Item>
+                <Dropdown.Item as={Link} to="/login" onClick={handleLogout}>
+                  Log out
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
         </Navbar.Collapse>
       </Container>
     </Navbar>

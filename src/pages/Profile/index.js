@@ -1,17 +1,12 @@
-/* eslint-disable consistent-return */
-/* eslint-disable array-callback-return */
-/* eslint-disable prefer-const */
-/* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/alt-text */
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
 import 'bootstrap/dist/css/bootstrap.css';
 import imageCompression from 'browser-image-compression';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Carousel from 'react-bootstrap/Carousel';
 import Col from 'react-bootstrap/Col';
@@ -20,17 +15,15 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
 import Row from 'react-bootstrap/Row';
 import { useForm } from 'react-hook-form';
-import { BiEdit } from 'react-icons/bi';
-import { MdAddAPhoto, MdConstruction } from 'react-icons/md';
+import { MdAddAPhoto } from 'react-icons/md';
 import * as yup from 'yup';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import getGroupList from '~/api/normal/getGroupList';
 import privateAxios from '~/api/PrivateAxios';
 import Loading from '~/components/Loading';
 import Notify from '~/components/Notification';
 import { AuthContext } from '~/Context';
 import { avt } from '~/img';
 import styles from './profile.module.css';
-import getGroupList from '~/api/normal/getGroupList';
 
 const schema = yup
   .object()
@@ -64,8 +57,7 @@ function Profile() {
   console.log('EFFECT');
   console.log(mygroups);
 
-  const navigate = useNavigate();
-  let [notify, setNotify] = useState({
+  const [notify, setNotify] = useState({
     show: false,
     msg: '',
     type: '',
@@ -80,7 +72,7 @@ function Profile() {
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const binaryData = [];
+
   const context = useContext(AuthContext);
   const { profile, setProfile } = context;
   const [loading, setLoading] = useState({
@@ -140,7 +132,6 @@ function Profile() {
     }
   };
 
-  const [registerErr, setRegisterErr] = useState('');
   const onSubmit = async (data) => {
     try {
       setLoading({ flag: true, msg: 'Update profile . . .' });
@@ -157,7 +148,6 @@ function Profile() {
       setNotify({ msg: 'Update profile success', type: 'success', show: true });
     } catch (error) {
       console.log('onSubmit error');
-      setRegisterErr(error.response?.data?.message);
       setNotify({ msg: 'Upload profile failed', type: 'warning', show: true });
     }
   };

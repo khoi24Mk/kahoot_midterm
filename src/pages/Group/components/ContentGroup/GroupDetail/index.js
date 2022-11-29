@@ -17,7 +17,7 @@ function GroupDetail({ groupId }) {
     return retGroupList;
   };
   const query = useQuery({
-    queryKey: ['GroupList'],
+    queryKey: ['MemberGroup'],
     queryFn: asyncGetMemberGroup,
   });
 

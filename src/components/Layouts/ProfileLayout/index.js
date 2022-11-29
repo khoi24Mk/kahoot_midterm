@@ -1,6 +1,3 @@
-/* eslint-disable no-nested-ternary */
-/* eslint-disable import/extensions */
-/* eslint-disable import/no-unresolved */
 import { useQuery } from '@tanstack/react-query';
 
 import { useContext } from 'react';

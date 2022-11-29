@@ -6,15 +6,14 @@ import Form from 'react-bootstrap/Form';
 
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useEffect, useState, useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import login from '~/api/auth/login';
 import useGoogleLogin from '~/hooks/useGoogleLogin';
 import styles from './login.module.css';
 import { AuthContext } from '~/Context';
-import getProfile from '~/api/normal/getProfile';
 
 const schema = yup
   .object()
@@ -49,16 +48,16 @@ function Login() {
         username: data.username,
         password: data.password,
       });
-      const token = response?.data?.object;
+      const loginRet = response?.data?.object;
 
-      if (token?.access_token && token?.refresh_token) {
-        // set token
-        localStorage.setItem('access_token', token.access_token);
-        localStorage.setItem('refresh_token', token.refresh_token);
-
-        // set profile
-        setProfile(getProfile());
-
+      if (
+        loginRet?.access_token &&
+        loginRet?.refresh_token &&
+        loginRet?.profile
+      ) {
+        localStorage.setItem('access_token', loginRet.access_token);
+        localStorage.setItem('refresh_token', loginRet.refresh_token);
+        setProfile(loginRet.profile);
         navigate(redirectUrl);
       } else {
         setLoginErr('Token is not found');
@@ -68,7 +67,8 @@ function Login() {
     }
   };
 
-  const { handleGoogle, error } = useGoogleLogin(() => {
+  const { handleGoogle, error } = useGoogleLogin((profile) => {
+    setProfile(profile);
     navigate(redirectUrl);
   });
 
@@ -83,18 +83,21 @@ function Login() {
       google.accounts.id.renderButton(
         document.getElementById('btnLoginGoogle'),
         {
-          theme: 'filled_black',
-          text: 'signin_with',
-          shape: 'pill',
+          scope: 'profile email',
+          width: 300,
+          height: 80,
+          longtitle: true,
+          theme: 'dark',
         }
       );
     }
   }, [handleGoogle]);
 
+  const MotionForm = motion(Form);
   return (
     <div className={clsx(styles.container)}>
       {' '}
-      <motion.Form
+      <MotionForm
         animate={{ x: 0, scale: 1 }}
         transition={{ duration: 0.5 }}
         initial={{ x: -100, scale: 0 }}
@@ -156,7 +159,7 @@ function Login() {
           type="submit"
         >
           {' '}
-          Log in{' '}
+          Sign In{' '}
         </Button>{' '}
         <p className={clsx(styles.google_opt)}>Or login with Google</p>{' '}
         <div className={clsx(styles.alt_login)}>
@@ -166,7 +169,7 @@ function Login() {
           {' '}
           Not a member? <Link to="/register">Sign up now</Link>{' '}
         </p>{' '}
-      </motion.Form>{' '}
+      </MotionForm>{' '}
     </div>
   );
 }
