@@ -24,12 +24,12 @@ $orange: #ec992c;
       .content {
         opacity: 1;
 
-        transform: translateY(0px);
+        transform: translateY(15px);
       }
     }
 
     .informations-container {      
-      transform: translateY(0px);
+      transform: translateY(30px);
       .more-information {
         opacity: 1;
       }
@@ -59,7 +59,7 @@ ul{
     position: relative;
     width: 300px;
 	///////////////////////////////
-	height: 500px;
+	height: 400px;
     display: flex;
     flex: 0 0 300px;
     flex-direction: column;
@@ -92,7 +92,7 @@ ul{
     }
     
     .book-container {
-      height: 200px;
+      height: 30px;
       .content {
         position: relative;
         opacity: 0;
@@ -108,13 +108,13 @@ ul{
         
         .btn {      
           border: 3px solid white;
-          padding: 10px 15px;
+          padding: 10px 35px;
           
           background: none;
           
           text-transform: uppercase;
           font-weight: bold;
-          font-size: 1.3em;
+          font-size: 0.7em;
           color: white;
           
           cursor: pointer;
@@ -136,8 +136,9 @@ ul{
       flex: 1 0 auto;
       
       padding: 20px;
+      padding-bottom: 0;
 
-	  height: 400px;
+	  height: 200px;
       
       background: $grey2;
       
@@ -180,8 +181,9 @@ ul{
         display: flex;
         align-items: center;
         justify-content: center;
+		margin: 0;
         
-        margin-top: 10px;
+        // margin-top: 10px;
         
         .icon {
           margin-right: 10px;
@@ -198,7 +200,7 @@ ul{
           .box {
             flex: 1 0;
 
-            padding: 15px;
+            padding: 5px;
             margin-top: 20px;
             @include radius(10px);
 
@@ -223,6 +225,8 @@ ul{
 
           font-size: 0.8em;
           color: $grey;
+		  height: 40px;
+		  object-fit: contain;
 		  word-wrap: break-word;
         }
       }
