@@ -203,7 +203,7 @@ function Register() {
           variant="outline-info"
           type="submit"
         >
-          Login
+          Sign up
         </Button>
 
         <p className={clsx(styles.google_opt)}>Or register with Google</p>

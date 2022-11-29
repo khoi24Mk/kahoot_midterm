@@ -6,13 +6,15 @@ import Form from 'react-bootstrap/Form';
 
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useForm } from 'react-hook-form';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import * as yup from 'yup';
 import login from '~/api/auth/login';
 import useGoogleLogin from '~/hooks/useGoogleLogin';
 import styles from './login.module.css';
+import { AuthContext } from '~/Context';
+import getProfile from '~/api/normal/getProfile';
 
 const schema = yup
   .object()
@@ -23,6 +25,10 @@ const schema = yup
   .required();
 
 function Login() {
+  const context = useContext(AuthContext);
+  const { setProfile } = context;
+  //   const unAuthenticated = profile === null || profile === undefined;
+
   const {
     register,
     handleSubmit,
@@ -46,8 +52,13 @@ function Login() {
       const token = response?.data?.object;
 
       if (token?.access_token && token?.refresh_token) {
+        // set token
         localStorage.setItem('access_token', token.access_token);
         localStorage.setItem('refresh_token', token.refresh_token);
+
+        // set profile
+        setProfile(getProfile());
+
         navigate(redirectUrl);
       } else {
         setLoginErr('Token is not found');
@@ -145,7 +156,7 @@ function Login() {
           type="submit"
         >
           {' '}
-          Sign Up{' '}
+          Log in{' '}
         </Button>{' '}
         <p className={clsx(styles.google_opt)}>Or login with Google</p>{' '}
         <div className={clsx(styles.alt_login)}>
@@ -153,7 +164,7 @@ function Login() {
         </div>
         <p className={clsx(styles.signup_opt)}>
           {' '}
-          Not a member? <a href="/login">Sign up now</a>{' '}
+          Not a member? <Link to="/register">Sign up now</Link>{' '}
         </p>{' '}
       </motion.Form>{' '}
     </div>
