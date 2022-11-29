@@ -111,7 +111,7 @@ function NavbarGroup({ id, groupList }) {
           >
             <Offcanvas.Header closeButton>
               <Offcanvas.Title id={`offcanvasNavbarLabel-expand-${false}`}>
-                Kahoot - Class - Clone
+                Kahoot - Class - Cloneaaaaaaaa
               </Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
