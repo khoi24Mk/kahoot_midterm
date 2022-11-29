@@ -30,7 +30,7 @@ export default function Invitation() {
   }
 
   return error == null ? (
-    <Navigate to="/profile" />
+    <Navigate to="/group" />
   ) : (
     <Error
       error={error}
