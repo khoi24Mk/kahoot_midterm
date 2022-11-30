@@ -1,12 +1,6 @@
-/* eslint-disable consistent-return */
-/* eslint-disable object-shorthand */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable react/self-closing-comp */
-/* eslint-disable jsx-a11y/anchor-is-valid */
-/* eslint-disable react/prop-types */
-/* eslint-disable array-callback-return */
 import {
   Button,
   Card,
@@ -31,7 +25,8 @@ import getGroupInvitationLink from '~/api/group/getGroupInvitationLink';
 import sendInviteEmails from '~/api/group/sendInviteEmails';
 
 const CustomToggle = forwardRef(({ children, onClick }, ref) => (
-  <a
+  <button
+    type="button"
     href="#"
     ref={ref}
     onClick={(e) => {
@@ -42,7 +37,7 @@ const CustomToggle = forwardRef(({ children, onClick }, ref) => (
   >
     {children}
     <span className="threedots" />
-  </a>
+  </button>
 ));
 
 function PeopleGroup({ members, id }) {
@@ -52,13 +47,13 @@ function PeopleGroup({ members, id }) {
   const [inviteLink, setInvilink] = useState('');
   const handleCloseCreate = () => setShowCreate(false);
   const handleShowCreate = async () => {
-    const link = await getGroupInvitationLink({ id: id });
-    setInvilink(link.links[0].href);
+    const link = await getGroupInvitationLink({ id });
+    setInvilink(link?.invitationLink);
     setShowCreate(true);
   };
 
   const handleSendInviteByEmail = async () => {
-    const res = await sendInviteEmails({ id: id, emails: emails });
+    const res = await sendInviteEmails({ id, emails });
     console.log(res);
   };
 
@@ -146,7 +141,7 @@ function PeopleGroup({ members, id }) {
                   <Card variant="flush" className="mb-5">
                     <Card.Header className="d-flex justify-content-between">
                       <span>Member</span>
-                      {profile.id === owner[0].id ? (
+                      {profile.id === owner[0]?.id ? (
                         <Button onClick={handleShowCreate}>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"

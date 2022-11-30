@@ -6,7 +6,6 @@ import clsx from 'clsx';
 import styles from './Notify.module.css';
 
 function Notify({ notify, setShow }) {
-  console.log(`msg_${notify.show ? 'on' : 'off'}`);
   let type = styles.normal;
   if (notify.type === 'success') {
     type = styles.success;

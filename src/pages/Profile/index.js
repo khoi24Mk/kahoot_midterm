@@ -44,8 +44,6 @@ function Profile() {
     const asyncGroup = async () => {
       try {
         const reponse = await getGroupList();
-        console.log('ASYNC');
-        console.log(reponse);
         setMyGroups(reponse);
       } catch (error) {
         //
@@ -53,9 +51,6 @@ function Profile() {
     };
     asyncGroup();
   }, []);
-
-  console.log('EFFECT');
-  console.log(mygroups);
 
   const [notify, setNotify] = useState({
     show: false,
@@ -79,8 +74,6 @@ function Profile() {
     flag: false,
     msg: '',
   });
-  console.log('FIRST');
-  console.log(loading);
 
   const [show, setShow] = useState(false);
   const [avatar, setAvatar] = useState({
@@ -100,8 +93,6 @@ function Profile() {
     }
   };
   const handleSubmitAvt = async () => {
-    console.log('Submit');
-
     const options = {
       maxSizeMB: 1,
       maxWidthOrHeight: 1920,
@@ -112,20 +103,13 @@ function Profile() {
       handleClose();
       setLoading({ flag: true, msg: 'Uploading img . . .' });
       const compressedFile = await imageCompression(file, options);
-      console.log(
-        'compressedFile instanceof Blob',
-        compressedFile instanceof Blob
-      ); // true
-      console.log(
-        `compressedFile size ${compressedFile.size / 1024 / 1024} MB`
-      ); // smaller than maxSizeMB
+
       const formData = new FormData();
       formData.append('image', compressedFile);
       const reponse = await privateAxios.post('/me/uploadAvatar', formData);
       setProfile(reponse?.data.object);
       setLoading({ flag: false, msg: 'Uploading image . . .' });
       setNotify({ msg: 'Upload success', type: 'success', show: true });
-      console.log(notify);
     } catch (e) {
       ///
       setNotify({ msg: 'Upload Failed', type: 'warning', show: true });
@@ -135,8 +119,7 @@ function Profile() {
   const onSubmit = async (data) => {
     try {
       setLoading({ flag: true, msg: 'Update profile . . .' });
-      console.log('onSubmit');
-      console.log(data);
+
       const reponse = await privateAxios.put('/me', {
         username: data.username,
         displayName: data.displayName,
@@ -147,18 +130,13 @@ function Profile() {
       setLoading({ flag: false, msg: 'Update profile . . .' });
       setNotify({ msg: 'Update profile success', type: 'success', show: true });
     } catch (error) {
-      console.log('onSubmit error');
       setNotify({ msg: 'Upload profile failed', type: 'warning', show: true });
     }
   };
 
   const handleEdit = () => {
-    console.log('EDITc');
     setEditable(false);
   };
-  console.log('PROFILE');
-  console.log(loading);
-  console.log(loading.msg);
   return (
     <>
       <Notify notify={notify} setShow={setNotify} />
@@ -274,7 +252,6 @@ function Profile() {
                   onChange={() => {
                     setEditable(!disableEdit);
                     setProfile(profile);
-                    console.log('switch selected');
                   }}
                 />
                 <fieldset disabled={disableEdit}>
@@ -356,10 +333,8 @@ function Profile() {
               </div>
               <Carousel className={styles.gallery}>
                 {mygroups.map((group) => {
-                  console.log('RENDER');
-                  console.log(mygroups);
                   return (
-                    <Carousel.Item>
+                    <Carousel.Item key={group.id}>
                       <img
                         className={styles.img_gr}
                         src={avt}

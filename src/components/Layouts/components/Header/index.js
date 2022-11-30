@@ -79,7 +79,7 @@ function Header() {
                   title="My classes"
                   id={`offcanvasNavbarDropdown-expand-${false}`}
                 >
-                  {groupList.map((group) => (
+                  {groupList?.map((group) => (
                     <NavDropdown.Item
                       style={
                         parseInt(id, 10) === parseInt(group.id, 10)
@@ -155,9 +155,9 @@ function Header() {
                 show={showA}
                 onClose={toggleShowA}
               >
-                {[1, 2, 3].map(() => {
+                {[1, 2, 3].map((i) => {
                   return (
-                    <Toast>
+                    <Toast key={i}>
                       <Toast.Header closeButton={false}>
                         <img
                           src="holder.js/20x20?text=%20"
@@ -200,7 +200,6 @@ function Header() {
                 <Dropdown.Item as={Link} to="/profile">
                   My profile
                 </Dropdown.Item>
-                <Dropdown.Item href="#/action-2">sth</Dropdown.Item>
                 <Dropdown.Item as={Link} to="/login" onClick={handleLogout}>
                   Log out
                 </Dropdown.Item>
