@@ -4,8 +4,6 @@ import React from 'react';
 import HashLoader from 'react-spinners/HashLoader';
 
 export default function Loading({ msg }) {
-  console.log('Loading');
-  console.log(msg);
   return (
     <div className="vh-100 w-100 d-flex justify-content-center align-items-center">
       {/* <Spinner animation="border" role="status">

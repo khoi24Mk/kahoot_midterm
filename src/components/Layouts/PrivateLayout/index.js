@@ -7,7 +7,7 @@ export default function PrivateLayout() {
   const context = useContext(AuthContext);
   const { profile, setProfile } = context;
   const unAuthenticated = profile === null || profile === undefined;
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   useEffect(() => {
     const asyncValidate = async () => {
       try {
@@ -27,7 +27,9 @@ export default function PrivateLayout() {
       to="/notAuthentication"
       state={{
         redirectUrl: pathname,
+        search,
       }}
+      replace
     />
   ) : (
     <Outlet />

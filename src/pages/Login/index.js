@@ -26,7 +26,6 @@ const schema = yup
 function Login() {
   const context = useContext(AuthContext);
   const { setProfile } = context;
-  //   const unAuthenticated = profile === null || profile === undefined;
 
   const {
     register,
@@ -40,8 +39,25 @@ function Login() {
   const { state } = useLocation();
 
   const redirectUrl = state?.redirectUrl || '/home';
+  const search = state?.search || '';
 
   const navigate = useNavigate();
+
+  const handleSuccessLogin = (loginRet) => {
+    if (
+      loginRet?.access_token &&
+      loginRet?.refresh_token &&
+      loginRet?.profile
+    ) {
+      localStorage.setItem('access_token', loginRet.access_token);
+      localStorage.setItem('refresh_token', loginRet.refresh_token);
+      setProfile(loginRet.profile);
+      navigate({ pathname: redirectUrl, search }, { replace: true });
+    } else {
+      setLoginErr('Token is not found');
+    }
+  };
+
   const onSubmit = async (data) => {
     try {
       const response = await login({
@@ -50,26 +66,14 @@ function Login() {
       });
       const loginRet = response?.data?.object;
 
-      if (
-        loginRet?.access_token &&
-        loginRet?.refresh_token &&
-        loginRet?.profile
-      ) {
-        localStorage.setItem('access_token', loginRet.access_token);
-        localStorage.setItem('refresh_token', loginRet.refresh_token);
-        setProfile(loginRet.profile);
-        navigate(redirectUrl);
-      } else {
-        setLoginErr('Token is not found');
-      }
+      handleSuccessLogin(loginRet);
     } catch (error) {
       setLoginErr(error?.response?.data?.message);
     }
   };
 
-  const { handleGoogle, error } = useGoogleLogin((profile) => {
-    setProfile(profile);
-    navigate(redirectUrl);
+  const { handleGoogle, error } = useGoogleLogin((loginRet) => {
+    handleSuccessLogin(loginRet);
   });
 
   useEffect(() => {
