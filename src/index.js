@@ -16,6 +16,10 @@ const queryClient = new QueryClient();
 
 root.render(
   <React.StrictMode>
+    <meta
+      httpEquiv="Content-Security-Policy"
+      content="upgrade-insecure-requests"
+    />
     <Context>
       <GlobalStyle>
         <QueryClientProvider client={queryClient}>
