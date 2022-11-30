@@ -23,6 +23,7 @@ import { ReactMultiEmail } from 'react-multi-email';
 import { AuthContext } from '~/Context';
 import getGroupInvitationLink from '~/api/group/getGroupInvitationLink';
 import sendInviteEmails from '~/api/group/sendInviteEmails';
+import changeRole from '~/api/group/changeRole';
 
 const CustomToggle = forwardRef(({ children, onClick }, ref) => (
   <button
@@ -40,9 +41,13 @@ const CustomToggle = forwardRef(({ children, onClick }, ref) => (
   </button>
 ));
 
-function PeopleGroup({ members, id }) {
+function PeopleGroup({ members, id, query }) {
   const context = useContext(AuthContext);
   const [showCreate, setShowCreate] = useState(false);
+
+  const [showAssignRole, setShowAssignRole] = useState(false);
+  const [memToAssign, setMemToAssign] = useState({});
+  const [roleToAssign, setRoleToAssign] = useState('');
   const [emails, setEmails] = useState([]);
   const [inviteLink, setInvilink] = useState('');
   const handleCloseCreate = () => setShowCreate(false);
@@ -57,11 +62,35 @@ function PeopleGroup({ members, id }) {
     console.log(res);
   };
 
+  const handleAssignRole = (member, role) => {
+    setRoleToAssign(role);
+    setMemToAssign(member);
+    setShowAssignRole(true);
+  };
+
+  const handleSubmitAssignRole = async () => {
+    try {
+      console.log(id, memToAssign, roleToAssign);
+      const response = await changeRole({
+        groupId: id,
+        userId: parseInt(memToAssign.id, 10),
+        role: roleToAssign,
+      });
+      setShowAssignRole(false);
+      setRoleToAssign('');
+      setMemToAssign({});
+      setShowAssignRole(false);
+      query.refetch();
+      console.log(response);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const { profile } = context;
   const owner = members.filter((member) => member.role === 'OWNER');
   const coOwner = members.filter((mem) => mem.role === 'CO_OWNER');
   const member = members.filter((me) => me.role === 'MEMBER');
-  console.log('member', member);
   // const kickOut = members.map((m) => m.role === 'KICK_OUT');
 
   return (
@@ -123,9 +152,21 @@ function PeopleGroup({ members, id }) {
                                 <Dropdown>
                                   <Dropdown.Toggle as={CustomToggle} />
                                   <Dropdown.Menu>
-                                    <Dropdown.Item>Delete</Dropdown.Item>
+                                    <Dropdown.Item
+                                      onClick={() =>
+                                        handleAssignRole(mem, 'MEMBER')
+                                      }
+                                    >
+                                      Remove Co-owner
+                                    </Dropdown.Item>
                                     <Dropdown.Divider />
-                                    <Dropdown.Item>Unenroll</Dropdown.Item>
+                                    <Dropdown.Item
+                                      onClick={() =>
+                                        handleAssignRole(mem, 'KICK_OUT')
+                                      }
+                                    >
+                                      Kickout
+                                    </Dropdown.Item>
                                   </Dropdown.Menu>
                                 </Dropdown>
                               ) : (
@@ -174,9 +215,21 @@ function PeopleGroup({ members, id }) {
                               <Dropdown>
                                 <Dropdown.Toggle as={CustomToggle} />
                                 <Dropdown.Menu>
-                                  <Dropdown.Item>Permission</Dropdown.Item>
+                                  <Dropdown.Item
+                                    onClick={() =>
+                                      handleAssignRole(mem, 'CO_OWNER')
+                                    }
+                                  >
+                                    Add Co-owner
+                                  </Dropdown.Item>
                                   <Dropdown.Divider />
-                                  <Dropdown.Item>Delete</Dropdown.Item>
+                                  <Dropdown.Item
+                                    onClick={() =>
+                                      handleAssignRole(mem, 'KICK_OUT')
+                                    }
+                                  >
+                                    Kickout
+                                  </Dropdown.Item>
                                 </Dropdown.Menu>
                               </Dropdown>
                             ) : (
@@ -252,6 +305,29 @@ function PeopleGroup({ members, id }) {
             form="createGroupForm"
           >
             Create
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showAssignRole} onHide={() => setShowAssignRole(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Change role</Modal.Title>
+        </Modal.Header>
+        {roleToAssign === 'KICK_OUT' ? (
+          <Modal.Body>
+            Do you want to delete member: {memToAssign.displayName}
+          </Modal.Body>
+        ) : (
+          <Modal.Body>
+            Do you want to change this role member: {memToAssign.displayName}
+          </Modal.Body>
+        )}
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowAssignRole(false)}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={() => handleSubmitAssignRole()}>
+            {roleToAssign === 'KICK_OUT' ? 'Delete' : 'Change'}
           </Button>
         </Modal.Footer>
       </Modal>

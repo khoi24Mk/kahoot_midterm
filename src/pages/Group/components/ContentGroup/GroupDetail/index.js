@@ -39,7 +39,7 @@ function GroupDetail({ groupId }) {
               <StreamGroup />
             </Tab>
             <Tab eventKey="people" title="People">
-              <PeopleGroup id={groupId} members={memberList} />
+              <PeopleGroup id={groupId} members={memberList} query={query} />
             </Tab>
           </Tabs>
         </Col>

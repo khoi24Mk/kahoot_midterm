@@ -23,7 +23,7 @@ const useGoogleLogin = (handleSuccess) => {
       );
       handleSuccess(loginResponse?.data?.object);
     } catch (err) {
-      setError(err.response.data.message);
+      setError(err?.response?.data?.message);
     } finally {
       setLoading(false);
     }
