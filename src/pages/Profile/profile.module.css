@@ -142,6 +142,7 @@
     height: auto;
     /* background:cadetblue; */
     border-radius: 0 0 1em 1em;
+	padding: 0.5rem;
 
     /* box-shadow: 0 0.188em 0.155em rgb(100,156,156); */
     display: flex;
@@ -160,6 +161,10 @@
     font-weight: 100;
     font-size: 1.2rem;
 	text-align: center;
+}
+
+.info_detail p:first-child{
+	font-weight: bold;
 }
 
 .info{

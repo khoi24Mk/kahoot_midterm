@@ -1,6 +1,8 @@
+/* eslint-disable no-unused-vars */
 import { Accordion } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
 import GroupsByRole from './GroupsByRole';
+import AddingGroup from '~/components/AddingGroup';
 
 function GroupList({ groupList }) {
   const ownerGroups = groupList?.filter((item) => item.role === 'OWNER');
@@ -9,6 +11,7 @@ function GroupList({ groupList }) {
 
   return (
     <Container fluid>
+      <AddingGroup />
       <Accordion defaultActiveKey="0">
         <Accordion.Item eventKey="0">
           <Accordion.Header>
