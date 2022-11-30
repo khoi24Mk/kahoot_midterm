@@ -8,7 +8,8 @@ import Loading from '~/components/Loading';
 import getGroupList from '~/api/normal/getGroupList';
 import GroupDetail from './components/ContentGroup/GroupDetail';
 import GroupList from './components/ContentGroup/GroupList';
-import NavbarGroup from './components/NavbarGroup';
+// import NavbarGroup from './components/NavbarGroup';
+import Header from '~/components/Layouts/components/Header';
 
 function Group() {
   const { id } = useParams();
@@ -26,7 +27,8 @@ function Group() {
     <Loading />
   ) : (
     <>
-      <NavbarGroup id={id} groupList={groupList} />
+      {/* <NavbarGroup id={id} groupList={groupList} /> */}
+      <Header />
       {id ? <GroupDetail groupId={id} /> : <GroupList groupList={groupList} />}
     </>
   );

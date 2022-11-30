@@ -52,6 +52,10 @@ function Profile() {
     asyncGroup();
   }, []);
 
+  const ownerGroups = mygroups?.filter((item) => item.role === 'OWNER');
+  const coOwnerGroups = mygroups?.filter((item) => item.role === 'CO-OWNER');
+  //   const memberGroups = groupList?.filter((item) => item.role === 'MEMBER');
+
   const [notify, setNotify] = useState({
     show: false,
     msg: '',
@@ -134,9 +138,9 @@ function Profile() {
     }
   };
 
-  const handleEdit = () => {
-    setEditable(false);
-  };
+  //   const handleEdit = () => {
+  //     setEditable(false);
+  //   };
   return (
     <>
       <Notify notify={notify} setShow={setNotify} />
@@ -208,7 +212,7 @@ function Profile() {
               className={clsx(styles.overview)}
             >
               {/* <button className={clsx(styles.edit_btn)}>Edit profile</button> */}
-              <Button
+              {/* <Button
                 form="profile-form"
                 type="submit"
                 onClick={handleEdit}
@@ -216,7 +220,7 @@ function Profile() {
                 variant="outline-primary"
               >
                 Edit profile
-              </Button>{' '}
+              </Button>{' '} */}
               <div className={clsx(styles.overview_info)}>
                 <div className={clsx(styles.info_detail)}>
                   <p>{mygroups.length}</p>
@@ -224,11 +228,11 @@ function Profile() {
                 </div>
 
                 <div className={clsx(styles.info_detail)}>
-                  <p>10</p>
+                  <p>{ownerGroups.length}</p>
                   <p>group owner</p>
                 </div>
                 <div className={clsx(styles.info_detail)}>
-                  <p>10</p>
+                  <p>{coOwnerGroups.length}</p>
                   <p>group co-owner</p>
                 </div>
               </div>

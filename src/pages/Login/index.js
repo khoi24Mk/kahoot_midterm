@@ -1,6 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import clsx from 'clsx';
-import { motion } from 'framer-motion';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
@@ -97,14 +96,13 @@ function Login() {
     }
   }, [handleGoogle]);
 
-  const MotionForm = motion(Form);
   return (
     <div className={clsx(styles.container)}>
       {' '}
-      <MotionForm
-        animate={{ x: 0, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        initial={{ x: -100, scale: 0 }}
+      <Form
+        // animate={{ x: 0, scale: 1 }}
+        // transition={{ duration: 0.5 }}
+        // initial={{ x: -100, scale: 0 }}
         className={clsx(styles.content)}
         onSubmit={handleSubmit(onSubmit)}
       >
@@ -173,7 +171,7 @@ function Login() {
           {' '}
           Not a member? <Link to="/register">Sign up now</Link>{' '}
         </p>{' '}
-      </MotionForm>{' '}
+      </Form>{' '}
     </div>
   );
 }

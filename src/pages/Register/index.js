@@ -13,8 +13,6 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import * as yup from 'yup';
-
-import { motion } from 'framer-motion';
 import { useState } from 'react';
 import registerAuth from '~/api/auth/register';
 import styles from './register.module.css';
@@ -73,14 +71,13 @@ function Register() {
     }
   };
 
-  const MotionForm = motion(Form);
   return (
     <div className={clsx(styles.container)}>
       {' '}
-      <MotionForm
-        animate={{ x: 0, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        initial={{ x: -100, scale: 0 }}
+      <Form
+        // animate={{ x: 0, scale: 1 }}
+        // transition={{ duration: 0.5 }}
+        // initial={{ x: -100, scale: 0 }}
         onSubmit={handleSubmit(onSubmit)}
         className={clsx(styles.content)}
       >
@@ -206,7 +203,7 @@ function Register() {
         >
           Register
         </Button>
-      </MotionForm>
+      </Form>
     </div>
   );
 }
