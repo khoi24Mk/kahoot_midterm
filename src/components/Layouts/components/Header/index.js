@@ -1,3 +1,4 @@
+/* eslint-disable react/button-has-type */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/no-unescaped-entities */
@@ -40,6 +41,7 @@ function Header() {
 
   const context = useContext(AuthContext);
   const { profile, setProfile } = context;
+  const unAuthenticated = profile === null || profile === undefined;
 
   const [show, setShow] = useState(false);
 
@@ -106,7 +108,7 @@ function Header() {
             </Offcanvas.Body>
           </Offcanvas>
         </>
-        <Navbar.Brand href="#">Navbar scroll</Navbar.Brand>
+        <Navbar.Brand href="#">KAHOOT</Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll">
           <Nav
@@ -114,7 +116,7 @@ function Header() {
             style={{ maxHeight: '100px' }}
             navbarScroll
           >
-            <Nav.Link href="#action1">Home</Nav.Link>
+            {/* <Nav.Link href="#action1">Home</Nav.Link>
             <Nav.Link href="#action2">Link</Nav.Link>
             <NavDropdown title="Link" id="navbarScrollingDropdown">
               <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
@@ -128,7 +130,7 @@ function Header() {
             </NavDropdown>
             <Nav.Link href="#" disabled>
               Link
-            </Nav.Link>
+            </Nav.Link> */}
           </Nav>
           <Form className="d-flex">
             <Form.Control
@@ -176,36 +178,47 @@ function Header() {
               </Toast>
             </Col>
           </Row>
-          <div
-            onClick={() => {
-              hindeA();
-            }}
-            className={clsx(styles.user)}
-          >
-            <Dropdown className={clsx(styles.avtDropDown)}>
-              <Dropdown.Toggle
-                className={clsx(styles.realAvt)}
-                split
-                variant="success"
-                id="dropdown-split-basic"
-              >
-                <Image
-                  roundedCircle
-                  className={clsx(styles.avt)}
-                  src={profile?.avatar || avt}
-                  alt=""
-                />
-              </Dropdown.Toggle>
-              <Dropdown.Menu className={clsx(styles.dropInfo)}>
-                <Dropdown.Item as={Link} to="/profile">
-                  My profile
-                </Dropdown.Item>
-                <Dropdown.Item as={Link} to="/login" onClick={handleLogout}>
-                  Log out
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-          </div>
+          {unAuthenticated ? (
+            <div className={clsx(styles.unauth)}>
+              <Button as={Link} to="/login" variant="outline-info">
+                Log in
+              </Button>
+              <Button as={Link} to="/register" variant="outline-info">
+                Sign in
+              </Button>
+            </div>
+          ) : (
+            <div
+              onClick={() => {
+                hindeA();
+              }}
+              className={clsx(styles.user)}
+            >
+              <Dropdown className={clsx(styles.avtDropDown)}>
+                <Dropdown.Toggle
+                  className={clsx(styles.realAvt)}
+                  split
+                  variant="success"
+                  id="dropdown-split-basic"
+                >
+                  <Image
+                    roundedCircle
+                    className={clsx(styles.avt)}
+                    src={profile?.avatar || avt}
+                    alt=""
+                  />
+                </Dropdown.Toggle>
+                <Dropdown.Menu className={clsx(styles.dropInfo)}>
+                  <Dropdown.Item as={Link} to="/profile">
+                    My profile
+                  </Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/login" onClick={handleLogout}>
+                    Log out
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
+          )}
         </Navbar.Collapse>
       </Container>
     </Navbar>

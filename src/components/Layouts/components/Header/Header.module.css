@@ -91,13 +91,10 @@ avtDropDown:focus{
 }
 
 
-.auth_btn{
+.unauth{
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin: 1rem;
-	width: 10%;
+	margin: 0 1rem;
+	width:150px;
 }
-/* .auth_btn Link{
-	margin: 0 0.5rem;
-} */
