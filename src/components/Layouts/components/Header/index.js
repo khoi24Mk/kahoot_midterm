@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 /* eslint-disable react/button-has-type */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
@@ -72,20 +73,26 @@ function Header() {
 
           <Offcanvas show={show} onHide={handleClose}>
             <Offcanvas.Header closeButton>
-              <Offcanvas.Title>Offcanvas</Offcanvas.Title>
+              <Offcanvas.Title />
             </Offcanvas.Header>
             <Offcanvas.Body>
               <Nav className="justify-content-start flex-grow-1 pe-3">
-                <Nav.Link href="/group">Home</Nav.Link>
+                <Nav.Link as={Link} to="/group">
+                  Home
+                </Nav.Link>
                 <NavDropdown
                   title="My classes"
                   id={`offcanvasNavbarDropdown-expand-${false}`}
                 >
                   {groupList?.map((group) => (
                     <NavDropdown.Item
+                      className={clsx(styles.dropdownGroup)}
                       style={
                         parseInt(id, 10) === parseInt(group.id, 10)
-                          ? { color: 'blue', fontWeight: 'bold' }
+                          ? {
+                              color: 'blue',
+                              fontWeight: 'bold',
+                            }
                           : {}
                       }
                       key={group.id}
@@ -103,12 +110,14 @@ function Header() {
                   className="me-2"
                   aria-label="Search"
                 />
-                <Button variant="outline-success">Search</Button>
+                <Button variant="outline-info">Search</Button>
               </Form>
             </Offcanvas.Body>
           </Offcanvas>
         </>
-        <Navbar.Brand href="#">KAHOOT</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/group">
+          KAHOOT
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll">
           <Nav

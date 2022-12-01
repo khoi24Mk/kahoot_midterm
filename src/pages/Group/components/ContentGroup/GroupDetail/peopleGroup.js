@@ -1,3 +1,5 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable react/no-unknown-property */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/no-unstable-nested-components */
@@ -12,7 +14,7 @@ import {
   Dropdown,
   Modal,
   OverlayTrigger,
-  Tooltip,
+  Tooltip
 } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-multi-email/dist/style.css';
@@ -20,10 +22,13 @@ import { forwardRef, useContext, useState } from 'react';
 import { BsClipboard } from 'react-icons/bs';
 import { ReactMultiEmail } from 'react-multi-email';
 
+import clsx from 'clsx';
+import { motion } from 'framer-motion';
 import { AuthContext } from '~/Context';
 import getGroupInvitationLink from '~/api/group/getGroupInvitationLink';
 import sendInviteEmails from '~/api/group/sendInviteEmails';
 import changeRole from '~/api/group/changeRole';
+import './GroupDetail.css';
 
 const CustomToggle = forwardRef(({ children, onClick }, ref) => (
   <button
@@ -74,7 +79,7 @@ function PeopleGroup({ members, id, query }) {
       const response = await changeRole({
         groupId: id,
         userId: parseInt(memToAssign.id, 10),
-        role: roleToAssign,
+        role: roleToAssign
       });
       setShowAssignRole(false);
       setRoleToAssign('');
@@ -95,95 +100,67 @@ function PeopleGroup({ members, id, query }) {
 
   return (
     <>
-      <Container>
+      <Container className={clsx('people_frame')}>
         <Row className="justify-content-center">
           <Col>
-            <Card>
-              <ListGroup variant="flush">
-                <ListGroup.Item>
-                  <Card variant="flush" className="mb-5">
-                    <Card.Header className="d-flex justify-content-between">
-                      <span>Owner</span>
-                    </Card.Header>
-                    <Table>
-                      <tbody>
-                        {owner.map((mem) => (
-                          <tr
-                            key={mem.id}
-                            className="d-flex justify-content-between"
-                          >
-                            <span>{mem.displayName}</span>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </Card>
-
-                  {coOwner.length > 0 ? (
-                    <Card variant="flush" className="mb-5">
-                      <Card.Header className="d-flex justify-content-between">
-                        <span>Co-Owner</span>
-                        <Button>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-person-plus"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
-                            <path
-                              fillRule="evenodd"
-                              d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"
-                            />
-                          </svg>
-                        </Button>
+            <motion.div
+              animate={{ x: 0 }}
+              transition={{ duration: 0.5 }}
+              initial={{ x: -100 }}
+            >
+              <Card className={clsx('people_card', 'mb-5')}>
+                <ListGroup variant="flush">
+                  <ListGroup.Item>
+                    <Card
+                      variant="flush"
+                      className={clsx('people_cardItem', 'mb-5')}
+                    >
+                      <Card.Header
+                        className={clsx(
+                          'people_cardHeader',
+                          'd-flex justify-content-between'
+                        )}
+                      >
+                        <span>Owner</span>
                       </Card.Header>
                       <Table>
                         <tbody>
-                          {coOwner.map((mem) => (
+                          {owner.map((mem) => (
                             <tr
                               key={mem.id}
-                              className="d-flex justify-content-between"
+                              className="d-flex justify-content-flex-start"
                             >
-                              <span>{mem.displayName}</span>
-                              {profile.id === owner[0].id ? (
-                                <Dropdown>
-                                  <Dropdown.Toggle as={CustomToggle} />
-                                  <Dropdown.Menu>
-                                    <Dropdown.Item
-                                      onClick={() =>
-                                        handleAssignRole(mem, 'MEMBER')
-                                      }
-                                    >
-                                      Remove Co-owner
-                                    </Dropdown.Item>
-                                    <Dropdown.Divider />
-                                    <Dropdown.Item
-                                      onClick={() =>
-                                        handleAssignRole(mem, 'KICK_OUT')
-                                      }
-                                    >
-                                      Kickout
-                                    </Dropdown.Item>
-                                  </Dropdown.Menu>
-                                </Dropdown>
-                              ) : (
-                                ''
-                              )}
+                              <span
+                                className={clsx('people_userInfo', {
+                                  people_myGroup: profile.id === mem.id
+                                })}
+                              >
+                                <img
+                                  className="people_img"
+                                  src={mem.avatar}
+                                  alt=""
+                                />
+                                <span>{mem.displayName}</span>
+                              </span>
                             </tr>
                           ))}
                         </tbody>
                       </Table>
                     </Card>
-                  ) : undefined}
 
-                  <Card variant="flush" className="mb-5">
-                    <Card.Header className="d-flex justify-content-between">
-                      <span>Member</span>
-                      {profile.id === owner[0]?.id ? (
-                        <Button onClick={handleShowCreate}>
+                    {coOwner.length > 0 ? (
+                      <Card
+                        variant="flush"
+                        className={clsx('people_cardItem', 'mb-5')}
+                      >
+                        <Card.Header
+                          className={clsx(
+                            'people_cardHeader',
+                            'd-flex justify-content-between'
+                          )}
+                        >
+                          <span>Co-Owner</span>
+                          {/* <Button>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"
@@ -198,51 +175,143 @@ function PeopleGroup({ members, id, query }) {
                               d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"
                             />
                           </svg>
-                        </Button>
-                      ) : (
-                        ''
-                      )}
-                    </Card.Header>
-                    <Table>
-                      <tbody>
-                        {member.map((mem) => (
-                          <tr
-                            key={mem.id}
-                            className="d-flex justify-content-between"
-                          >
-                            <span>{mem.displayName}</span>
-                            {profile.id === owner[0].id ? (
-                              <Dropdown>
-                                <Dropdown.Toggle as={CustomToggle} />
-                                <Dropdown.Menu>
-                                  <Dropdown.Item
-                                    onClick={() =>
-                                      handleAssignRole(mem, 'CO_OWNER')
-                                    }
-                                  >
-                                    Add Co-owner
-                                  </Dropdown.Item>
-                                  <Dropdown.Divider />
-                                  <Dropdown.Item
-                                    onClick={() =>
-                                      handleAssignRole(mem, 'KICK_OUT')
-                                    }
-                                  >
-                                    Kickout
-                                  </Dropdown.Item>
-                                </Dropdown.Menu>
-                              </Dropdown>
-                            ) : (
-                              ''
-                            )}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </Card>
-                </ListGroup.Item>
-              </ListGroup>
-            </Card>
+                        </Button> */}
+                        </Card.Header>
+                        <Table>
+                          <tbody>
+                            {coOwner.map((mem) => (
+                              <tr
+                                key={mem.id}
+                                className="d-flex justify-content-between"
+                              >
+                                <span className={clsx('people_userInfo')}>
+                                  <img
+                                    className="people_img"
+                                    src={mem.avatar}
+                                    alt=""
+                                  />
+                                  <span>{mem.displayName}</span>
+                                </span>
+                                {profile.id === owner[0].id ? (
+                                  <Dropdown className={clsx('people_dropdown')}>
+                                    <Dropdown.Toggle as={CustomToggle} />
+                                    <Dropdown.Menu>
+                                      <Dropdown.Item
+                                        onClick={() =>
+                                          handleAssignRole(mem, 'MEMBER')
+                                        }
+                                      >
+                                        Remove Co-owner
+                                      </Dropdown.Item>
+                                      <Dropdown.Divider />
+                                      <Dropdown.Item
+                                        onClick={() =>
+                                          handleAssignRole(mem, 'KICK_OUT')
+                                        }
+                                      >
+                                        Kickout
+                                      </Dropdown.Item>
+                                    </Dropdown.Menu>
+                                  </Dropdown>
+                                ) : (
+                                  ''
+                                )}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </Table>
+                      </Card>
+                    ) : undefined}
+
+                    <Card
+                      variant="flush"
+                      className={clsx('people_cardItem', 'mb-5')}
+                    >
+                      <Card.Header
+                        className={clsx(
+                          'people_cardHeader',
+                          'd-flex justify-content-between'
+                        )}
+                      >
+                        <span>Member</span>
+                        {profile.id === owner[0]?.id ? (
+                          <Button onClick={handleShowCreate}>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-person-plus"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
+                              <path
+                                fillRule="evenodd"
+                                d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"
+                              />
+                            </svg>
+                          </Button>
+                        ) : (
+                          ''
+                        )}
+                      </Card.Header>
+                      <Table>
+                        <tbody>
+                          {member.map((mem) => {
+                            console.log('MEMBER');
+                            console.log(mem.id);
+                            console.log(profile.id);
+                            return (
+                              <tr
+                                key={mem.id}
+                                className="d-flex justify-content-between"
+                              >
+                                <span
+                                  className={clsx('people_userInfo', {
+                                    people_myGroup: profile.id === mem.id
+                                  })}
+                                >
+                                  <img
+                                    className="people_img"
+                                    src={mem.avatar}
+                                    alt=""
+                                  />
+                                  <span>{mem.displayName}</span>
+                                </span>
+                                {profile.id === owner[0].id ? (
+                                  <Dropdown>
+                                    <Dropdown.Toggle as={CustomToggle} />
+                                    <Dropdown.Menu>
+                                      <Dropdown.Item
+                                        onClick={() =>
+                                          handleAssignRole(mem, 'CO_OWNER')
+                                        }
+                                      >
+                                        Add Co-owner
+                                      </Dropdown.Item>
+                                      <Dropdown.Divider />
+                                      <Dropdown.Item
+                                        onClick={() =>
+                                          handleAssignRole(mem, 'KICK_OUT')
+                                        }
+                                      >
+                                        Kickout
+                                      </Dropdown.Item>
+                                    </Dropdown.Menu>
+                                  </Dropdown>
+                                ) : (
+                                  ''
+                                )}
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </Table>
+                    </Card>
+                  </ListGroup.Item>
+                </ListGroup>
+              </Card>
+            </motion.div>
           </Col>
         </Row>
       </Container>

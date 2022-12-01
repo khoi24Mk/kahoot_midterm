@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { ErrorMessage } from '@hookform/error-message';
@@ -17,6 +18,7 @@ import Row from 'react-bootstrap/Row';
 import { useForm } from 'react-hook-form';
 import { MdAddAPhoto } from 'react-icons/md';
 import * as yup from 'yup';
+import { Link } from 'react-router-dom';
 import getGroupList from '~/api/normal/getGroupList';
 import privateAxios from '~/api/PrivateAxios';
 import Loading from '~/components/Loading';
@@ -81,7 +83,7 @@ function Profile() {
 
   const [show, setShow] = useState(false);
   const [avatar, setAvatar] = useState({
-    url: '',
+    url: profile.avatar,
     obj: null,
   });
 
@@ -237,122 +239,166 @@ function Profile() {
                 </div>
               </div>
             </motion.div>
-            <motion.div
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              initial={{ y: -100, opacity: 0 }}
-              className={clsx(styles.info)}
-            >
-              <Form
-                className={clsx(styles.profile_form)}
-                id="profile-form"
-                onSubmit={handleSubmit(onSubmit)}
+            <div className={clsx(styles.group_info)}>
+              <motion.div
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                initial={{ y: -100, opacity: 0 }}
+                className={clsx(styles.info)}
               >
-                <Form.Check
-                  type="switch"
-                  id="custom-switch"
-                  label="Edit Profile"
-                  defaultValue={!disableEdit}
-                  onChange={() => {
-                    setEditable(!disableEdit);
-                    setProfile(profile);
-                  }}
-                />
-                <fieldset disabled={disableEdit}>
-                  <Row className="mb-3">
-                    <Form.Group as={Col} controlId="formGridEmail">
-                      <Form.Label>Email</Form.Label>
-                      <InputGroup>
+                <Form
+                  className={clsx(styles.profile_form)}
+                  id="profile-form"
+                  onSubmit={handleSubmit(onSubmit)}
+                >
+                  <div className={clsx(styles.info_header)}>
+                    <Form.Check
+                      type="switch"
+                      id="custom-switch"
+                      label="Edit Profile"
+                      defaultValue={!disableEdit}
+                      onChange={() => {
+                        setEditable(!disableEdit);
+                        setProfile(profile);
+                      }}
+                    />
+                    {disableEdit ? (
+                      <div />
+                    ) : (
+                      <Button
+                        className={clsx(styles.submit_btn)}
+                        variant="outline-info"
+                        type="submit"
+                      >
+                        Submit
+                      </Button>
+                    )}
+                  </div>
+                  <fieldset disabled={disableEdit}>
+                    <Row className="mb-3">
+                      <Form.Group as={Col} controlId="formGridEmail">
+                        <Form.Label>Email</Form.Label>
+                        <InputGroup>
+                          <Form.Control
+                            {...register('email')}
+                            defaultValue={profile.email}
+                            type="email"
+                            placeholder="Enter email"
+                            aria-label="Recipient's username"
+                            aria-describedby="basic-addon1"
+                          />
+                        </InputGroup>
+                        <Form.Text
+                          className={clsx(styles.err_frame, 'text-muted')}
+                        >
+                          {disableEdit ? (
+                            <div />
+                          ) : (
+                            <ErrorMessage
+                              errors={errors}
+                              name="email"
+                              render={({ message }) => (
+                                <p className={clsx(styles.error)}>{message}</p>
+                              )}
+                            />
+                          )}
+                        </Form.Text>
+                      </Form.Group>
+                    </Row>
+                    <Row className="mb-3">
+                      <Form.Group as={Col} controlId="formGridCity">
+                        <Form.Label>Name</Form.Label>
                         <Form.Control
-                          {...register('email')}
-                          defaultValue={profile.email}
-                          type="email"
-                          placeholder="Enter email"
-                          aria-label="Recipient's username"
-                          aria-describedby="basic-addon1"
+                          {...register('displayName')}
+                          defaultValue={profile.displayName}
                         />
-                      </InputGroup>
-                    </Form.Group>
-
-                    <Form.Group as={Col} controlId="formGridCity">
-                      <Form.Label>Name</Form.Label>
-                      <Form.Control
-                        {...register('displayName')}
-                        defaultValue={profile.displayName}
-                      />
-                      <Form.Text className="text-muted">
-                        <ErrorMessage
-                          errors={errors}
-                          name="displayName"
-                          render={({ message }) => (
-                            <p className={clsx(styles.error)}>{message}</p>
+                        <Form.Text
+                          className={clsx(styles.err_frame, 'text-muted')}
+                        >
+                          {disableEdit ? (
+                            <div />
+                          ) : (
+                            <ErrorMessage
+                              errors={errors}
+                              name="displayName"
+                              render={({ message }) => (
+                                <p className={clsx(styles.error)}>{message}</p>
+                              )}
+                            />
                           )}
-                        />
-                      </Form.Text>
-                    </Form.Group>
-                  </Row>
+                        </Form.Text>
+                      </Form.Group>
+                    </Row>
 
-                  <Row className="mb-3">
-                    <Form.Group as={Col} controlId="formGridZip">
-                      <Form.Label>Username</Form.Label>
-                      <Form.Control
-                        {...register('username')}
-                        defaultValue={profile.username}
-                        // login by email
-                        disabled={profile.username === null}
-                      />
-                      <Form.Text className="text-muted">
-                        <ErrorMessage
-                          errors={errors}
-                          name="username"
-                          render={({ message }) => (
-                            <p className={clsx(styles.error)}>{message}</p>
+                    <Row className="mb-3">
+                      <Form.Group as={Col} controlId="formGridZip">
+                        <Form.Label>Username</Form.Label>
+                        <Form.Control
+                          {...register('username')}
+                          defaultValue={profile.username}
+                          // login by email
+                          disabled={profile.username === null}
+                        />
+                        <Form.Text
+                          className={clsx(styles.err_frame, 'text-muted')}
+                        >
+                          {disableEdit ? (
+                            <div />
+                          ) : (
+                            <ErrorMessage
+                              errors={errors}
+                              name="username"
+                              render={({ message }) => (
+                                <p className={clsx(styles.error)}>{message}</p>
+                              )}
+                            />
                           )}
-                        />
-                      </Form.Text>
-                    </Form.Group>
-                    <Form.Group as={Col} controlId="formGridPassword">
-                      {/* <Form.Label>Password</Form.Label>
-                <Form.Control type="password" placeholder="Password" /> */}
-                    </Form.Group>
-                  </Row>
-                </fieldset>
-                {disableEdit ? (
-                  <div />
-                ) : (
-                  <Button
-                    className={clsx(styles.submit_btn)}
-                    variant="outline-info"
-                    type="submit"
-                  >
-                    Submit
-                  </Button>
-                )}
-              </Form>
-            </motion.div>
-            <div className={clsx(styles.group)}>
-              <div className={clsx(styles.group_filter)}>
-                <p>Recent group</p>
-                <a href="/home">Show all </a>
-              </div>
-              <Carousel className={styles.gallery}>
-                {mygroups.map((group) => {
-                  return (
-                    <Carousel.Item key={group.id}>
-                      <img
-                        className={styles.img_gr}
-                        src={avt}
-                        alt="Second slide"
-                      />
+                        </Form.Text>
+                      </Form.Group>
+                      {/* <Form.Group as={Col} controlId="formGridPassword">
+                      <Form.Label>Password</Form.Label>
+                      <Form.Control type="password" placeholder="Password" />
+                    </Form.Group> */}
+                    </Row>
+                  </fieldset>
+                </Form>
+              </motion.div>
+              <motion.div
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                initial={{ y: -100, opacity: 0 }}
+                className={clsx(styles.slider)}
+              >
+                <div className={clsx(styles.group)}>
+                  <div className={clsx(styles.group_filter)}>
+                    <p>Recent group</p>
+                    <a href="/home">Show all </a>
+                  </div>
+                  <Carousel className={styles.gallery}>
+                    {mygroups.map((group) => {
+                      return (
+                        <Carousel.Item
+                          as={Link}
+                          to={`/group/${group.id}`}
+                          key={group.id}
+                          className={clsx(styles.gallery_item)}
+                        >
+                          <img
+                            className={styles.img_gr}
+                            src={avt}
+                            alt="Second slide"
+                          />
 
-                      <Carousel.Caption>
-                        <h3>{group.groupName}</h3>
-                        <p>{group.description}</p>
-                      </Carousel.Caption>
-                    </Carousel.Item>
-                  );
-                })}
-              </Carousel>
+                          <Carousel.Caption className={clsx(styles.slide_info)}>
+                            <h3>{group.groupName}</h3>
+                            <p>{group.description}</p>
+                          </Carousel.Caption>
+                        </Carousel.Item>
+                      );
+                    })}
+                  </Carousel>
+                </div>
+              </motion.div>
             </div>
           </div>
         </div>
