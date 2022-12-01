@@ -55,7 +55,7 @@ function Profile() {
   }, []);
 
   const ownerGroups = mygroups?.filter((item) => item.role === 'OWNER');
-  const coOwnerGroups = mygroups?.filter((item) => item.role === 'CO-OWNER');
+  const coOwnerGroups = mygroups?.filter((item) => item.role === 'CO_OWNER');
   //   const memberGroups = groupList?.filter((item) => item.role === 'MEMBER');
 
   const [notify, setNotify] = useState({
@@ -176,7 +176,10 @@ function Profile() {
               centered
             >
               <Modal.Header closeButton>
-                <Modal.Title>Avatar</Modal.Title>
+                <Modal.Title style={{ fontWeight: 'bold' }}>
+                  {' '}
+                  Avatar
+                </Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <img
@@ -187,7 +190,7 @@ function Profile() {
                 />
                 <Form>
                   <Form.Group controlId="formFile" className="mb-3">
-                    <Form.Label>Choose an image</Form.Label>
+                    <Form.Label />
                     <Form.Control
                       onChange={handleUpload}
                       accept="image/png, image/jpg"
@@ -201,7 +204,7 @@ function Profile() {
                   Close
                 </Button>
                 <Button onClick={handleSubmitAvt} variant="primary">
-                  Understood
+                  Save
                 </Button>
               </Modal.Footer>
             </Modal>

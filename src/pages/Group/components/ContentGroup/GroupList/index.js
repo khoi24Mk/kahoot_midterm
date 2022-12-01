@@ -6,7 +6,7 @@ import AddingGroup from '~/components/AddingGroup';
 
 function GroupList({ groupList }) {
   const ownerGroups = groupList?.filter((item) => item.role === 'OWNER');
-  const coOwnerGroups = groupList?.filter((item) => item.role === 'CO-OWNER');
+  const coOwnerGroups = groupList?.filter((item) => item.role === 'CO_OWNER');
   const memberGroups = groupList?.filter((item) => item.role === 'MEMBER');
 
   return (

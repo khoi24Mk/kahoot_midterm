@@ -279,7 +279,7 @@ function PeopleGroup({ members, id, query }) {
                                   <span>{mem.displayName}</span>
                                 </span>
                                 {profile.id === owner[0].id ? (
-                                  <Dropdown>
+                                  <Dropdown className={clsx('people_dropdown')}>
                                     <Dropdown.Toggle as={CustomToggle} />
                                     <Dropdown.Menu>
                                       <Dropdown.Item
@@ -318,7 +318,7 @@ function PeopleGroup({ members, id, query }) {
 
       <Modal show={showCreate} onHide={handleCloseCreate}>
         <Modal.Header closeButton>
-          <Modal.Title>Create classroom</Modal.Title>
+          <Modal.Title>Create group</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <ReactMultiEmail

@@ -18,7 +18,7 @@ function GroupDetail({ groupId }) {
   };
 
   const query = useQuery({
-    queryKey: ['sth'],
+    queryKey: ['GroupDetail'],
     queryFn: asyncGetMemberGroup,
   });
 

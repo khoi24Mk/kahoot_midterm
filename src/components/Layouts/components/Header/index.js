@@ -221,6 +221,9 @@ function Header() {
                   <Dropdown.Item as={Link} to="/profile">
                     My profile
                   </Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/group">
+                    My group
+                  </Dropdown.Item>
                   <Dropdown.Item as={Link} to="/login" onClick={handleLogout}>
                     Log out
                   </Dropdown.Item>
