@@ -16,6 +16,8 @@ import * as yup from 'yup';
 import { useState } from 'react';
 import registerAuth from '~/api/auth/register';
 import styles from './register.module.css';
+import Notify from '~/components/Notification';
+import Loading from '~/components/Loading';
 
 const schema = yup
 
@@ -57,8 +59,14 @@ function Register() {
     resolver: yupResolver(schema),
   });
 
-  const [registerErr, setRegisterErr] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [notify, setNotify] = useState({
+    show: false,
+    msg: '',
+    type: '',
+  });
   const onSubmit = async (data) => {
+    setLoading(true);
     try {
       await registerAuth({
         username: data.username,
@@ -66,145 +74,156 @@ function Register() {
         displayName: data.displayName,
         email: data.email,
       });
+      setNotify({
+        msg: 'Successfully. Check your email',
+        type: 'success',
+        show: true,
+      });
     } catch (error) {
-      setRegisterErr(error.response?.data?.message);
+      setNotify({
+        msg: error?.response?.data?.message,
+        type: 'warning',
+        show: true,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className={clsx(styles.container)}>
-      {' '}
-      <Form
-        // animate={{ x: 0, scale: 1 }}
-        // transition={{ duration: 0.5 }}
-        // initial={{ x: -100, scale: 0 }}
-        onSubmit={handleSubmit(onSubmit)}
-        className={clsx(styles.content)}
-      >
-        <h1>Register</h1>
+    <>
+      <Notify notify={notify} setShow={setNotify} />
+      {loading ? (
+        <Loading />
+      ) : (
+        <div className={clsx(styles.container)}>
+          {' '}
+          <Form
+            onSubmit={handleSubmit(onSubmit)}
+            className={clsx(styles.content)}
+          >
+            <h1>Register</h1>
 
-        <Form.Group
-          className={clsx(styles.group, 'mb-3')}
+            <Form.Group
+              className={clsx(styles.group, 'mb-3')}
 
-          // controlId="formBasicEmail"
-        >
-          <Form.Label>Username</Form.Label>
+              // controlId="formBasicEmail"
+            >
+              <Form.Label>Username</Form.Label>
 
-          <Form.Control
-            {...register('username')}
-            placeholder="Username"
-            aria-label="Username"
-            aria-describedby="basic-addon1"
-          />
-        </Form.Group>
+              <Form.Control
+                {...register('username')}
+                placeholder="Username"
+                aria-label="Username"
+                aria-describedby="basic-addon1"
+              />
+            </Form.Group>
 
-        <Form.Group
-          className={clsx(styles.group, 'mb-3')}
+            <Form.Group
+              className={clsx(styles.group, 'mb-3')}
 
-          // controlId="formBasicPassword"
-        >
-          <Form.Label>Password</Form.Label>
+              // controlId="formBasicPassword"
+            >
+              <Form.Label>Password</Form.Label>
 
-          <Form.Control
-            {...register('password')}
-            type="password"
-            placeholder="Password"
-          />
+              <Form.Control
+                {...register('password')}
+                type="password"
+                placeholder="Password"
+              />
 
-          <Form.Text className="text-muted">
-            <ErrorMessage
-              errors={errors}
-              name="password"
-              render={({ message }) => (
-                <p className={clsx(styles.error)}>{message}</p>
-              )}
-            />
-          </Form.Text>
-        </Form.Group>
+              <Form.Text className="text-muted">
+                <ErrorMessage
+                  errors={errors}
+                  name="password"
+                  render={({ message }) => (
+                    <p className={clsx(styles.error)}>{message}</p>
+                  )}
+                />
+              </Form.Text>
+            </Form.Group>
 
-        <Form.Group
-          className={clsx(styles.group, 'mb-3')}
+            <Form.Group
+              className={clsx(styles.group, 'mb-3')}
 
-          // controlId="formBasicPassword"
-        >
-          <Form.Label>Retype Password</Form.Label>
+              // controlId="formBasicPassword"
+            >
+              <Form.Label>Retype Password</Form.Label>
 
-          <Form.Control
-            {...register('retypePassword')}
-            type="password"
-            placeholder="retype password"
-          />
+              <Form.Control
+                {...register('retypePassword')}
+                type="password"
+                placeholder="retype password"
+              />
 
-          <Form.Text className="text-muted">
-            <ErrorMessage
-              errors={errors}
-              name="retypePassword"
-              render={({ message }) => (
-                <p className={clsx(styles.error)}>{message}</p>
-              )}
-            />
-          </Form.Text>
-        </Form.Group>
+              <Form.Text className="text-muted">
+                <ErrorMessage
+                  errors={errors}
+                  name="retypePassword"
+                  render={({ message }) => (
+                    <p className={clsx(styles.error)}>{message}</p>
+                  )}
+                />
+              </Form.Text>
+            </Form.Group>
 
-        <Form.Group
-          className={clsx(styles.group, 'mb-3')}
-          controlId="formBasicName"
-        >
-          <Form.Label>Name</Form.Label>
+            <Form.Group
+              className={clsx(styles.group, 'mb-3')}
+              controlId="formBasicName"
+            >
+              <Form.Label>Name</Form.Label>
 
-          <Form.Control
-            {...register('displayName')}
-            type="text"
-            placeholder="Enter Name"
-          />
+              <Form.Control
+                {...register('displayName')}
+                type="text"
+                placeholder="Enter Name"
+              />
 
-          <Form.Text className="text-muted">
-            <ErrorMessage
-              errors={errors}
-              name="displayName"
-              render={({ message }) => (
-                <p className={clsx(styles.error)}>{message}</p>
-              )}
-            />
-          </Form.Text>
-        </Form.Group>
+              <Form.Text className="text-muted">
+                <ErrorMessage
+                  errors={errors}
+                  name="displayName"
+                  render={({ message }) => (
+                    <p className={clsx(styles.error)}>{message}</p>
+                  )}
+                />
+              </Form.Text>
+            </Form.Group>
 
-        <Form.Group
-          className={clsx(styles.group, 'mb-3')}
-          controlId="formBasicEmail"
-        >
-          <Form.Label>Email address</Form.Label>
+            <Form.Group
+              className={clsx(styles.group, 'mb-3')}
+              controlId="formBasicEmail"
+            >
+              <Form.Label>Email address</Form.Label>
 
-          <Form.Control
-            {...register('email')}
-            type="email"
-            placeholder="Enter email"
-          />
+              <Form.Control
+                {...register('email')}
+                type="email"
+                placeholder="Enter email"
+              />
 
-          <Form.Text className="text-muted">
-            <ErrorMessage
-              errors={errors}
-              name="email"
-              render={({ message }) => (
-                <p className={clsx(styles.error)}>{message}</p>
-              )}
-            />
-          </Form.Text>
+              <Form.Text className="text-muted">
+                <ErrorMessage
+                  errors={errors}
+                  name="email"
+                  render={({ message }) => (
+                    <p className={clsx(styles.error)}>{message}</p>
+                  )}
+                />
+              </Form.Text>
+            </Form.Group>
 
-          <Form.Text className="text-muted">
-            <p className={clsx(styles.error)}>{registerErr}</p>
-          </Form.Text>
-        </Form.Group>
-
-        <Button
-          className={clsx(styles.login_btn)}
-          variant="outline-info"
-          type="submit"
-        >
-          Register
-        </Button>
-      </Form>
-    </div>
+            <Button
+              className={clsx(styles.login_btn)}
+              variant="outline-info"
+              type="submit"
+            >
+              Register
+            </Button>
+          </Form>
+        </div>
+      )}
+    </>
   );
 }
 

@@ -17,8 +17,7 @@ function Home() {
   return unAuthenticated ? (
     <div>
       <div className={clsx(styles.intro)}>
-        <h1>Build amazing things</h1>
-        <p>sth</p>
+        <h1 className="text-uppercase fw-bold">Experience my service </h1>
         <div className={clsx(styles.register)} />
         <Button as={Link} to="/register" className={clsx(styles.logup)}>
           Register

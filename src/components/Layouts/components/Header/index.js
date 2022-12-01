@@ -193,7 +193,7 @@ function Header() {
                 Log in
               </Button>
               <Button as={Link} to="/register" variant="outline-info">
-                Sign in
+                Register
               </Button>
             </div>
           ) : (

@@ -13,6 +13,8 @@ import login from '~/api/auth/login';
 import useGoogleLogin from '~/hooks/useGoogleLogin';
 import styles from './login.module.css';
 import { AuthContext } from '~/Context';
+import Loading from '~/components/Loading';
+import Notify from '~/components/Notification';
 
 const schema = yup
   .object()
@@ -34,9 +36,14 @@ function Login() {
     resolver: yupResolver(schema),
   });
 
-  const [loginErr, setLoginErr] = useState('');
-  const { state } = useLocation();
+  const [loadingLogin, setLoading] = useState(false);
+  const [notify, setNotify] = useState({
+    show: false,
+    msg: '',
+    type: '',
+  });
 
+  const { state } = useLocation();
   const redirectUrl = state?.redirectUrl || '/home';
   const search = state?.search || '';
 
@@ -53,27 +60,33 @@ function Login() {
       setProfile(loginRet.profile);
       navigate({ pathname: redirectUrl, search }, { replace: true });
     } else {
-      setLoginErr('Token is not found');
+      setNotify({ msg: 'Token is not found', type: 'warning', show: true });
     }
   };
 
   const onSubmit = async (data) => {
+    setLoading(true);
     try {
       const response = await login({
         username: data.username,
         password: data.password,
       });
       const loginRet = response?.data?.object;
-
       handleSuccessLogin(loginRet);
     } catch (error) {
-      setLoginErr(error?.response?.data?.message);
+      setNotify({
+        msg: error?.response?.data?.message,
+        type: 'warning',
+        show: true,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const { handleGoogle, error } = useGoogleLogin((loginRet) => {
+  const { handleGoogle, error, loading } = useGoogleLogin((loginRet) => {
     handleSuccessLogin(loginRet);
-  });
+  }, setNotify);
 
   useEffect(() => {
     /* global google */
@@ -97,82 +110,82 @@ function Login() {
   }, [handleGoogle]);
 
   return (
-    <div className={clsx(styles.container)}>
-      {' '}
-      <Form
-        // animate={{ x: 0, scale: 1 }}
-        // transition={{ duration: 0.5 }}
-        // initial={{ x: -100, scale: 0 }}
-        className={clsx(styles.content)}
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <h1>Login</h1>
-        <Form.Group
-          className={clsx(styles.group, 'mb-3')}
-          controlId="formBasicEmail"
-        >
-          <Form.Label>Username</Form.Label>
-          <Form.Control
-            {...register('username')}
-            placeholder="Username"
-            aria-label="Username"
-            aria-describedby="basic-addon1"
-          />
-          <Form.Text className="text-muted">
-            <ErrorMessage
-              errors={errors}
-              name="username"
-              render={({ message }) => (
-                <p className={clsx(styles.error)}>{message}</p>
-              )}
-            />
-          </Form.Text>
-        </Form.Group>
-        <Form.Group
-          className={clsx(styles.group, 'mb-3')}
-          controlId="formBasicPassword"
-        >
-          {' '}
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            {...register('password')}
-            type="password"
-            placeholder="Password"
-          />{' '}
-          <Form.Text className="text-muted">
-            <ErrorMessage
-              errors={errors}
-              name="password"
-              render={({ message }) => (
-                <p className={clsx(styles.error)}>{message}</p>
-              )}
-            />
-          </Form.Text>
-          <Form.Text className="text-muted">
-            <p className={clsx(styles.error)}>{loginErr}</p>
-          </Form.Text>
-          <Form.Text className="text-muted">
-            <p className={clsx(styles.error)}>{error}</p>
-          </Form.Text>
-        </Form.Group>
-        <Button
-          className={clsx(styles.signup_btn)}
-          variant="outline-info"
-          type="submit"
-        >
-          {' '}
-          Log In{' '}
-        </Button>{' '}
-        <p className={clsx(styles.google_opt)}>Or login with Google</p>{' '}
-        <div className={clsx(styles.alt_login)}>
-          <div id="btnLoginGoogle" />
+    <>
+      <Notify notify={notify} setShow={setNotify} />
+      {loading || loadingLogin ? (
+        <Loading />
+      ) : (
+        <div className={clsx(styles.container)}>
+          <Form
+            className={clsx(styles.content)}
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <h1>Login</h1>
+            <Form.Group
+              className={clsx(styles.group, 'mb-3')}
+              controlId="formBasicEmail"
+            >
+              <Form.Label>Username</Form.Label>
+              <Form.Control
+                {...register('username')}
+                placeholder="Username"
+                aria-label="Username"
+                aria-describedby="basic-addon1"
+              />
+              <Form.Text className="text-muted">
+                <ErrorMessage
+                  errors={errors}
+                  name="username"
+                  render={({ message }) => (
+                    <p className={clsx(styles.error)}>{message}</p>
+                  )}
+                />
+              </Form.Text>
+            </Form.Group>
+            <Form.Group
+              className={clsx(styles.group, 'mb-3')}
+              controlId="formBasicPassword"
+            >
+              {' '}
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                {...register('password')}
+                type="password"
+                placeholder="Password"
+              />{' '}
+              <Form.Text className="text-muted">
+                <ErrorMessage
+                  errors={errors}
+                  name="password"
+                  render={({ message }) => (
+                    <p className={clsx(styles.error)}>{message}</p>
+                  )}
+                />
+              </Form.Text>
+              <Form.Text className="text-muted">
+                <p className={clsx(styles.error)}>{error}</p>
+              </Form.Text>
+            </Form.Group>
+            <Button
+              className={clsx(styles.signup_btn)}
+              variant="outline-info"
+              type="submit"
+            >
+              {' '}
+              Log In{' '}
+            </Button>{' '}
+            <p className={clsx(styles.google_opt)}>Or login with Google</p>{' '}
+            <div className={clsx(styles.alt_login)}>
+              <div id="btnLoginGoogle" />
+            </div>
+            <p className={clsx(styles.signup_opt)}>
+              {' '}
+              Not a member? <Link to="/register">Sign up now</Link>{' '}
+            </p>{' '}
+          </Form>{' '}
         </div>
-        <p className={clsx(styles.signup_opt)}>
-          {' '}
-          Not a member? <Link to="/register">Sign up now</Link>{' '}
-        </p>{' '}
-      </Form>{' '}
-    </div>
+      )}
+    </>
   );
 }
 

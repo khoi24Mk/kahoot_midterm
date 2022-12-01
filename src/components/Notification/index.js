@@ -20,12 +20,11 @@ function Notify({ notify, setShow }) {
       delay={3000}
       autohide
     >
-      <Toast.Header>
+      <Toast.Header className="text-black fw-bold">
         <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
-        <strong className="me-auto">Bootstrap</strong>
-        {/* <small>11 mins ago</small> */}
+        <strong className="me-auto">{notify.type}</strong>
       </Toast.Header>
-      <Toast.Body>{notify.msg}</Toast.Body>
+      <Toast.Body className="text-white">{notify.msg}</Toast.Body>
     </Toast>
   );
 }
