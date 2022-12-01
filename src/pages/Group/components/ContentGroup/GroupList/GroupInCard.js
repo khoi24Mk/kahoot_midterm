@@ -60,7 +60,9 @@ import { forwardRef } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import Card from 'react-bootstrap/Card';
 import { Link } from 'react-router-dom';
+import clsx from 'clsx';
 import { groupBg } from '~/img';
+import styles from './groupList.module.css';
 
 const CustomToggle = forwardRef(({ children, onClick }, ref) => (
   <button
@@ -87,6 +89,14 @@ const CustomToggle = forwardRef(({ children, onClick }, ref) => (
 function GroupInCard({ groupId, groupName, owner, description }) {
   return (
     <Card style={{ minWidth: '300px' }}>
+      <Dropdown className={clsx(styles.dropdown)}>
+        <Dropdown.Toggle as={CustomToggle} />
+        <Dropdown.Menu className={clsx(styles.dropdown_menu)}>
+          <Dropdown.Item>Move</Dropdown.Item>
+          <Dropdown.Divider />
+          <Dropdown.Item>Unenroll</Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
       <Card.Img
         role="button"
         variant="top"
@@ -126,29 +136,11 @@ function GroupInCard({ groupId, groupName, owner, description }) {
             {owner?.displayName}
           </Card.Text>
         </div>
-
-        <Dropdown className="col-1">
-          <Dropdown.Toggle as={CustomToggle} />
-          <Dropdown.Menu>
-            <Dropdown.Item>Move</Dropdown.Item>
-            <Dropdown.Divider />
-            <Dropdown.Item>Unenroll</Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
       </Card.ImgOverlay>
 
       <Card.Body style={{ minHeight: '150px', position: 'relative' }}>
         <img
-          style={{
-            width: '80px',
-            height: '80px',
-            objectFit: 'cover',
-            position: 'absolute',
-            right: '10px',
-            top: '-40px',
-            border: 'solid 1px',
-            borderRadius: '50%',
-          }}
+          className={clsx(styles.GroupInCard_img)}
           alt=""
           src={
             owner?.avatar ||

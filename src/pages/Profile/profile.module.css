@@ -86,6 +86,7 @@
 .error{
     font-size: 1rem;
     color: red;
+	margin: 0;
 }
 
 
@@ -121,6 +122,29 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
+
+}
+.slider{
+	margin-left: 10px;
+	flex:2;
+	padding: 0 1rem;
+    position: relative;
+    font-size: 1em;
+	height: 100%;
+    /* background:cadetblue; */
+    /* border-radius: 0 0 1em 1em; */
+    /* box-shadow: 0 0.188em 0.155em rgb(100,156,156); */
+    /* border: solid 1px; */
+    border-width:1px;
+    border-style: solid;
+    /* border-image:  linear-gradient( #72edf2  ,#5151e5 ) 30; */
+    border-color:  #72edf2  ;
+    /* border-image: linear-gradient(#f6b73c, #4d9f0c) 30; */
+    border-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
     align-items: center;
 
 }
@@ -167,6 +191,12 @@
 	font-weight: bold;
 }
 
+.group_info{
+	display: flex;
+	height: 430px;
+	
+}
+
 .info{
     /* border: #bdbdbd solid 1px; */
 
@@ -175,11 +205,11 @@
     border-color:  #72edf2  ;
     border-radius: 0.5rem;
     padding: 0.8rem;
-    margin-bottom: 1rem;
+	flex:3
 }
 
 .group{
-
+	height: 100%;
 }
 
 .gallery{
@@ -188,6 +218,12 @@
     justify-content: center;
     align-items: center;
 	object-fit: contain;
+	height: 70%;
+}
+
+.gallery div:first-child{
+	display: none!important;
+	z-index: 1;
 }
 .item{
 
@@ -207,8 +243,14 @@
 .group_filter{
     display: flex;
     justify-content: space-between;
-    align-items:flex-end;
+    align-items:center;
+	margin-bottom: 1rem;
 }
+
+.group_filter p{
+	margin: 0;
+}
+
 .group_filter a{
     font-size: 1.5rem;
 }
@@ -223,12 +265,43 @@
 	flex-direction: column;
 }
 .submit_btn{
-		margin: 1rem auto;
+		margin-right: 1rem;
 		width: 20%;
 		    font-family: 'Roboto Condensed', sans-serif;
 }
 
 
+.info_header{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
 
+.err_frame{
+	height: 1rem;
+	display: block;
+}
+
+.slide_info{
+	position: absolute;
+	bottom: -3px;
+	height: 100px;
+	z-index: 1000;
+	color:#6B728E
+}
+.slide_info h3{
+	
+	text-overflow:ellipsis;
+	overflow: hidden;
+	
+}
+.slide_info p{
+	
+	text-overflow:ellipsis;
+	overflow: hidden;
+}
+.gallery_item{
+	height: 300px;
+}
 
 

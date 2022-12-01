@@ -1,8 +1,12 @@
 .Adding{
 
 	margin: 1rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	padding: 1rem;
-	border-radius: 45%;
+	border-radius: 50%;
+	object-fit: cover;
 	background: linear-gradient(to right, rgb(114, 237, 242) 0%, rgb(81, 81, 229) 100%);
     box-shadow: 0 0.188em 0.155em rgb(100,156,156);
 	z-index: 10000;
@@ -10,10 +14,11 @@
 	position: fixed;
 	bottom:10px;
 	right:10px;
-	transition: scale 0.4s ease-in-out;
+	transition: scale 0.3s ease-in-out;
 	
 }
 
 .Adding:hover{
 	scale: 1.2;
+	border-radius: 47%;
 }

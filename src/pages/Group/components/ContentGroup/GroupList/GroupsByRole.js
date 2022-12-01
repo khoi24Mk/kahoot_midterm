@@ -1,5 +1,7 @@
 import { Col, Container, Row } from 'react-bootstrap';
+import clsx from 'clsx';
 import GroupInCard from './GroupInCard';
+import styles from './groupList.module.css';
 
 export default function GroupsByRole({ groupList }) {
   return (
@@ -7,7 +9,10 @@ export default function GroupsByRole({ groupList }) {
       <Row xs={1} md={2} lg={3} xxl={5}>
         {groupList.map((data) => {
           return (
-            <Col key={data.dateCreated} className="justify-items-center">
+            <Col
+              key={data.dateCreated}
+              className={clsx(styles.GroupCard, 'justify-items-center')}
+            >
               <GroupInCard
                 groupId={data.id}
                 groupName={data.groupName ? data.groupName : 'Missing'}

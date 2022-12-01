@@ -161,7 +161,7 @@ function Login() {
           type="submit"
         >
           {' '}
-          Sign In{' '}
+          Log In{' '}
         </Button>{' '}
         <p className={clsx(styles.google_opt)}>Or login with Google</p>{' '}
         <div className={clsx(styles.alt_login)}>

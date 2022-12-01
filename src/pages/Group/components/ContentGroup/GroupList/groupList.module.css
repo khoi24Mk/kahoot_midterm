@@ -4,3 +4,45 @@
 	flex-wrap: wrap;
 
 }
+.GroupCard{
+	margin:1rem 0.7rem;
+    box-shadow: 0 0.188em 0.155em #72edf2;
+	border: none;
+	padding:0;
+	transition: scale  0.3s ease-in-out, margin 0.3s ease-in-out;
+}
+.GroupCard:hover{
+	scale:1.1;
+	margin: 1rem 1.6rem 1rem 0.7rem;
+		z-index: 10000;
+}
+
+.GroupCard div{
+	border: none;
+	margin:0;	
+}
+
+.GroupInCard_img{
+            width:80px;
+            height: 80px;
+            object-fit: cover;
+            position: absolute;
+            right: 10px;
+           top: -30px;
+		       /* box-shadow: 0 0.188em 0.155em rgb(100,156,156); */
+			   box-shadow: rgba(0, 0, 0, 0.5) 0px 5px 15px;
+            /* border: 'solid1px; */
+            border-radius: 50%;
+}
+
+
+
+.dropdown{
+	z-index: 100000;
+	position:absolute;
+	right: 10px;
+}
+
+.dropdown_menu{
+	z-index: 100000;
+}

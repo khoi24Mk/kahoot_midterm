@@ -98,3 +98,20 @@ avtDropDown:focus{
 	margin: 0 1rem;
 	width:150px;
 }
+
+.dropdownGroup{
+	width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	border-left: 1px solid #72edf2;
+	border-radius: 0.3rem;
+	transition: scale 0.3s ease-in-out,
+				border-bottom 0.3s ease-in-out;
+}
+.dropdownGroup:hover{
+	position: relative;
+	border-bottom: 1px solid #72edf2;
+	border-left: 3px solid #72edf2;
+	scale: 1.1;
+	margin-left: 10px;
+}
