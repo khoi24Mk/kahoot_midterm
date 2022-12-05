@@ -15,13 +15,11 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 const queryClient = new QueryClient();
 
 root.render(
-  <React.StrictMode>
-    <Context>
-      <GlobalStyle>
-        <QueryClientProvider client={queryClient}>
-          <App />
-        </QueryClientProvider>
-      </GlobalStyle>
-    </Context>
-  </React.StrictMode>
+  <Context>
+    <GlobalStyle>
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
+    </GlobalStyle>
+  </Context>
 );
