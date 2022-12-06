@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable no-shadow */
 /* eslint-disable react/button-has-type */
@@ -8,10 +9,10 @@ import clsx from 'clsx';
 import { Button } from 'react-bootstrap';
 import { BsFillPlayFill } from 'react-icons/bs';
 import { GoKebabVertical } from 'react-icons/go';
-import { FcBarChart, FcSettings } from 'react-icons/fc';
+import { FcBarChart, FcSettings, FcDoughnutChart } from 'react-icons/fc';
 import Dropdown from 'react-bootstrap/Dropdown';
 import React, { useState } from 'react';
-import { FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle, FaHackerrank } from 'react-icons/fa';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { GrFormAdd } from 'react-icons/gr';
 import { CiImport } from 'react-icons/ci';
@@ -22,9 +23,73 @@ import { IoCloseOutline } from 'react-icons/io5';
 import styles from './slide.module.css';
 import Chart from '~/components/Chart';
 import BarChart from '~/components/Chart/barchart';
+import Question from '~/components/Questions';
 
 function Slide() {
-  const [chartType, setChartType] = [];
+  //   const chartOptions = {
+  //     scales: {
+  //       xAxes: [
+  //         {
+  //           stacked: true,
+  //           barPercentage: 0.2,
+  //         },
+  //       ],
+  //       yAxes: [
+  //         {
+  //           stacked: true,
+  //           barPercentage: 0.2,
+  //         },
+  //       ],
+  //     },
+  //   };
+
+  // data chart
+
+  //   const [chartLabels, setChartLabels] = useState([1, 2, 3]);
+  //   const [chartData, setChartData] = useState([0, 0, 0]);
+
+  const [chartName, setChartName] = useState('bar');
+  const [question, setQuestion] = useState('Enter Your Question');
+
+  const [ChartData, setChartData] = useState([
+    {
+      id: '1',
+      labels: '1',
+      data: 134,
+    },
+    {
+      id: '2',
+      labels: '2',
+      data: 134,
+    },
+    {
+      id: '3',
+      labels: '3',
+      data: 134,
+    },
+  ]);
+  //   const [data, setData] = useState({
+  //     labels: [1, 2, 3],
+  //     datasets: [{ data: [0, 0, 0] }],
+  //   });
+
+  const SlideOption = [
+    {
+      icon: FcBarChart,
+      name: 'multiChoice',
+    },
+    {
+      icon: FaHackerrank,
+      name: 'ranking',
+    },
+  ];
+  //   const SlideOption = ['multiChoice', 'sth'];
+  const [SlideType, setSlideType] = useState(SlideOption[0]);
+
+  //   const [chartType, setChartType] = useState({
+  //     icon: FcBarChart,
+  //     name: 'bar',
+  //   });
 
   const finalSpaceCharacters = [
     {
@@ -50,13 +115,7 @@ function Slide() {
   ];
   //   const layout = [{ id: 1, chart: Barchart }];
 
-  const [characters, updateCharacters] = useState(finalSpaceCharacters);
-  function handleOnDragEnd(result) {
-    const items = Array.from(characters);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-    updateCharacters(items);
-  }
+  //   const [characters, updateCharacters] = useState(finalSpaceCharacters);
 
   const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
     <button
@@ -89,7 +148,6 @@ function Slide() {
     </button>
   ));
 
-  console.log(characters);
   return (
     <div className={clsx(styles.Presentation_container)}>
       <div className={clsx(styles.Presentation_operator)}>
@@ -140,7 +198,7 @@ function Slide() {
             </div>
             <div className={clsx(styles.Slide_item_overview)}>
               <FcBarChart size={40} />
-              <p>this question is to longggggg</p>
+              <p>{question}</p>
             </div>
           </div>
         </div>
@@ -150,11 +208,19 @@ function Slide() {
               <p>This is code 113 </p>
             </div>
             <div className={clsx(styles.Slide_editorItem_body)}>
-              <p>QUestion</p>
+              <p>{question}</p>
+              {() => {
+                console.log('CHARDATA');
+                console.log(ChartData);
+                // console.log(chartData);
+                // console.log(chartLabels);
+              }}
               <Chart
-                type="circle"
-                labels={[1, 2, 3]}
-                datasets={{ data: [10, 20, 20] }}
+                type={chartName}
+                labels={ChartData.map((a) => a.labels)}
+                data={ChartData.map((a) => a.data)}
+                // data={data}
+                // options={chartOptions}
               />
             </div>
             <div className={clsx(styles.Slide_editorItem_footer)}>
@@ -167,94 +233,44 @@ function Slide() {
           <div className={clsx(styles.Slide_operator_type)}>
             <p>Slide type</p>
             <div className={clsx(styles.Slide_operatorType_dropdown)}>
-              <p>ok</p>
+              <p>
+                <span>
+                  <SlideType.icon size={30} />
+                </span>
+                {SlideType.name}
+              </p>
               <Dropdown>
                 <Dropdown.Toggle as={CustomDropdown} />
 
                 <Dropdown.Menu className={clsx(styles.Slide_typeMenu)}>
-                  <Dropdown.Item
-                    className={clsx(styles.Slide_typeItem)}
-                    href="#/action-1"
-                  >
-                    <p>
-                      <FcBarChart size={30} />
-                      hello
-                    </p>
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    className={clsx(styles.Slide_typeItem)}
-                    href="#/action-1"
-                  >
-                    <p>
-                      <FcBarChart size={30} />
-                      hello
-                    </p>
-                  </Dropdown.Item>
+                  {SlideOption.map((item) => (
+                    <Dropdown.Item
+                      onClick={() => {
+                        console.log('Click');
+                        setSlideType(item);
+                      }}
+                      className={clsx(styles.Slide_typeItem)}
+                      href="#/action-1"
+                    >
+                      <p>
+                        <item.icon size={30} />
+                        {item.name}
+                      </p>
+                    </Dropdown.Item>
+                  ))}
                 </Dropdown.Menu>
               </Dropdown>
             </div>
           </div>
-          <div className={clsx(styles.Slide_operator_question)}>
-            <p>Content</p>
-            <p>Question</p>
-            <input type="text" />
-            <div className={clsx(styles.Slide_operator_answer)}>
-              <div className={clsx(styles.Slide_operatorAns_header)}>
-                <p>Options</p>
-                <Button>
-                  <GrFormAdd color="white" size={20} />
-                  Add Option
-                </Button>
-              </div>
-              <div className={clsx(styles.Slide_operatorAnswer_item)}>
-                <DragDropContext onDragEnd={handleOnDragEnd}>
-                  <Droppable droppableId="characters">
-                    {(provided) => (
-                      <ul
-                        className="characters"
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                      >
-                        {characters.map((item, index) => {
-                          return (
-                            <Draggable
-                              key={item.id}
-                              draggableId={item.id}
-                              index={index}
-                            >
-                              {(provided) => (
-                                <li
-                                  // key={provided.id}
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                >
-                                  <div className={clsx(styles.dragAnswer_item)}>
-                                    <MdOutlineDragIndicator />
-                                    <input type="text" />
-                                    <IoCloseOutline />
-                                  </div>
-                                </li>
-                              )}
-                            </Draggable>
-                          );
-                        })}
-                      </ul>
-                    )}
-                  </Droppable>
-                </DragDropContext>
-                {/* <button>hello</button> */}
-              </div>
-            </div>
-          </div>
-          <div className={clsx(styles.Slide_operator_layout)}>
-            <p>Result layout</p>
-            <ul>
-              {/* {layout.map((item) => (
-                <li>{item.id}</li>
-              ))} */}
-            </ul>
-          </div>
+          <Question
+            // label={chartLabels}
+            data={ChartData}
+            setChartName={setChartName}
+            setQuestion={setQuestion}
+            // setLabels={setChartLabels}
+            setData={setChartData}
+            SlideType={SlideType.name}
+          />
         </div>
       </div>
     </div>

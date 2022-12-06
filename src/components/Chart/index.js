@@ -21,48 +21,60 @@ import React, { useState, useEffect } from 'react';
 
 // ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
 
-function Chart({ type, labels, datasets }) {
-  const [data, setData] = useState({
+function Chart({ type, labels, data }) {
+  const [ChartData, setChartData] = useState({
     labels,
-    datasets,
+    datasets: [{ data }],
   });
+
+  useEffect(() => {
+    setChartData({ labels, datasets: [{ data }] });
+  }, [labels, data]);
+
   const sth = () => {
+    console.log(type);
+    console.log(ChartData);
+
+    console.log('OUT');
     console.log('ININ');
     if (type === 'bar') {
-      console.log('CIRCLE');
-      return <Bar data={data} />;
+      console.log('BAR');
+      return <Bar data={ChartData} />;
     }
 
     if (type === 'circle') {
       console.log('CIRCLE');
-      return <Doughnut data={data} />;
+      return <Doughnut data={ChartData} />;
     }
     console.log('CIRCLE');
-    return <Doughnut data={data} />;
   };
-  useEffect(() => {
-    const asyncGroup = async () => {
-      try {
-        setData({ labels, datasets });
-      } catch (error) {
-        //
-      }
-    };
-    asyncGroup();
-  }, []);
-  console.log(type);
-  console.log(labels);
-  console.log(datasets);
-  console.log(data);
 
-  console.log('OUT');
-  return (
-    <div>
-      {() => {
-        sth();
-      }}
-    </div>
-  );
+  //   const data = {
+  //     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+  //     datasets: [
+  //       {
+  //         label: 'First dataset',
+  //         data: [33, 53, 85, 41, 44, 65],
+  //         fill: true,
+  //         backgroundColor: 'rgba(75,192,192,0.2)',
+  //         borderColor: 'rgba(75,192,192,1)'
+  //       }
+
+  //     ]
+  //   };
+
+  //   return <Doughnut data={data} />;
+  //   useEffect(() => {
+  //     const asyncGroup = async () => {
+  //       try {
+  //         setData({ labels, datasets });
+  //       } catch (error) {
+  //         //
+  //       }
+  //     };
+  //     asyncGroup();
+  //   }, []);
+  return <div>{sth()}</div>;
 }
 
 export default Chart;
