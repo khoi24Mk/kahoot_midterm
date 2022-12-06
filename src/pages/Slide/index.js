@@ -19,11 +19,23 @@ import { HiOutlineDocumentReport } from 'react-icons/hi';
 import { MdOutlineDragIndicator } from 'react-icons/md';
 import { RiArrowDropDownLine } from 'react-icons/ri';
 import { IoCloseOutline } from 'react-icons/io5';
+import useWebSocket from 'react-use-websocket';
 import styles from './slide.module.css';
 import Chart from '~/components/Chart';
 import BarChart from '~/components/Chart/barchart';
+import Constant from '~/constants';
 
 function Slide() {
+  // connect socket
+  const { sendJsonMessage } = useWebSocket(
+    'wss://kahoot-clone-vodinhphuc.herokuapp.com/socket',
+    {
+      onOpen: () => console.log('opened'),
+      onClose: () => console.log('closed'),
+      shouldReconnect: (closeEvent) => true,
+    }
+  );
+
   const [chartType, setChartType] = [];
 
   const finalSpaceCharacters = [
@@ -89,7 +101,6 @@ function Slide() {
     </button>
   ));
 
-  console.log(characters);
   return (
     <div className={clsx(styles.Presentation_container)}>
       <div className={clsx(styles.Presentation_operator)}>
