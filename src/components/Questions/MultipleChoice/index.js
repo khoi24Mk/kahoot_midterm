@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 /* eslint-disable react/button-has-type */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable no-unused-vars */
@@ -13,12 +14,10 @@ import { IoCloseOutline } from 'react-icons/io5';
 import { MdOutlineDragIndicator } from 'react-icons/md';
 import { FcBarChart, FcSettings, FcDoughnutChart } from 'react-icons/fc';
 import { RiArrowDropDownLine } from 'react-icons/ri';
+import Form from 'react-bootstrap/Form';
 import styles from './multiplechoice.module.css';
 
 function MultipleChoice({ setChartName, data, setData, setQuestion }) {
-  //   const [chartLabels, setChartLabels] = useState([1, 2, 3]);
-  //   const [chartData, setChartData] = useState([0, 0, 0]);
-
   const handleAddOption = () => {
     setData([
       ...data,
@@ -61,30 +60,6 @@ function MultipleChoice({ setChartName, data, setData, setQuestion }) {
     icon: FcBarChart,
     name: 'bar',
   });
-
-  //   const finalSpaceCharacters = [
-  //     {
-  //       id: '1',
-  //       name: 'Gary Goodspeed',
-  //       thumb: '/images/gary.png',
-  //     },
-  //     {
-  //       id: '2',
-  //       name: 'sthoco',
-  //       thumb: '/images/gary.png',
-  //     },
-  //     {
-  //       id: '3',
-  //       name: 'hello',
-  //       thumb: '/images/gary.png',
-  //     },
-  //     {
-  //       id: '4',
-  //       name: 'world',
-  //       thumb: '/images/gary.png',
-  //     },
-  //   ];
-  //   const [characters, updateCharacters] = useState(finalSpaceCharacters);
 
   function handleOnDragEnd(result) {
     const items = Array.from(data);
@@ -134,7 +109,21 @@ function MultipleChoice({ setChartName, data, setData, setQuestion }) {
                             >
                               <div className={clsx(styles.dragAnswer_item)}>
                                 <MdOutlineDragIndicator />
-                                <input type="text" />
+                                <input
+                                  value={item.labels}
+                                  onChange={(e) => {
+                                    const items = [...data];
+                                    const item = {
+                                      ...items[index],
+                                      labels: e.target.value,
+                                    };
+                                    items[index] = item;
+                                    console.log('ONCHANGE');
+                                    console.log(items);
+                                    setData(items);
+                                  }}
+                                  type="text"
+                                />
                                 <IoCloseOutline />
                               </div>
                             </li>

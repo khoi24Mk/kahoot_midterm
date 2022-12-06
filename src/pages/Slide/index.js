@@ -1,3 +1,6 @@
+/* eslint-disable array-callback-return */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/jsx-pascal-case */
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable no-shadow */
@@ -6,7 +9,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable no-unused-vars */
 import clsx from 'clsx';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { BsFillPlayFill } from 'react-icons/bs';
@@ -18,9 +21,16 @@ import { GrFormAdd } from 'react-icons/gr';
 import { HiOutlineDocumentReport } from 'react-icons/hi';
 import { RiArrowDropDownLine } from 'react-icons/ri';
 import useWebSocket from 'react-use-websocket';
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import Spinner from 'react-bootstrap/Spinner';
 import Chart from '~/components/Chart';
 import Question from '~/components/Questions';
 import styles from './slide.module.css';
+import getSlideOfPresent from '~/api/normal/getSlideOfPresent';
+import createSlide from '~/api/normal/createSlide';
+import deleteSlide from '~/api/normal/deleteSlide';
+import Loading from '~/components/Loading';
 
 function Slide() {
   // connect socket
@@ -32,31 +42,53 @@ function Slide() {
       shouldReconnect: (closeEvent) => true,
     }
   );
-  //   const chartOptions = {
-  //     scales: {
-  //       xAxes: [
-  //         {
-  //           stacked: true,
-  //           barPercentage: 0.2,
-  //         },
-  //       ],
-  //       yAxes: [
-  //         {
-  //           stacked: true,
-  //           barPercentage: 0.2,
-  //         },
-  //       ],
-  //     },
-  //   };
 
-  // data chart
-
-  //   const [chartLabels, setChartLabels] = useState([1, 2, 3]);
-  //   const [chartData, setChartData] = useState([0, 0, 0]);
+  const [saving, setSaving] = useState(false);
+  const [ListSlide, setListSlide] = useState([
+    {
+      id: 1,
+      content: 'How is you?>>',
+      options: [
+        'This is answer>>>',
+        "This isn't answer>>",
+        'This is another answer',
+      ],
+      answer: 'This is answer',
+      userRecords: [
+        {
+          answer: '',
+          user: '',
+        },
+      ],
+      presenting: true,
+      links: [
+        {
+          rel: 'self',
+          href: 'https://kahoot-clone-vodinhphuc.herokuapp.com/api/v1/presentation/1/slide/1',
+        },
+      ],
+    },
+  ]);
+  const SlideOption = [
+    {
+      icon: FcBarChart,
+      name: 'multiChoice',
+    },
+    {
+      icon: FaHackerrank,
+      name: 'ranking',
+    },
+  ];
+  const [SlidePresenting, setSlidePresenting] = useState(ListSlide[0]);
 
   const [chartName, setChartName] = useState('bar');
+  // important
   const [question, setQuestion] = useState('Enter Your Question');
-
+  // important
+  const [SlideType, setSlideType] = useState(SlideOption[0]);
+  // important
+  const { id } = useParams();
+  // important
   const [ChartData, setChartData] = useState([
     {
       id: '1',
@@ -74,55 +106,71 @@ function Slide() {
       data: 134,
     },
   ]);
-  //   const [data, setData] = useState({
-  //     labels: [1, 2, 3],
-  //     datasets: [{ data: [0, 0, 0] }],
-  //   });
 
-  const SlideOption = [
-    {
-      icon: FcBarChart,
-      name: 'multiChoice',
-    },
-    {
-      icon: FaHackerrank,
-      name: 'ranking',
-    },
-  ];
-  //   const SlideOption = ['multiChoice', 'sth'];
-  const [SlideType, setSlideType] = useState(SlideOption[0]);
+  const asyncGetSlide = async () => {
+    const listSlide = await getSlideOfPresent(id);
+    console.log('LIST SLIDE');
+    console.log(listSlide);
+    setListSlide(listSlide);
+    listSlide.map((slide) => {
+      if (slide.presenting === true) {
+        setSlidePresenting(slide);
+      }
+    });
+    return listSlide;
+  };
+  useEffect(() => {
+    setQuestion(SlidePresenting.content);
+    const SlideLabel = SlidePresenting.options;
+    const SlideData = SlideLabel.map((label) => {
+      console.log('VERIFY');
+      console.log(SlidePresenting);
+      const NumberRecord = SlidePresenting.userRecords.filter((record) => {
+        console.log('COMPARE');
+        console.log(record.answer);
+        console.log(label);
+        return record.answer === label;
+      });
+      return NumberRecord ? NumberRecord.length : 0;
+    });
+    console.log('FIBOEIBFEOIBFNEOFB');
+    console.log(SlideData);
 
-  //   const [chartType, setChartType] = useState({
-  //     icon: FcBarChart,
-  //     name: 'bar',
-  //   });
+    setChartData(
+      SlideLabel.map((value, index) => {
+        return {
+          id: `${index}`,
+          labels: value,
+          data: SlideData[index],
+        };
+      })
+    );
+    // const SlideData = SlidePresenting.recorduserRecords;
+  }, [SlidePresenting]);
+  const query = useQuery({
+    queryKey: ['ListSlide'],
+    queryFn: asyncGetSlide,
+  });
 
-  const finalSpaceCharacters = [
-    {
-      id: '1',
-      name: 'Gary Goodspeed',
-      thumb: '/images/gary.png',
-    },
-    {
-      id: '2',
-      name: 'sthoco',
-      thumb: '/images/gary.png',
-    },
-    {
-      id: '3',
-      name: 'hello',
-      thumb: '/images/gary.png',
-    },
-    {
-      id: '4',
-      name: 'world',
-      thumb: '/images/gary.png',
-    },
-  ];
-  //   const layout = [{ id: 1, chart: Barchart }];
+  const handleDeleteSlide = async (slide) => {
+    setSaving(true);
+    const response = await deleteSlide(id, slide);
+    setSaving(false);
+    return response;
+  };
 
-  //   const [characters, updateCharacters] = useState(finalSpaceCharacters);
+  const handleAddSlide = async () => {
+    setSaving(true);
+    const response = await createSlide(id);
+    setSaving(false);
+    return response;
+  };
 
+  const activeSlide = (slide) => {
+    console.log('CLICK SLIDE');
+    console.log(slide);
+    setSlidePresenting(slide);
+  };
   const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
     <button
       className={clsx(styles.slide_operator_dropButton)}
@@ -154,11 +202,43 @@ function Slide() {
     </button>
   ));
 
-  return (
+  return query.isLoading ? (
+    <Loading />
+  ) : (
     <div className={clsx(styles.Presentation_container)}>
       <div className={clsx(styles.Presentation_operator)}>
         <div className={clsx(styles.Presentation_operator_start)}>
-          <Button>
+          <Button
+            onClick={() => {
+              setListSlide([
+                ...ListSlide,
+                {
+                  id: 1,
+                  content: 'How is you?>>',
+                  options: [
+                    'This is answer>>>',
+                    "This isn't answer>>",
+                    'This is another answer',
+                  ],
+                  answer: 'This is answer',
+                  userRecords: [
+                    {
+                      answer: '',
+                      user: '',
+                    },
+                  ],
+                  presenting: true,
+                  links: [
+                    {
+                      rel: 'self',
+                      href: 'https://kahoot-clone-vodinhphuc.herokuapp.com/api/v1/presentation/1/slide/1',
+                    },
+                  ],
+                },
+              ]);
+              handleAddSlide();
+            }}
+          >
             <GrFormAdd color="white" size={20} />
             New Slide
           </Button>
@@ -168,6 +248,17 @@ function Slide() {
           </Button>
         </div>
         <div className={clsx(styles.Presentation_operator_end)}>
+          {saving ? (
+            <span>
+              <Spinner
+                style={{ width: '1rem', height: '1rem' }}
+                animation="border"
+              />
+              Saving
+            </span>
+          ) : (
+            <div />
+          )}
           <Button>
             <FcSettings size={30} />
             Seting
@@ -180,41 +271,59 @@ function Slide() {
       </div>
       <div className={clsx(styles.Slide_workspace)}>
         <div className={clsx(styles.Slide_review)}>
-          <div className={clsx(styles.Slide_item, styles.active)}>
-            <div className={clsx(styles.Slide_item_operator)}>
-              <div>
-                <p>1</p>
-                <BsFillPlayFill size={20} color="#196cff" />
-              </div>
-              <div>
-                <Dropdown>
-                  <Dropdown.Toggle as={CustomToggle} />
+          {ListSlide.map((slide, index) => (
+            <div
+              onClick={() => activeSlide(slide)}
+              className={clsx(styles.Slide_item, {
+                [styles.active]: slide === SlidePresenting,
+              })}
+            >
+              <div className={clsx(styles.Slide_item_operator)}>
+                <div>
+                  <p>{index}</p>
+                  <BsFillPlayFill size={20} color="#196cff" />
+                </div>
+                <div>
+                  <Dropdown>
+                    <Dropdown.Toggle as={CustomToggle} />
 
-                  <Dropdown.Menu>
-                    <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                    <Dropdown.Item href="#/action-2">
-                      Another action
-                    </Dropdown.Item>
-                    <Dropdown.Item href="#/action-3">
-                      Something else
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
+                    <Dropdown.Menu>
+                      <Dropdown.Item
+                        onClick={() => {
+                          setListSlide(
+                            ListSlide.filter((item) => {
+                              return item.id !== slide.id;
+                            })
+                          );
+                          handleDeleteSlide(slide.id);
+                        }}
+                      >
+                        Delete
+                      </Dropdown.Item>
+                      <Dropdown.Item>Active</Dropdown.Item>
+                      <Dropdown.Item>Double</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </div>
+              </div>
+              <div className={clsx(styles.Slide_item_overview)}>
+                <FcBarChart size={40} />
+                <p>{question}</p>
               </div>
             </div>
-            <div className={clsx(styles.Slide_item_overview)}>
-              <FcBarChart size={40} />
-              <p>{question}</p>
-            </div>
-          </div>
+          ))}
         </div>
         <div className={clsx(styles.Slide_editor)}>
-          <div className={clsx(styles.Slide_editor_item)}>
+          {/* {ListSlide.map((slide) => ( */}
+          <div
+            // onClick={() => activeSlide(slide)}
+            className={clsx(styles.Slide_editor_item)}
+          >
             <div className={clsx(styles.Slide_editorItem_header)}>
               <p>This is code 113 </p>
             </div>
             <div className={clsx(styles.Slide_editorItem_body)}>
-              <p>{question}</p>
+              <p>{SlidePresenting.content}</p>
               {() => {
                 console.log('CHARDATA');
                 console.log(ChartData);
@@ -234,6 +343,7 @@ function Slide() {
               <p>10</p>
             </div>
           </div>
+          {/* ))} */}
         </div>
         <div className={clsx(styles.Slide_operator)}>
           <div className={clsx(styles.Slide_operator_type)}>
