@@ -213,12 +213,8 @@ function Register() {
               </Form.Text>
             </Form.Group>
 
-            <Button
-              className={clsx(styles.login_btn)}
-              variant="outline-info"
-              type="submit"
-            >
-              Register
+            <Button type="submit" variant="dark" className="mb-3 v-75">
+              Submit
             </Button>
           </Form>
         </div>
