@@ -2,10 +2,12 @@
 import React from 'react';
 // import { Spinner } from 'react-bootstrap';
 import HashLoader from 'react-spinners/HashLoader';
+import clsx from 'clsx';
+import styles from './loading.module.css';
 
 export default function Loading({ msg }) {
   return (
-    <div className="vh-100 w-100 d-flex justify-content-center align-items-center">
+    <div className={clsx(styles.loading)}>
       {/* <Spinner animation="border" role="status">
         <span className="visually-hidden">Loading...</span>
       </Spinner> */}

@@ -1,3 +1,7 @@
+/* eslint-disable array-callback-return */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable react/jsx-pascal-case */
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable no-shadow */
 /* eslint-disable react/button-has-type */
@@ -5,27 +9,32 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable no-unused-vars */
 import clsx from 'clsx';
+import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
-import { BsFillPlayFill } from 'react-icons/bs';
-import { GoKebabVertical } from 'react-icons/go';
-import { FcBarChart, FcSettings } from 'react-icons/fc';
 import Dropdown from 'react-bootstrap/Dropdown';
-import React, { useState } from 'react';
-import { FaUserCircle } from 'react-icons/fa';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { GrFormAdd } from 'react-icons/gr';
+import { BsFillPlayFill } from 'react-icons/bs';
 import { CiImport } from 'react-icons/ci';
+import { FaHackerrank, FaUserCircle } from 'react-icons/fa';
+import { FcBarChart, FcSettings } from 'react-icons/fc';
+import { GoKebabVertical } from 'react-icons/go';
+import { GrFormAdd } from 'react-icons/gr';
 import { HiOutlineDocumentReport } from 'react-icons/hi';
-import { MdOutlineDragIndicator } from 'react-icons/md';
 import { RiArrowDropDownLine } from 'react-icons/ri';
-import { IoCloseOutline } from 'react-icons/io5';
 import useWebSocket from 'react-use-websocket';
-import styles from './slide.module.css';
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import Spinner from 'react-bootstrap/Spinner';
 import Chart from '~/components/Chart';
-import BarChart from '~/components/Chart/barchart';
-import Constant from '~/constants';
+import Question from '~/components/Questions';
+import styles from './slide.module.css';
+import getSlideOfPresent from '~/api/normal/getSlideOfPresent';
+import createSlide from '~/api/normal/createSlide';
+import deleteSlide from '~/api/normal/deleteSlide';
+import Loading from '~/components/Loading';
+import updateSlide from '~/api/normal/updateSlide';
+import getSlide from '~/api/normal/getSlide';
 
-function Slide() {
+export default React.memo(function Slide() {
   // connect socket
   const { sendJsonMessage } = useWebSocket(
     'wss://kahoot-clone-vodinhphuc.herokuapp.com/socket',
@@ -36,47 +45,183 @@ function Slide() {
     }
   );
 
-  const [chartType, setChartType] = [];
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [ListSlide, setListSlide] = useState([
+    {
+      id: 1,
+      content: 'How is you?>>',
+      options: [
+        'This is answer>>>',
+        "This isn't answer>>",
+        'This is another answer',
+      ],
+      answer: 'This is answer',
+      userRecords: [
+        {
+          answer: '',
+          user: '',
+        },
+      ],
+      presenting: true,
+      links: [
+        {
+          rel: 'self',
+          href: 'https://kahoot-clone-vodinhphuc.herokuapp.com/api/v1/presentation/1/slide/1',
+        },
+      ],
+    },
+  ]);
+  const SlideOption = [
+    {
+      icon: FcBarChart,
+      name: 'multiChoice',
+    },
+    {
+      icon: FaHackerrank,
+      name: 'ranking',
+    },
+  ];
+  const [SlideEditing, setSlideEditing] = useState(ListSlide[0]);
 
-  const finalSpaceCharacters = [
+  const [chartName, setChartName] = useState('bar');
+  // important
+  const [question, setQuestion] = useState('Enter Your Question');
+  // important
+  const [SlideType, setSlideType] = useState(SlideOption[0]);
+  // important
+  const { id } = useParams();
+  // important
+  const [ChartData, setChartData] = useState([
     {
       id: '1',
-      name: 'Gary Goodspeed',
-      thumb: '/images/gary.png',
+      labels: '1',
+      data: 134,
     },
     {
       id: '2',
-      name: 'sthoco',
-      thumb: '/images/gary.png',
+      labels: '2',
+      data: 134,
     },
     {
       id: '3',
-      name: 'hello',
-      thumb: '/images/gary.png',
+      labels: '3',
+      data: 134,
     },
-    {
-      id: '4',
-      name: 'world',
-      thumb: '/images/gary.png',
-    },
-  ];
-  //   const layout = [{ id: 1, chart: Barchart }];
+  ]);
 
-  const [characters, updateCharacters] = useState(finalSpaceCharacters);
-  function handleOnDragEnd(result) {
-    const items = Array.from(characters);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-    updateCharacters(items);
-  }
+  const asyncGetSlide = async () => {
+    try {
+      setLoading(true);
+      const listSlide = await getSlideOfPresent(id);
+      console.log('LIST SLIDE');
+      console.log(listSlide);
+      setListSlide(listSlide);
+      // listSlide.map((slide) => {
+      setSlideEditing(listSlide[0]);
+      // });
+      setLoading(false);
+      return listSlide;
+    } catch (e) {
+      return null;
+    }
+  };
+  const [answer, setAnswer] = useState(null);
+  useEffect(() => {
+    asyncGetSlide();
+  }, []);
 
+  //   useEffect(() => {
+  //     console.log('CHAGESLIT  CIS');
+  //     console.log(ListSlide);
+  //     console.log(SlideEditing);
+  //     if (!ListSlide.includes(SlideEditing)) {
+  //       //   setSlideEditing(ListSlide[0]);
+  //     }
+  //   }, [ListSlide]);
+
+  useEffect(() => {
+    setQuestion(SlideEditing.content);
+    const SlideLabel = SlideEditing.options;
+    const SlideData = SlideLabel.map((label) => {
+      console.log('VERIFY');
+      console.log(SlideEditing);
+      const NumberRecord = SlideEditing.userRecords.filter((record) => {
+        console.log('COMPARE');
+        console.log(record.answer);
+        console.log(label);
+        return record.answer === label;
+      });
+      return NumberRecord ? NumberRecord.length : 0;
+    });
+    console.log('FIBOEIBFEOIBFNEOFB');
+    console.log(SlideData);
+
+    setChartData(
+      SlideLabel.map((value, index) => {
+        return {
+          id: `${index}`,
+          labels: value,
+          data: SlideData[index],
+        };
+      })
+    );
+  }, [SlideEditing]);
+
+  const [isNeedUpdate, setIsNeedUpdate] = useState(false);
+  const handleFlagUpdate = () => {
+    setIsNeedUpdate(!isNeedUpdate);
+  };
+
+  const handleDeleteSlide = async (slide) => {
+    setSaving(true);
+    const response = await deleteSlide(id, slide);
+    setSaving(false);
+    return response;
+  };
+
+  const handleAddSlide = async () => {
+    setSaving(true);
+    const response = await createSlide(id);
+    setSaving(false);
+    return response;
+  };
+
+  const handleUpdateSlide = async () => {
+    setSaving(true);
+    const response = await updateSlide(
+      id,
+      SlideEditing.id,
+      answer,
+      question,
+      ChartData.map((item) => item.labels)
+    );
+    setSlideEditing(response);
+    setSaving(false);
+    return response;
+  };
+
+  useEffect(() => {
+    console.log('UPDATE SLIDE');
+    handleUpdateSlide();
+  }, [isNeedUpdate]);
+
+  const activeSlide = async (slide) => {
+    console.log('CLICK SLIDE');
+    console.log(slide);
+    setLoading(true);
+    const SlideActive = await getSlide(id, slide.id);
+    setSlideEditing(SlideActive);
+    setLoading(false);
+  };
   const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
     <button
       className={clsx(styles.slide_operator_dropButton)}
       href=""
       ref={ref}
       onClick={(e) => {
-        e.preventDefault();
+        // e.preventDefault();
+        e.stopPropagation();
         onClick(e);
       }}
     >
@@ -103,9 +248,40 @@ function Slide() {
 
   return (
     <div className={clsx(styles.Presentation_container)}>
+      {loading ? <Loading /> : <div />}
       <div className={clsx(styles.Presentation_operator)}>
         <div className={clsx(styles.Presentation_operator_start)}>
-          <Button>
+          <Button
+            onClick={() => {
+              setListSlide([
+                ...ListSlide,
+                {
+                  id: 1,
+                  content: 'How is you?>>',
+                  options: [
+                    'This is answer>>>',
+                    "This isn't answer>>",
+                    'This is another answer',
+                  ],
+                  answer: 'This is answer',
+                  userRecords: [
+                    {
+                      answer: '',
+                      user: '',
+                    },
+                  ],
+                  presenting: true,
+                  links: [
+                    {
+                      rel: 'self',
+                      href: 'https://kahoot-clone-vodinhphuc.herokuapp.com/api/v1/presentation/1/slide/1',
+                    },
+                  ],
+                },
+              ]);
+              handleAddSlide();
+            }}
+          >
             <GrFormAdd color="white" size={20} />
             New Slide
           </Button>
@@ -115,6 +291,17 @@ function Slide() {
           </Button>
         </div>
         <div className={clsx(styles.Presentation_operator_end)}>
+          {saving ? (
+            <span>
+              <Spinner
+                style={{ width: '1rem', height: '1rem' }}
+                animation="border"
+              />
+              Saving
+            </span>
+          ) : (
+            <div />
+          )}
           <Button>
             <FcSettings size={30} />
             Seting
@@ -127,45 +314,71 @@ function Slide() {
       </div>
       <div className={clsx(styles.Slide_workspace)}>
         <div className={clsx(styles.Slide_review)}>
-          <div className={clsx(styles.Slide_item, styles.active)}>
-            <div className={clsx(styles.Slide_item_operator)}>
-              <div>
-                <p>1</p>
-                <BsFillPlayFill size={20} color="#196cff" />
-              </div>
-              <div>
-                <Dropdown>
-                  <Dropdown.Toggle as={CustomToggle} />
+          {ListSlide.map((slide, index) => (
+            <div
+              onClick={() => activeSlide(slide)}
+              className={clsx(styles.Slide_item, {
+                [styles.active]: slide === SlideEditing,
+              })}
+            >
+              <div className={clsx(styles.Slide_item_operator)}>
+                <div>
+                  <p>{index}</p>
+                  <BsFillPlayFill size={20} color="#196cff" />
+                </div>
+                <div>
+                  <Dropdown>
+                    <Dropdown.Toggle as={CustomToggle} />
 
-                  <Dropdown.Menu>
-                    <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                    <Dropdown.Item href="#/action-2">
-                      Another action
-                    </Dropdown.Item>
-                    <Dropdown.Item href="#/action-3">
-                      Something else
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
+                    <Dropdown.Menu>
+                      <Dropdown.Item
+                        onClick={() => {
+                          setListSlide(
+                            ListSlide.filter((item) => {
+                              return item.id !== slide.id;
+                            })
+                          );
+                          handleDeleteSlide(slide.id);
+                        }}
+                      >
+                        Delete
+                      </Dropdown.Item>
+                      <Dropdown.Item>Active</Dropdown.Item>
+                      <Dropdown.Item>Double</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </div>
+              </div>
+              <div className={clsx(styles.Slide_item_overview)}>
+                <FcBarChart size={40} />
+                <p>{slide.content}</p>
               </div>
             </div>
-            <div className={clsx(styles.Slide_item_overview)}>
-              <FcBarChart size={40} />
-              <p>this question is to longggggg</p>
-            </div>
-          </div>
+          ))}
         </div>
         <div className={clsx(styles.Slide_editor)}>
-          <div className={clsx(styles.Slide_editor_item)}>
+          {/* {ListSlide.map((slide) => ( */}
+          <div
+            // onClick={() => activeSlide(slide)}
+            className={clsx(styles.Slide_editor_item)}
+          >
             <div className={clsx(styles.Slide_editorItem_header)}>
               <p>This is code 113 </p>
             </div>
             <div className={clsx(styles.Slide_editorItem_body)}>
-              <p>QUestion</p>
+              <p>{question}</p>
+              {() => {
+                console.log('CHARDATA');
+                console.log(ChartData);
+                // console.log(chartData);
+                // console.log(chartLabels);
+              }}
               <Chart
-                type="circle"
-                labels={[1, 2, 3]}
-                datasets={{ data: [10, 20, 20] }}
+                type={chartName}
+                labels={ChartData.map((a) => a.labels)}
+                data={ChartData.map((a) => a.data)}
+                // data={data}
+                // options={chartOptions}
               />
             </div>
             <div className={clsx(styles.Slide_editorItem_footer)}>
@@ -173,103 +386,56 @@ function Slide() {
               <p>10</p>
             </div>
           </div>
+          {/* ))} */}
         </div>
         <div className={clsx(styles.Slide_operator)}>
           <div className={clsx(styles.Slide_operator_type)}>
             <p>Slide type</p>
             <div className={clsx(styles.Slide_operatorType_dropdown)}>
-              <p>ok</p>
+              <p>
+                <span>
+                  <SlideType.icon size={30} />
+                </span>
+                {SlideType.name}
+              </p>
               <Dropdown>
                 <Dropdown.Toggle as={CustomDropdown} />
 
                 <Dropdown.Menu className={clsx(styles.Slide_typeMenu)}>
-                  <Dropdown.Item
-                    className={clsx(styles.Slide_typeItem)}
-                    href="#/action-1"
-                  >
-                    <p>
-                      <FcBarChart size={30} />
-                      hello
-                    </p>
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    className={clsx(styles.Slide_typeItem)}
-                    href="#/action-1"
-                  >
-                    <p>
-                      <FcBarChart size={30} />
-                      hello
-                    </p>
-                  </Dropdown.Item>
+                  {SlideOption.map((item) => (
+                    <Dropdown.Item
+                      onClick={() => {
+                        console.log('Click');
+                        setSlideType(item);
+                      }}
+                      className={clsx(styles.Slide_typeItem)}
+                      href="#/action-1"
+                    >
+                      <p>
+                        <item.icon size={30} />
+                        {item.name}
+                      </p>
+                    </Dropdown.Item>
+                  ))}
                 </Dropdown.Menu>
               </Dropdown>
             </div>
           </div>
-          <div className={clsx(styles.Slide_operator_question)}>
-            <p>Content</p>
-            <p>Question</p>
-            <input type="text" />
-            <div className={clsx(styles.Slide_operator_answer)}>
-              <div className={clsx(styles.Slide_operatorAns_header)}>
-                <p>Options</p>
-                <Button>
-                  <GrFormAdd color="white" size={20} />
-                  Add Option
-                </Button>
-              </div>
-              <div className={clsx(styles.Slide_operatorAnswer_item)}>
-                <DragDropContext onDragEnd={handleOnDragEnd}>
-                  <Droppable droppableId="characters">
-                    {(provided) => (
-                      <ul
-                        className="characters"
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                      >
-                        {characters.map((item, index) => {
-                          return (
-                            <Draggable
-                              key={item.id}
-                              draggableId={item.id}
-                              index={index}
-                            >
-                              {(provided) => (
-                                <li
-                                  // key={provided.id}
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                >
-                                  <div className={clsx(styles.dragAnswer_item)}>
-                                    <MdOutlineDragIndicator />
-                                    <input type="text" />
-                                    <IoCloseOutline />
-                                  </div>
-                                </li>
-                              )}
-                            </Draggable>
-                          );
-                        })}
-                      </ul>
-                    )}
-                  </Droppable>
-                </DragDropContext>
-                {/* <button>hello</button> */}
-              </div>
-            </div>
-          </div>
-          <div className={clsx(styles.Slide_operator_layout)}>
-            <p>Result layout</p>
-            <ul>
-              {/* {layout.map((item) => (
-                <li>{item.id}</li>
-              ))} */}
-            </ul>
-          </div>
+          <Question
+            // label={chartLabels}
+            data={ChartData}
+            setChartName={setChartName}
+            question={question}
+            setQuestion={setQuestion}
+            // setLabels={setChartLabels}
+            setData={setChartData}
+            SlideType={SlideType.name}
+            answer={answer}
+            setAnswer={setAnswer}
+            setIsNeedUpdate={handleFlagUpdate}
+          />
         </div>
       </div>
     </div>
   );
-}
-
-export default Slide;
+});
