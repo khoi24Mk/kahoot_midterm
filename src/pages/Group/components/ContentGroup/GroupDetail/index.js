@@ -7,22 +7,36 @@ import Loading from '~/components/Loading';
 import PeopleGroup from './peopleGroup';
 import StreamGroup from './streamGroup';
 import './GroupDetail.css';
+import getPresentationInGroup from '~/api/group/getPresentationGroup';
 
 function GroupDetail({ groupId }) {
   const [keyTabs, setKeyTabs] = useState('people');
   const [memberList, setMemberList] = useState([]);
+  const [presentationList, setPresentationList] = useState([]);
+
   const asyncGetMemberGroup = async () => {
     const retGroupList = await getUserInGroup({ id: groupId });
     setMemberList(retGroupList);
     return retGroupList;
   };
 
-  const query = useQuery({
+  const asyncGetPresentationsGroup = async () => {
+    const retPresentationList = await getPresentationInGroup({ id: groupId });
+    setPresentationList(retPresentationList);
+    return retPresentationList;
+  };
+
+  const queryMember = useQuery({
     queryKey: ['GroupDetail'],
     queryFn: asyncGetMemberGroup,
   });
 
-  return query.isLoading ? (
+  const queryPresentation = useQuery({
+    queryKey: ['PresentationList'],
+    queryFn: asyncGetPresentationsGroup,
+  });
+
+  return queryMember.isLoading || queryPresentation.isLoading ? (
     <Loading />
   ) : (
     <Container>
@@ -38,11 +52,18 @@ function GroupDetail({ groupId }) {
             justify
           >
             <Tab eventKey="stream" title="Stream">
-              <span>{groupId}</span>
-              <StreamGroup />
+              <StreamGroup
+                id={groupId}
+                presentations={presentationList}
+                query={queryPresentation}
+              />
             </Tab>
             <Tab className={clsx('tabsItem')} eventKey="people" title="People">
-              <PeopleGroup id={groupId} members={memberList} query={query} />
+              <PeopleGroup
+                id={groupId}
+                members={memberList}
+                query={queryMember}
+              />
             </Tab>
           </Tabs>
         </Col>
