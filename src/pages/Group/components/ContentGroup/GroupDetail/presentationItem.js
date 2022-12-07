@@ -23,19 +23,23 @@ function PresentationItem({ item, deleteOption, deleteCheck, deleteAll }) {
         <Col>
           <Form.Check
             inline
+            name={`group${item.id}`}
             type="checkbox"
             defaultChecked={deleteCheck}
             onChange={handleOnChange}
             checked={checkedBox}
           />
-          <Button>play</Button>
+          <Button href={`/presentation/${item.id}`}>play</Button>
         </Col>
         <Col>{item.presentationName ? item.presentationName : 'null'}</Col>
         <Col>
           <span>2 days ago</span>
         </Col>
         <Col>
-          <Button href="#" variant="outline-warning">
+          <Button
+            href={`/presentation/${item.id}/slide`}
+            variant="outline-warning"
+          >
             Edit
           </Button>
         </Col>

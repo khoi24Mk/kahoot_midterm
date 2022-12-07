@@ -15,6 +15,7 @@ import Profile from './pages/Profile';
 import Invitation from './pages/redirections/Invitation';
 import Verification from './pages/redirections/Verification';
 import Register from './pages/Register';
+import Presentation from './pages/presentation';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route element={<DefaultLayout />}>
             <Route path="/home" element={<Home />} />
             <Route path="/slide" element={<Slide />} />
+            <Route path="/presentation/:id" element={<Presentation />} />
           </Route>
 
           <Route element={<PrivateLayout />}>

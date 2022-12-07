@@ -89,13 +89,13 @@ function StreamGroup({ id, presentations, query }) {
   const handleDeleteSubmit = async () => {
     if (deleteList.length < 1) return;
     try {
+      setDeleteAll(false);
+      setDeleteList([]);
       const response = await Promise.all(
         deleteList.map(async (item) => {
           return deletePresentation({ presentationId: item.id });
         })
       );
-      setDeleteList([]);
-      setDeleteAll(false);
       setDeleteOption(false);
       query.refetch();
       console.log(response);
@@ -151,6 +151,7 @@ function StreamGroup({ id, presentations, query }) {
           <Row>
             {presentations.map((presentation) => (
               <PresentationItem
+                key={presentation.id}
                 item={presentation}
                 deleteOption={handleDeleteCheck}
                 deleteCheck={
