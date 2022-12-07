@@ -1,21 +1,34 @@
-/* eslint-disable react/jsx-pascal-case */
-/* eslint-disable react/button-has-type */
-/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable no-unused-vars */
-/* eslint-disable no-shadow */
 /* eslint-disable react/jsx-no-bind */
 import clsx from 'clsx';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { Button } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
+import Form from 'react-bootstrap/Form';
+import { FcBarChart, FcDoughnutChart } from 'react-icons/fc';
 import { GrFormAdd } from 'react-icons/gr';
 import { IoCloseOutline } from 'react-icons/io5';
 import { MdOutlineDragIndicator } from 'react-icons/md';
-import { FcBarChart, FcSettings, FcDoughnutChart } from 'react-icons/fc';
 import { RiArrowDropDownLine } from 'react-icons/ri';
-import Form from 'react-bootstrap/Form';
 import styles from './multiplechoice.module.css';
+
+const CustomDropdown = React.forwardRef(({ children, onClick }, ref) => (
+  <button
+    type="button"
+    className={clsx(styles.slide_operator_dropButton)}
+    href=""
+    ref={ref}
+    onClick={(e) => {
+      e.preventDefault();
+      onClick(e);
+    }}
+  >
+    {children}
+    {/* <GoKebabVertical /> */}
+    <RiArrowDropDownLine size={30} />
+  </button>
+));
 
 function MultipleChoice({
   setChartName,
@@ -23,15 +36,11 @@ function MultipleChoice({
   setData,
   question,
   setQuestion,
-  answer,
   setAnswer,
   setIsNeedUpdate,
 }) {
-  const HandleRemoveOption = (index) => {
-    const items = [...data];
-    items.splice(index, 1);
-    console.log('REMOVE OPTION');
-    console.log(items);
+  const handleRemoveOption = (slide) => {
+    const items = data.filter((item) => item.id !== slide.id);
     setData(items);
     setIsNeedUpdate();
   };
@@ -41,7 +50,7 @@ function MultipleChoice({
       ...data,
       {
         id: `${parseInt(data[data.length - 1].id, 10) + 1}`,
-        labels: 'this is option',
+        labels: 'Option',
         data: 0,
       },
     ]);
@@ -49,23 +58,6 @@ function MultipleChoice({
   };
 
   const [isShowAnswer, setIsShowAnswer] = useState(false);
-
-  const CustomDropdown = React.forwardRef(({ children, onClick }, ref) => (
-    <button
-      className={clsx(styles.slide_operator_dropButton)}
-      href=""
-      ref={ref}
-      onClick={(e) => {
-        e.preventDefault();
-        onClick(e);
-      }}
-    >
-      {children}
-      {/* <GoKebabVertical /> */}
-      <RiArrowDropDownLine size={30} />
-    </button>
-  ));
-
   const chartOptions = [
     {
       icon: FcBarChart,
@@ -95,9 +87,9 @@ function MultipleChoice({
   return (
     <div className={clsx(styles.Slide_operator_Content)}>
       <div className={clsx(styles.Slide_operator_question)}>
-        <p>Content</p>
-        <p>Question</p>
-        <input
+        {/* <p>Content</p> */}
+        <p className="fw-bold">Question</p>
+        <Form.Control
           value={question}
           onChange={(e) => {
             setQuestion(e.target.value);
@@ -107,7 +99,7 @@ function MultipleChoice({
         />
         <div className={clsx(styles.Slide_operator_answer)}>
           <div className={clsx(styles.Slide_operatorAns_header)}>
-            <p>Options</p>
+            <p className="fw-bold">Options</p>
             <Button onClick={() => handleAddOption()}>
               <GrFormAdd color="white" size={20} />
               Add Option
@@ -116,11 +108,11 @@ function MultipleChoice({
           <div className={clsx(styles.Slide_operatorAnswer_item)}>
             <DragDropContext onDragEnd={handleOnDragEnd}>
               <Droppable droppableId="characters">
-                {(provided) => (
+                {(draggedItem) => (
                   <ul
                     className="characters"
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
+                    {...draggedItem.droppableProps}
+                    ref={draggedItem.innerRef}
                   >
                     <Form>
                       {data.map((item, index) => {
@@ -147,30 +139,27 @@ function MultipleChoice({
                                       id={`inline-${index}`}
                                       onChange={(e) => {
                                         e.persist();
-                                        console.log(e.target.value);
                                         setAnswer(item.labels);
                                       }}
                                     />
                                   ) : (
                                     <div />
                                   )}
-                                  <input
+                                  <Form.Control
                                     value={item.labels}
                                     onChange={(e) => {
                                       const items = [...data];
-                                      const item = {
+                                      const slide = {
                                         ...items[index],
                                         labels: e.target.value,
                                       };
-                                      items[index] = item;
-                                      console.log('ONCHANGE');
-                                      console.log(items);
+                                      items[index] = slide;
                                       setData(items);
                                     }}
                                     type="text"
                                   />
                                   <Button
-                                    onClick={() => HandleRemoveOption(item)}
+                                    onClick={() => handleRemoveOption(item)}
                                   >
                                     <IoCloseOutline />
                                   </Button>
@@ -185,20 +174,19 @@ function MultipleChoice({
                 )}
               </Droppable>
             </DragDropContext>
-            {/* <button>hello</button> */}
           </div>
         </div>
       </div>
-      <Form>
+      {/* <Form>
         <Form.Check
           type="switch"
           id="custom-switch"
           label="Check this switch"
           onClick={() => setIsShowAnswer(!isShowAnswer)}
         />
-      </Form>
+      </Form> */}
       <div className={clsx(styles.Slide_operator_layout)}>
-        <p>Result layout</p>
+        <p className="fw-bold">Result layout</p>
         <div className={clsx(styles.Slide_operatorLayout_dropdown)}>
           <p>
             <span>
@@ -212,8 +200,8 @@ function MultipleChoice({
             <Dropdown.Menu className={clsx(styles.Slide_LayoutMenu)}>
               {chartOptions.map((item) => (
                 <Dropdown.Item
+                  key={item.name}
                   onClick={() => {
-                    console.log('Click');
                     setChartType(item);
                     setChartName(item.name);
                     // setData([44, 24, 39, 94]);
@@ -232,19 +220,6 @@ function MultipleChoice({
           </Dropdown>
         </div>
       </div>
-      <Form>
-        {[1, 2, 3].map((type) => (
-          //   <div className="mb-3">
-          <Form.Check
-            inline
-            label="1"
-            name="group1"
-            type="radio"
-            id={`inline-${type}`}
-          />
-          //   </div>
-        ))}
-      </Form>
     </div>
   );
 }

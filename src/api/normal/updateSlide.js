@@ -7,8 +7,6 @@ export default async function updateSlide(
   content,
   options
 ) {
-  console.log('PRESENTATION ID');
-  console.log(id);
   const response = await privateAxios.put(
     `/presentation/${id}/slide/${slideId}`,
     {
@@ -17,6 +15,5 @@ export default async function updateSlide(
       options,
     }
   );
-  console.log(response?.data.object);
-  return response?.data.object;
+  return response;
 }
