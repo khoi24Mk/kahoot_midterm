@@ -1,7 +1,7 @@
 import privateAxios from '../PrivateAxios';
 
 export default async function getSlideOfPresent(id) {
-  console.log('SILDE ID');
+  console.log('SILDE ID from present ###############');
   console.log(id);
   const response = await privateAxios.get(`/presentation/${id}/slide`);
   console.log(response?.data.object);

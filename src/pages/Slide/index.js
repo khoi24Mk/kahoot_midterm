@@ -31,8 +31,10 @@ import getSlideOfPresent from '~/api/normal/getSlideOfPresent';
 import createSlide from '~/api/normal/createSlide';
 import deleteSlide from '~/api/normal/deleteSlide';
 import Loading from '~/components/Loading';
+import updateSlide from '~/api/normal/updateSlide';
+import getSlide from '~/api/normal/getSlide';
 
-function Slide() {
+export default React.memo(function Slide() {
   // connect socket
   const { sendJsonMessage } = useWebSocket(
     'wss://kahoot-clone-vodinhphuc.herokuapp.com/socket',
@@ -44,6 +46,7 @@ function Slide() {
   );
 
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [ListSlide, setListSlide] = useState([
     {
       id: 1,
@@ -79,7 +82,7 @@ function Slide() {
       name: 'ranking',
     },
   ];
-  const [SlidePresenting, setSlidePresenting] = useState(ListSlide[0]);
+  const [SlideEditing, setSlideEditing] = useState(ListSlide[0]);
 
   const [chartName, setChartName] = useState('bar');
   // important
@@ -108,24 +111,42 @@ function Slide() {
   ]);
 
   const asyncGetSlide = async () => {
-    const listSlide = await getSlideOfPresent(id);
-    console.log('LIST SLIDE');
-    console.log(listSlide);
-    setListSlide(listSlide);
-    listSlide.map((slide) => {
-      if (slide.presenting === true) {
-        setSlidePresenting(slide);
-      }
-    });
-    return listSlide;
+    try {
+      setLoading(true);
+      const listSlide = await getSlideOfPresent(id);
+      console.log('LIST SLIDE');
+      console.log(listSlide);
+      setListSlide(listSlide);
+      // listSlide.map((slide) => {
+      setSlideEditing(listSlide[0]);
+      // });
+      setLoading(false);
+      return listSlide;
+    } catch (e) {
+      return null;
+    }
   };
+  const [answer, setAnswer] = useState(null);
   useEffect(() => {
-    setQuestion(SlidePresenting.content);
-    const SlideLabel = SlidePresenting.options;
+    asyncGetSlide();
+  }, []);
+
+  //   useEffect(() => {
+  //     console.log('CHAGESLIT  CIS');
+  //     console.log(ListSlide);
+  //     console.log(SlideEditing);
+  //     if (!ListSlide.includes(SlideEditing)) {
+  //       //   setSlideEditing(ListSlide[0]);
+  //     }
+  //   }, [ListSlide]);
+
+  useEffect(() => {
+    setQuestion(SlideEditing.content);
+    const SlideLabel = SlideEditing.options;
     const SlideData = SlideLabel.map((label) => {
       console.log('VERIFY');
-      console.log(SlidePresenting);
-      const NumberRecord = SlidePresenting.userRecords.filter((record) => {
+      console.log(SlideEditing);
+      const NumberRecord = SlideEditing.userRecords.filter((record) => {
         console.log('COMPARE');
         console.log(record.answer);
         console.log(label);
@@ -145,12 +166,12 @@ function Slide() {
         };
       })
     );
-    // const SlideData = SlidePresenting.recorduserRecords;
-  }, [SlidePresenting]);
-  const query = useQuery({
-    queryKey: ['ListSlide'],
-    queryFn: asyncGetSlide,
-  });
+  }, [SlideEditing]);
+
+  const [isNeedUpdate, setIsNeedUpdate] = useState(false);
+  const handleFlagUpdate = () => {
+    setIsNeedUpdate(!isNeedUpdate);
+  };
 
   const handleDeleteSlide = async (slide) => {
     setSaving(true);
@@ -166,10 +187,32 @@ function Slide() {
     return response;
   };
 
-  const activeSlide = (slide) => {
+  const handleUpdateSlide = async () => {
+    setSaving(true);
+    const response = await updateSlide(
+      id,
+      SlideEditing.id,
+      answer,
+      question,
+      ChartData.map((item) => item.labels)
+    );
+    setSlideEditing(response);
+    setSaving(false);
+    return response;
+  };
+
+  useEffect(() => {
+    console.log('UPDATE SLIDE');
+    handleUpdateSlide();
+  }, [isNeedUpdate]);
+
+  const activeSlide = async (slide) => {
     console.log('CLICK SLIDE');
     console.log(slide);
-    setSlidePresenting(slide);
+    setLoading(true);
+    const SlideActive = await getSlide(id, slide.id);
+    setSlideEditing(SlideActive);
+    setLoading(false);
   };
   const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
     <button
@@ -177,7 +220,8 @@ function Slide() {
       href=""
       ref={ref}
       onClick={(e) => {
-        e.preventDefault();
+        // e.preventDefault();
+        e.stopPropagation();
         onClick(e);
       }}
     >
@@ -202,10 +246,9 @@ function Slide() {
     </button>
   ));
 
-  return query.isLoading ? (
-    <Loading />
-  ) : (
+  return (
     <div className={clsx(styles.Presentation_container)}>
+      {loading ? <Loading /> : <div />}
       <div className={clsx(styles.Presentation_operator)}>
         <div className={clsx(styles.Presentation_operator_start)}>
           <Button
@@ -275,7 +318,7 @@ function Slide() {
             <div
               onClick={() => activeSlide(slide)}
               className={clsx(styles.Slide_item, {
-                [styles.active]: slide === SlidePresenting,
+                [styles.active]: slide === SlideEditing,
               })}
             >
               <div className={clsx(styles.Slide_item_operator)}>
@@ -308,7 +351,7 @@ function Slide() {
               </div>
               <div className={clsx(styles.Slide_item_overview)}>
                 <FcBarChart size={40} />
-                <p>{question}</p>
+                <p>{slide.content}</p>
               </div>
             </div>
           ))}
@@ -323,7 +366,7 @@ function Slide() {
               <p>This is code 113 </p>
             </div>
             <div className={clsx(styles.Slide_editorItem_body)}>
-              <p>{SlidePresenting.content}</p>
+              <p>{question}</p>
               {() => {
                 console.log('CHARDATA');
                 console.log(ChartData);
@@ -382,15 +425,17 @@ function Slide() {
             // label={chartLabels}
             data={ChartData}
             setChartName={setChartName}
+            question={question}
             setQuestion={setQuestion}
             // setLabels={setChartLabels}
             setData={setChartData}
             SlideType={SlideType.name}
+            answer={answer}
+            setAnswer={setAnswer}
+            setIsNeedUpdate={handleFlagUpdate}
           />
         </div>
       </div>
     </div>
   );
-}
-
-export default Slide;
+});

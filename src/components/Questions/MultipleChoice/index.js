@@ -17,17 +17,38 @@ import { RiArrowDropDownLine } from 'react-icons/ri';
 import Form from 'react-bootstrap/Form';
 import styles from './multiplechoice.module.css';
 
-function MultipleChoice({ setChartName, data, setData, setQuestion }) {
+function MultipleChoice({
+  setChartName,
+  data,
+  setData,
+  question,
+  setQuestion,
+  answer,
+  setAnswer,
+  setIsNeedUpdate,
+}) {
+  const HandleRemoveOption = (index) => {
+    const items = [...data];
+    items.splice(index, 1);
+    console.log('REMOVE OPTION');
+    console.log(items);
+    setData(items);
+    setIsNeedUpdate();
+  };
+
   const handleAddOption = () => {
     setData([
       ...data,
       {
         id: `${parseInt(data[data.length - 1].id, 10) + 1}`,
-        labels: `${parseInt(data[data.length - 1].id, 10) + 1}`,
-        data: 543,
+        labels: 'this is option',
+        data: 0,
       },
     ]);
+    setIsNeedUpdate();
   };
+
+  const [isShowAnswer, setIsShowAnswer] = useState(false);
 
   const CustomDropdown = React.forwardRef(({ children, onClick }, ref) => (
     <button
@@ -68,6 +89,7 @@ function MultipleChoice({ setChartName, data, setData, setQuestion }) {
     items.splice(result.destination.index, 0, reorderedItem);
     // updateCharacters(items);
     setData(items);
+    setIsNeedUpdate();
   }
 
   return (
@@ -75,7 +97,14 @@ function MultipleChoice({ setChartName, data, setData, setQuestion }) {
       <div className={clsx(styles.Slide_operator_question)}>
         <p>Content</p>
         <p>Question</p>
-        <input onChange={(e) => setQuestion(e.target.value)} type="text" />
+        <input
+          value={question}
+          onChange={(e) => {
+            setQuestion(e.target.value);
+          }}
+          onBlur={() => setIsNeedUpdate()}
+          type="text"
+        />
         <div className={clsx(styles.Slide_operator_answer)}>
           <div className={clsx(styles.Slide_operatorAns_header)}>
             <p>Options</p>
@@ -93,44 +122,65 @@ function MultipleChoice({ setChartName, data, setData, setQuestion }) {
                     {...provided.droppableProps}
                     ref={provided.innerRef}
                   >
-                    {data.map((item, index) => {
-                      return (
-                        <Draggable
-                          key={item.id}
-                          draggableId={item.id}
-                          index={index}
-                        >
-                          {(provided) => (
-                            <li
-                              // key={provided.id}
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            >
-                              <div className={clsx(styles.dragAnswer_item)}>
-                                <MdOutlineDragIndicator />
-                                <input
-                                  value={item.labels}
-                                  onChange={(e) => {
-                                    const items = [...data];
-                                    const item = {
-                                      ...items[index],
-                                      labels: e.target.value,
-                                    };
-                                    items[index] = item;
-                                    console.log('ONCHANGE');
-                                    console.log(items);
-                                    setData(items);
-                                  }}
-                                  type="text"
-                                />
-                                <IoCloseOutline />
-                              </div>
-                            </li>
-                          )}
-                        </Draggable>
-                      );
-                    })}
+                    <Form>
+                      {data.map((item, index) => {
+                        return (
+                          <Draggable
+                            key={item.id}
+                            draggableId={item.id}
+                            index={index}
+                          >
+                            {(provided) => (
+                              <li
+                                // key={provided.id}
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <div className={clsx(styles.dragAnswer_item)}>
+                                  <MdOutlineDragIndicator />
+                                  {isShowAnswer ? (
+                                    <Form.Check
+                                      inline
+                                      type="radio"
+                                      name="group1"
+                                      id={`inline-${index}`}
+                                      onChange={(e) => {
+                                        e.persist();
+                                        console.log(e.target.value);
+                                        setAnswer(item.labels);
+                                      }}
+                                    />
+                                  ) : (
+                                    <div />
+                                  )}
+                                  <input
+                                    value={item.labels}
+                                    onChange={(e) => {
+                                      const items = [...data];
+                                      const item = {
+                                        ...items[index],
+                                        labels: e.target.value,
+                                      };
+                                      items[index] = item;
+                                      console.log('ONCHANGE');
+                                      console.log(items);
+                                      setData(items);
+                                    }}
+                                    type="text"
+                                  />
+                                  <Button
+                                    onClick={() => HandleRemoveOption(item)}
+                                  >
+                                    <IoCloseOutline />
+                                  </Button>
+                                </div>
+                              </li>
+                            )}
+                          </Draggable>
+                        );
+                      })}
+                    </Form>
                   </ul>
                 )}
               </Droppable>
@@ -139,6 +189,14 @@ function MultipleChoice({ setChartName, data, setData, setQuestion }) {
           </div>
         </div>
       </div>
+      <Form>
+        <Form.Check
+          type="switch"
+          id="custom-switch"
+          label="Check this switch"
+          onClick={() => setIsShowAnswer(!isShowAnswer)}
+        />
+      </Form>
       <div className={clsx(styles.Slide_operator_layout)}>
         <p>Result layout</p>
         <div className={clsx(styles.Slide_operatorLayout_dropdown)}>
@@ -174,6 +232,19 @@ function MultipleChoice({ setChartName, data, setData, setQuestion }) {
           </Dropdown>
         </div>
       </div>
+      <Form>
+        {[1, 2, 3].map((type) => (
+          //   <div className="mb-3">
+          <Form.Check
+            inline
+            label="1"
+            name="group1"
+            type="radio"
+            id={`inline-${type}`}
+          />
+          //   </div>
+        ))}
+      </Form>
     </div>
   );
 }
