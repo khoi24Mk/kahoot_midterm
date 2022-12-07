@@ -1,25 +1,16 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable no-unused-vars */
-import { AiOutlineAppstoreAdd } from 'react-icons/ai';
-import {
-  ButtonGroup,
-  Dropdown,
-  Row,
-  Col,
-  Modal,
-  Image,
-  Toast,
-  ToastContainer,
-} from 'react-bootstrap';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import Form from 'react-bootstrap/Form';
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import Button from 'react-bootstrap/Button';
 import { ErrorMessage } from '@hookform/error-message';
+import { yupResolver } from '@hookform/resolvers/yup';
 import clsx from 'clsx';
+import { useState } from 'react';
+import { Modal } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import { useForm } from 'react-hook-form';
+import { AiOutlineAppstoreAdd } from 'react-icons/ai';
+import * as yup from 'yup';
 import createGroup from '~/api/group/createGroup';
 import styles from './AddingGroup.module.css';
 
@@ -70,7 +61,7 @@ function AddingGroup() {
       </span>
       <Modal show={showCreate} onHide={handleCloseCreate}>
         <Modal.Header closeButton>
-          <Modal.Title>Create classroom</Modal.Title>
+          <Modal.Title className="fw-bold">Create classroom</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit(onSubmit)} id="createGroupForm">

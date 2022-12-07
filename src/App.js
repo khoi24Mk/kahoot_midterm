@@ -9,6 +9,7 @@ import NotAuthentication from './pages/errors/NotAuthentication';
 import NotFound from './pages/errors/NotFound';
 import NotPermission from './pages/errors/NotPermisson';
 import Home from './pages/Home';
+import Slide from './pages/Slide';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Invitation from './pages/redirections/Invitation';
@@ -29,6 +30,7 @@ function App() {
 
           <Route element={<DefaultLayout />}>
             <Route path="/home" element={<Home />} />
+            <Route path="/slide" element={<Slide />} />
           </Route>
 
           <Route element={<PrivateLayout />}>

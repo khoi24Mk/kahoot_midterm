@@ -166,15 +166,20 @@ function Login() {
                 <p className={clsx(styles.error)}>{error}</p>
               </Form.Text>
             </Form.Group>
-            <Button
+            {/* <Button
               className={clsx(styles.signup_btn)}
               variant="outline-info"
               type="submit"
             >
               {' '}
               Log In{' '}
-            </Button>{' '}
-            <p className={clsx(styles.google_opt)}>Or login with Google</p>{' '}
+            </Button>{' '} */}
+            <Button type="submit" variant="dark" className="mb-3 v-75">
+              Submit
+            </Button>
+            <b style={{ fontSize: '1rem' }} className="mb-3">
+              Or login with Google
+            </b>{' '}
             <div className={clsx(styles.alt_login)}>
               <div id="btnLoginGoogle" />
             </div>
