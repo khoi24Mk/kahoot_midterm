@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { Button, Container, Stack } from 'react-bootstrap';
+import { Button, Container, Spinner, Stack } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket';
 import getPresentation from '~/api/normal/presentation/getPresentation';
@@ -24,6 +24,9 @@ function Presentation() {
   // state for slide
   const [slide, setSlide] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // submitting
+  const [submiting, setSubmitting] = useState(false);
 
   // handle socket message
   const handleReceivedMessage = (event) => {
@@ -57,6 +60,7 @@ function Presentation() {
 
   // handle vote
   const handleVote = () => {
+    setSubmitting(true);
     const message = {
       metaData: {
         roomName: presentation.roomName,
@@ -140,15 +144,16 @@ function Presentation() {
           );
         })}
 
-        <Button size="lg" onClick={handleVote}>
+        <Button size="lg" onClick={handleVote} disabled={submiting}>
+          {submiting && <Spinner size="sm" />}
           Submit
         </Button>
       </Stack>
     </Container>
   ) : (
     <Error
-      title="Vote Error"
-      error="No slide is prenting or you already voted this"
+      title="Existing Voting"
+      error="You voted presenting slide. Plase, wait for host present another slide"
     />
   );
 }

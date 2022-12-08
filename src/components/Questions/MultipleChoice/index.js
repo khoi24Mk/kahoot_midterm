@@ -156,6 +156,7 @@ function MultipleChoice({
                                       items[index] = slide;
                                       setData(items);
                                     }}
+                                    onBlur={() => setIsNeedUpdate()}
                                     type="text"
                                   />
                                   <Button
