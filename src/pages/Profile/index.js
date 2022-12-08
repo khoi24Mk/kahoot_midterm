@@ -19,7 +19,7 @@ import { useForm } from 'react-hook-form';
 import { MdAddAPhoto } from 'react-icons/md';
 import * as yup from 'yup';
 import { Link } from 'react-router-dom';
-import getGroupList from '~/api/normal/getGroupList';
+import getGroupList from '~/api/normal/group/getGroupList';
 import privateAxios from '~/api/PrivateAxios';
 import Loading from '~/components/Loading';
 import Notify from '~/components/Notification';

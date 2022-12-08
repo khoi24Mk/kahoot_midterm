@@ -1,116 +1,155 @@
-/* eslint-disable no-unused-vars */
-import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import { Button, Carousel, Col, Container, Form, Row } from 'react-bootstrap';
+import { useContext, useEffect, useState } from 'react';
+import { Button, Container, Stack } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-import getPresentationSlide from '~/api/normal/getPresentationSlide';
+import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket';
+import getPresentation from '~/api/normal/presentation/getPresentation';
+import getPresentingSlide from '~/api/normal/slide/getPrentingSlide';
+import Error from '~/components/Error';
+import Loading from '~/components/Loading';
+import Constant from '~/constants';
+import { AuthContext } from '~/Context';
+import Option from './Option';
 
 function Presentation() {
-  const { id } = useParams();
-  const [slideList, setSlideList] = useState([]);
-  const [curQuestion, setCurQuestion] = useState(1);
-  const asyncGetGroup = async () => {
-    const retSlide = await getPresentationSlide({ presentationId: id });
-    console.log(retSlide);
-    console.log(slideList);
-    setSlideList(retSlide);
-    return retSlide;
-  };
-  //   const query = useQuery({
-  //     queryKey: ['presentaionSlide'],
-  //     queryFn: asyncGetGroup,
-  //   });
-  const tempdata = JSON.parse(`{
-    "message": "Successfully",
-    "object": [
-        {
-            "id": 50,
-            "content": "Who is Khoi Bui?",
-            "options": [
-                "3"
-            ],
-            "answer": "This is another answer",
-            "userRecords": [],
-            "presenting": false,
-            "links": [
-                {
-                    "rel": "self",
-                    "href": "https://kahoot-clone-vodinhphuc.herokuapp.com/api/v1/presentation/1/slide/50"
-                }
-            ]
-        },
-        {
-            "id": 51,
-            "content": "Who is Khoi ?",
-            "options": [
-                "this is option",
-                "this is option",
-                "this is option",
-                "this is option"
-            ],
-            "answer": "This is another answer",
-            "userRecords": [],
-            "presenting": false,
-            "links": [
-                {
-                    "rel": "self",
-                    "href": "https://kahoot-clone-vodinhphuc.herokuapp.com/api/v1/presentation/1/slide/51"
-                }
-            ]
-        },
-        {
-            "id": 53,
-            "content": "How old are you?",
-            "options": [
-                "This isn't answer",
-                "this is option"
-            ],
-            "answer": "This is another answer",
-            "userRecords": [],
-            "presenting": false,
-            "links": [
-                {
-                    "rel": "self",
-                    "href": "https://kahoot-clone-vodinhphuc.herokuapp.com/api/v1/presentation/1/slide/53"
-                }
-            ]
-        }
-    ],
-    "errorCode": 0
-}`);
-  const handleNext = (e) => {
-    setCurQuestion(curQuestion + 1);
+  // user id
+  const { profile } = useContext(AuthContext);
+  // get presentation id
+  const { id: presentationId } = useParams();
+  // state for answer
+  const [checkedIndex, setCheckedIndex] = useState(-1);
+
+  // state for presentation
+  const [presentation, setPresentation] = useState(null);
+
+  // state for slide
+  const [slide, setSlide] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  // handle socket message
+  const handleReceivedMessage = (event) => {
+    const receivedEvent = JSON.parse(event);
+    console.log(receivedEvent);
+    if (
+      receivedEvent.metaData.messageType ===
+        Constant.ServerMessageType.updatedSlide ||
+      receivedEvent.metaData.messageType ===
+        Constant.ServerMessageType.presentedSlide
+    ) {
+      const receivedSlide = receivedEvent.message;
+      setSlide(receivedSlide);
+    }
   };
 
-  const handleFinishQuestion = (e) => {
-    console.log('form submit', e);
+  // connect socket
+  const { sendMessage } = useWebSocket(Constant.SocketURL, {
+    onOpen: () => {
+      console.log('Open socket');
+    },
+    onClose: () => {
+      console.log('Close socket');
+    },
+    onError: () => {
+      console.log('Error socket');
+    },
+    shouldReconnect: () => true,
+    onMessage: (message) => handleReceivedMessage(message?.data),
+  });
+
+  // handle vote
+  const handleVote = () => {
+    const message = {
+      metaData: {
+        roomName: presentation.roomName,
+        clientType: Constant.ClientType.member,
+        messageType: Constant.ClientMessageType.voteSlide,
+      },
+      message: {
+        userId: profile.id,
+        slideId: slide.id,
+        answer: slide.options[checkedIndex],
+      },
+    };
+
+    console.log(message);
+
+    sendMessage(JSON.stringify(message));
   };
-  const data = tempdata.object.map((item, pos, td) => (
-    <Form
-      id={`slide-${item.id}`}
-      onSubmit={handleFinishQuestion}
-      className="jutify-content-center"
-    >
-      <Form.Label>{item.content}</Form.Label>
-      {item.options.map((i) => (
-        <div key={item.id} className="mb-3">
-          <Form.Check type="checkbox" label={i} />
-        </div>
-      ))}
-      <Button type="submitt" form={`slide-${item.id}`} onClick={handleNext}>
-        {pos === td.length - 1 ? 'Submit' : 'Next'}
-      </Button>
-    </Form>
-  ));
-  return (
-    <Container className="justify-content-center">
-      <Row className="jutify-content-center">
-        Question {curQuestion}/{data.length}
-      </Row>
-      <Row>
-        <Col>{data.map((d, i) => (i === curQuestion - 1 ? d : undefined))}</Col>
-      </Row>
+
+  useEffect(() => {
+    if (presentation == null) return;
+    sendMessage(
+      JSON.stringify({
+        metaData: {
+          roomName: presentation.roomName,
+          clientType: Constant.ClientType.member,
+          messageType: Constant.ClientMessageType.joinRoom,
+        },
+        message: null,
+      })
+    );
+    // eslint-disable-next-line consistent-return
+    return () =>
+      sendMessage(
+        JSON.stringify({
+          metaData: {
+            roomName: presentation.roomName,
+            clientType: Constant.ClientType.member,
+            messageType: Constant.ClientMessageType.leaveRoom,
+          },
+        })
+      );
+  }, [presentation]);
+
+  useEffect(() => {
+    const asyncGetPresentingSlide = async (pId) => {
+      try {
+        setLoading(true);
+        const slideResponse = await getPresentingSlide(pId);
+        const presentationRes = await getPresentation(presentationId);
+        setSlide(slideResponse.data.object);
+        setPresentation(presentationRes.data.object);
+      } catch (error) {
+        setSlide(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    asyncGetPresentingSlide(presentationId);
+  }, []);
+
+  if (loading) return <Loading />;
+  return slide ? (
+    <Container style={{ maxWidth: '568px' }} className="py-4">
+      <h2 className="mb-5 text-center fw-bold">KAMEN system</h2>
+
+      <p className="fw-bold">{slide?.content}</p>
+
+      <Stack gap={3}>
+        {slide?.options.map((option, index) => {
+          return (
+            <Option
+              checked={index === checkedIndex}
+              handleCheck={() => {
+                setCheckedIndex(index);
+              }}
+              option={option}
+              id={index + 1}
+              key={option}
+            />
+          );
+        })}
+
+        <Button size="lg" onClick={handleVote}>
+          Submit
+        </Button>
+      </Stack>
     </Container>
+  ) : (
+    <Error
+      title="Vote Error"
+      error="No slide is prenting or you already voted this"
+    />
   );
 }
 

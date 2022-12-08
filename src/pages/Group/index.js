@@ -1,15 +1,10 @@
-/* eslint-disable import/no-named-as-default */
-/* eslint-disable no-unneeded-ternary */
-/* eslint-disable no-nested-ternary */
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import getGroupList from '~/api/normal/group/getGroupList';
 import Loading from '~/components/Loading';
-import getGroupList from '~/api/normal/getGroupList';
 import GroupDetail from './components/ContentGroup/GroupDetail';
 import GroupList from './components/ContentGroup/GroupList';
-// import NavbarGroup from './components/NavbarGroup';
-import Header from '~/components/Layouts/components/Header';
 
 function Group() {
   const { id } = useParams();
@@ -23,14 +18,11 @@ function Group() {
     queryKey: ['GroupList'],
     queryFn: asyncGetGroup,
   });
-  return query.isLoading ? (
-    <Loading />
+  if (query.isLoading) return <Loading />;
+  return id ? (
+    <GroupDetail groupId={id} />
   ) : (
-    <>
-      {/* <NavbarGroup id={id} groupList={groupList} /> */}
-      <Header />
-      {id ? <GroupDetail groupId={id} /> : <GroupList groupList={groupList} />}
-    </>
+    <GroupList groupList={groupList} />
   );
 }
 

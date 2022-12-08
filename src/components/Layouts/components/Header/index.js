@@ -24,7 +24,7 @@ import logout from '~/api/auth/logout';
 import { AuthContext } from '~/Context';
 import { avt, menu } from '~/img';
 import styles from './Header.module.css';
-import getGroupList from '~/api/normal/getGroupList';
+import getGroupList from '~/api/normal/group/getGroupList';
 import Loading from '~/components/Loading';
 
 function Header() {

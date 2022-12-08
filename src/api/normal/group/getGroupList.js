@@ -1,5 +1,4 @@
-/* eslint-disable array-callback-return */
-import privateAxios from '../PrivateAxios';
+import privateAxios from '~/api/PrivateAxios';
 
 export default async function getGroupList() {
   try {

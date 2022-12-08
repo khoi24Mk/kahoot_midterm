@@ -3,7 +3,7 @@
 /* eslint-disable import/no-unresolved */
 import axios from 'axios';
 import Constant from '~/constants';
-import memoizedRefreshToken from './normal/refreshToken';
+import memoizedRefreshToken from './normal/profile/refreshToken';
 
 axios.defaults.baseURL = Constant.BackEnd;
 axios.interceptors.request.use(

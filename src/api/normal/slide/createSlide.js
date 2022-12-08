@@ -1,4 +1,4 @@
-import privateAxios from '../PrivateAxios';
+import privateAxios from '~/api/PrivateAxios';
 
 export default async function createSlide(id) {
   const response = await privateAxios.post(`/presentation/${id}/slide`, {

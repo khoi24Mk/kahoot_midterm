@@ -31,16 +31,13 @@ function App() {
 
           <Route element={<DefaultLayout />}>
             <Route path="/home" element={<Home />} />
-            <Route path="/slide" element={<Slide />} />
-            <Route path="/presentation/:id" element={<Presentation />} />
-          </Route>
 
-          <Route element={<PrivateLayout />}>
-            <Route path="/invitation" element={<Invitation />} />
-            <Route path="/group" element={<Group />} />
-            <Route path="/group/:id" element={<Group />} />
-            <Route path="/presentation/:id/slide" element={<Slide />} />
-            <Route element={<DefaultLayout />}>
+            <Route element={<PrivateLayout />}>
+              <Route path="/invitation" element={<Invitation />} />
+              <Route path="/group" element={<Group />} />
+              <Route path="/group/:id" element={<Group />} />
+              <Route path="/presentation/:id/slide" element={<Slide />} />
+              <Route path="/presentation/:id" element={<Presentation />} />
               <Route path="/profile" element={<Profile />} />
             </Route>
           </Route>

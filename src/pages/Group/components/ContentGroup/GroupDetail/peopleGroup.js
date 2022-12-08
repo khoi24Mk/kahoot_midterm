@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable react/no-unknown-property */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/no-unstable-nested-components */
@@ -14,7 +12,7 @@ import {
   Dropdown,
   Modal,
   OverlayTrigger,
-  Tooltip
+  Tooltip,
 } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-multi-email/dist/style.css';
@@ -63,8 +61,7 @@ function PeopleGroup({ members, id, query }) {
   };
 
   const handleSendInviteByEmail = async () => {
-    const res = await sendInviteEmails({ id, emails });
-    console.log(res);
+    await sendInviteEmails({ id, emails });
   };
 
   const handleAssignRole = (member, role) => {
@@ -75,20 +72,19 @@ function PeopleGroup({ members, id, query }) {
 
   const handleSubmitAssignRole = async () => {
     try {
-      console.log(id, memToAssign, roleToAssign);
       const response = await changeRole({
         groupId: id,
         userId: parseInt(memToAssign.id, 10),
-        role: roleToAssign
+        role: roleToAssign,
       });
       setShowAssignRole(false);
       setRoleToAssign('');
       setMemToAssign({});
       setShowAssignRole(false);
       query.refetch();
-      console.log(response);
+      return response;
     } catch (err) {
-      console.log(err);
+      return null;
     }
   };
 
@@ -132,7 +128,7 @@ function PeopleGroup({ members, id, query }) {
                             >
                               <span
                                 className={clsx('people_userInfo', {
-                                  people_myGroup: profile.id === mem.id
+                                  people_myGroup: profile.id === mem.id,
                                 })}
                               >
                                 <img
@@ -160,22 +156,6 @@ function PeopleGroup({ members, id, query }) {
                           )}
                         >
                           <span>Co-Owner</span>
-                          {/* <Button>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-person-plus"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
-                            <path
-                              fillRule="evenodd"
-                              d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"
-                            />
-                          </svg>
-                        </Button> */}
                         </Card.Header>
                         <Table>
                           <tbody>
@@ -258,9 +238,6 @@ function PeopleGroup({ members, id, query }) {
                       <Table>
                         <tbody>
                           {member.map((mem) => {
-                            console.log('MEMBER');
-                            console.log(mem.id);
-                            console.log(profile.id);
                             return (
                               <tr
                                 key={mem.id}
@@ -268,7 +245,7 @@ function PeopleGroup({ members, id, query }) {
                               >
                                 <span
                                   className={clsx('people_userInfo', {
-                                    people_myGroup: profile.id === mem.id
+                                    people_myGroup: profile.id === mem.id,
                                   })}
                                 >
                                   <img

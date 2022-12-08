@@ -1,4 +1,4 @@
-import privateAxios from '../PrivateAxios';
+import privateAxios from '~/api/PrivateAxios';
 
 export default async function updateSlide(
   id,

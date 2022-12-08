@@ -2,9 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useContext } from 'react';
 import { Outlet } from 'react-router-dom';
-import getProfile from '~/api/normal/getProfile';
+import getProfile from '~/api/normal/profile/getProfile';
+import Loading from '~/components/Loading';
 import { AuthContext } from '~/Context';
-import Loading from '../../Loading';
 
 export default function ProfileLayout() {
   const context = useContext(AuthContext);

@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable no-unused-vars */
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
 import clsx from 'clsx';
@@ -26,8 +25,6 @@ function AddingGroup() {
   const [showCreate, setShowCreate] = useState(false);
   const handleCloseCreate = () => setShowCreate(false);
 
-  const [showAlert, setShowAlert] = useState(false);
-  const [createResponse, setCreateResponse] = useState('');
   const handleShowCreate = () => setShowCreate(true);
 
   const {
@@ -44,13 +41,10 @@ function AddingGroup() {
         groupName: data.groupName,
         description: data.description,
       });
-      setShowAlert(true);
-      setCreateResponse('success');
       handleCloseCreate();
+      return response;
     } catch (error) {
-      // setLoginErr(error?.response?.data?.message);
-      setCreateResponse('danger');
-      console.log(error);
+      return null;
     }
   };
 

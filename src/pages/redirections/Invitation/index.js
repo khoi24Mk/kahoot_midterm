@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
-import joinGroup from '~/api/normal/joinGroup';
+import joinGroup from '~/api/normal/group/joinGroup';
 import Error from '~/components/Error';
 import Loading from '~/components/Loading';
 

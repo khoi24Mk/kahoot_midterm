@@ -1,5 +1,3 @@
-/* eslint-disable import/extensions */
-/* eslint-disable import/no-unresolved */
 import mem from 'mem';
 import publicAxios from '~/api/PublicAxios';
 

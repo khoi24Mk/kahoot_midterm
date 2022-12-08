@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import validate from '~/api/normal/validate';
+import validate from '~/api/normal/profile/validate';
 import { AuthContext } from '~/Context';
 
 export default function PrivateLayout() {
