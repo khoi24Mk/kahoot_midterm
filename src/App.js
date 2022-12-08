@@ -39,6 +39,7 @@ function App() {
             <Route path="/invitation" element={<Invitation />} />
             <Route path="/group" element={<Group />} />
             <Route path="/group/:id" element={<Group />} />
+            <Route path="/presentation/:id/slide" element={<Slide />} />
             <Route element={<DefaultLayout />}>
               <Route path="/profile" element={<Profile />} />
             </Route>

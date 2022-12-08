@@ -282,6 +282,22 @@
 	align-items: center;
 	margin: 1rem 0;
 }
+.dragAnswer_item Button{
+	background-color: transparent;
+	color:#196cff;
+	outline: none;
+	border: none;
+	
+}
+
+.dragAnswer_item div{
+	padding:0;
+	margin: 0 0.2rem ;
+	width: 1.2rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
 
 
 

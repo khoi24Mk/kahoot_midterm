@@ -32,21 +32,13 @@ function Chart({ type, labels, data }) {
   }, [labels, data]);
 
   const sth = () => {
-    console.log(type);
-    console.log(ChartData);
-
-    console.log('OUT');
-    console.log('ININ');
     if (type === 'bar') {
-      console.log('BAR');
       return <Bar data={ChartData} />;
     }
 
     if (type === 'circle') {
-      console.log('CIRCLE');
       return <Doughnut data={ChartData} />;
     }
-    console.log('CIRCLE');
   };
 
   //   const data = {
