@@ -44,7 +44,7 @@ const CustomToggle = forwardRef(({ children, onClick }, ref) => (
   </button>
 ));
 
-function PeopleGroup({ members, id, query }) {
+function PeopleGroup({ members, id }) {
   const context = useContext(AuthContext);
   const [showCreate, setShowCreate] = useState(false);
 
@@ -81,7 +81,6 @@ function PeopleGroup({ members, id, query }) {
       setRoleToAssign('');
       setMemToAssign({});
       setShowAssignRole(false);
-      query.refetch();
       return response;
     } catch (err) {
       return null;

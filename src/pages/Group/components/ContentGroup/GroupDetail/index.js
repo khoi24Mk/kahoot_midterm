@@ -1,14 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
-import { useContext, useState } from 'react';
-import { Col, Container, Row, Tab, Tabs } from 'react-bootstrap';
 import clsx from 'clsx';
+import { useContext, useEffect, useState } from 'react';
+import { Col, Container, Row, Tab, Tabs } from 'react-bootstrap';
+import getPresentationInGroup from '~/api/group/getPresentationGroup';
 import getUserInGroup from '~/api/group/getUserInGroup';
 import Loading from '~/components/Loading';
+import { AuthContext } from '~/Context';
+import './GroupDetail.css';
 import PeopleGroup from './peopleGroup';
 import PresentationGroup from './presentationGroup';
-import './GroupDetail.css';
-import getPresentationInGroup from '~/api/group/getPresentationGroup';
-import { AuthContext } from '~/Context';
 
 function GroupDetail({ groupId }) {
   const [keyTabs, setKeyTabs] = useState('people');
@@ -17,36 +16,30 @@ function GroupDetail({ groupId }) {
   const [myRole, setMyRole] = useState('MEMBER');
   const { profile } = useContext(AuthContext);
 
-  const asyncGetMemberGroup = async () => {
-    const retGroupList = await getUserInGroup({ id: groupId });
-    setMemberList(retGroupList);
+  const [loading, setLoading] = useState(true);
 
-    const members = retGroupList.filter((member) => {
-      return member.id === profile.id;
-    });
+  useEffect(() => {
+    const asyncGetData = async () => {
+      setLoading(true);
 
-    setMyRole(members[0].role);
+      const retGroupList = await getUserInGroup({ id: groupId });
+      const retPresentationList = await getPresentationInGroup({ id: groupId });
+      setMemberList(retGroupList);
+      setPresentationList(retPresentationList);
 
-    return retGroupList;
-  };
+      const members = retGroupList.filter((member) => {
+        return member.id === profile.id;
+      });
 
-  const asyncGetPresentationsGroup = async () => {
-    const retPresentationList = await getPresentationInGroup({ id: groupId });
-    setPresentationList(retPresentationList);
-    return retPresentationList;
-  };
+      setMyRole(members[0].role);
+      setLoading(false);
 
-  const queryMember = useQuery({
-    queryKey: ['GroupDetail'],
-    queryFn: asyncGetMemberGroup,
-  });
+      return retGroupList;
+    };
+    asyncGetData();
+  }, []);
 
-  const queryPresentation = useQuery({
-    queryKey: ['PresentationList'],
-    queryFn: asyncGetPresentationsGroup,
-  });
-
-  return queryMember.isFetching || queryPresentation.isFetching ? (
+  return loading ? (
     <Loading />
   ) : (
     <Container fluid>
@@ -65,15 +58,11 @@ function GroupDetail({ groupId }) {
                 myRole={myRole}
                 id={groupId}
                 presentations={presentationList}
-                query={queryPresentation}
+                setPresentations={setPresentationList}
               />
             </Tab>
             <Tab className={clsx('tabsItem')} eventKey="people" title="People">
-              <PeopleGroup
-                id={groupId}
-                members={memberList}
-                query={queryMember}
-              />
+              <PeopleGroup id={groupId} members={memberList} />
             </Tab>
           </Tabs>
         </Col>

@@ -9,6 +9,7 @@ import {
   Form,
   Modal,
   Row,
+  Spinner,
   Table,
   Toast,
   ToastContainer,
@@ -31,11 +32,13 @@ const schema = yup
   })
   .required();
 
-function PresentationGroup({ id, presentations, query, myRole }) {
+function PresentationGroup({ id, presentations, setPresentations, myRole }) {
   const [showCreate, setShowCreate] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [createResponse, setCreateResponse] = useState('');
   const [deleteList, setDeleteList] = useState([]);
+  const [deleting, setDeleting] = useState(false);
+  const [adding, setAdding] = useState(false);
   const {
     register,
     handleSubmit,
@@ -44,21 +47,25 @@ function PresentationGroup({ id, presentations, query, myRole }) {
     resolver: yupResolver(schema),
   });
   const onSubmit = async (data) => {
+    setAdding(true);
     try {
+      setShowCreate(false);
       const response = await createPresentation({
         presentationName: data.presentationName,
         description: data.description,
         groupId: id,
       });
+      const updatedPresentations = [...presentations, response.data.object];
+      setPresentations(updatedPresentations);
+
       setShowAlert(true);
       setCreateResponse('success');
-      setShowCreate(false);
-      query.refetch();
-
       return response;
     } catch (err) {
       setCreateResponse('danger');
       return null;
+    } finally {
+      setAdding(false);
     }
   };
 
@@ -78,17 +85,25 @@ function PresentationGroup({ id, presentations, query, myRole }) {
     }
   };
   const handleDeleteSubmit = async () => {
+    setDeleting(true);
     if (deleteList.length < 1) return;
     try {
-      setDeleteList([]);
       await Promise.all(
         deleteList.map(async (presentationId) => {
           return deletePresentation({ presentationId });
         })
       );
-      query.refetch();
+
+      const updatedPresentations = presentations.filter(
+        (presentation) => !deleteList.includes(presentation.id)
+      );
+      setPresentations(updatedPresentations);
+
+      setDeleteList([]);
     } catch (err) {
       setCreateResponse('danger');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -98,15 +113,17 @@ function PresentationGroup({ id, presentations, query, myRole }) {
         {/* tool bar */}
         <Row className={`mb-5 ${myRole === 'MEMBER' ? 'd-none' : ''}`}>
           <Col>
-            <Button onClick={() => setShowCreate(true)}>
-              + New presentation
+            <Button onClick={() => setShowCreate(true)} disabled={adding}>
+              {adding && <Spinner size="sm" />}+ New presentation
             </Button>
             <Button
               variant="danger"
               className="mx-2"
               hidden={deleteList.length < 1}
               onClick={handleDeleteSubmit}
+              disabled={deleting}
             >
+              {deleting && <Spinner size="sm" />}
               Delete
             </Button>
           </Col>
