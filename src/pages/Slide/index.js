@@ -265,7 +265,11 @@ export default React.memo(function Slide() {
         </div>
         <div className={clsx(styles.Slide_editor)}>
           <div className={clsx(styles.Slide_editor_item)}>
-            <div className={clsx(styles.Slide_editorItem_body)}>
+            <div
+              className={clsx(styles.Slide_editorItem_body, {
+                [styles.chartStyle]: chartName === 'circle',
+              })}
+            >
               <p>{question}</p>
               <Chart
                 type={chartName}

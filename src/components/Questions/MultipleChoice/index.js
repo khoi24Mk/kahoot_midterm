@@ -212,7 +212,7 @@ function MultipleChoice({
                 >
                   <p>
                     <item.icon size={30} />
-                    hello
+                    {item.name}
                   </p>
                 </Dropdown.Item>
               ))}
