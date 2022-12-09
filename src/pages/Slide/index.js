@@ -1,23 +1,27 @@
 import clsx from 'clsx';
 import React, { useEffect, useState } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
+import { Bar } from 'react-chartjs-2';
 import { FaHackerrank } from 'react-icons/fa';
 import { FcBarChart } from 'react-icons/fc';
 import { RiArrowDropDownLine } from 'react-icons/ri';
 import { useParams } from 'react-router-dom';
+import { BsBookmarks } from 'react-icons/bs';
 import useWebSocket from 'react-use-websocket';
+import CopyToClipboard from 'react-copy-to-clipboard';
+import { Button } from 'react-bootstrap';
+import getPresentation from '~/api/normal/presentation/getPresentation';
 import createSlide from '~/api/normal/slide/createSlide';
 import deleteSlide from '~/api/normal/slide/deleteSlide';
-import getPresentation from '~/api/normal/presentation/getPresentation';
 import getSlideOfPresent from '~/api/normal/slide/getSlideOfPresent';
 import updateSlide from '~/api/normal/slide/updateSlide';
-import Chart from '~/components/Chart';
 import Loading from '~/components/Loading';
 import Question from '~/components/Questions';
 import Constant from '~/constants';
 import styles from './slide.module.css';
 import SlideItem from './SlideItem';
 import SlideToolBar from './SlideToolBar';
+import 'chart.js/auto';
 
 const CustomDropdown = React.forwardRef(({ children, onClick }, ref) => (
   <button
@@ -54,7 +58,7 @@ export default React.memo(function Slide() {
   const [ListSlide, setListSlide] = useState(undefined);
   const [SlideEditing, setSlideEditing] = useState();
 
-  const [chartName, setChartName] = useState('bar');
+  // const [chartName, setChartName] = useState('bar');
   // important
   const [question, setQuestion] = useState('Enter Your Question');
   // important
@@ -64,6 +68,12 @@ export default React.memo(function Slide() {
   // important
   const [ChartData, setChartData] = useState([]);
 
+  // link
+  const baseURL = window.location.href.replace(window.location.pathname, '');
+  const [presentationLink, setPresentationLink] = useState({
+    value: `${baseURL}/presentation/${presentationId}`,
+    copied: false,
+  });
   // handle socket message
   const handleReceivedMessage = (event) => {
     const receivedEvent = JSON.parse(event);
@@ -264,17 +274,42 @@ export default React.memo(function Slide() {
           ))}
         </div>
         <div className={clsx(styles.Slide_editor)}>
-          <div className={clsx(styles.Slide_editor_item)}>
+          <div className="relative bg-light p-2 rounded-1">
             <div
-              className={clsx(styles.Slide_editorItem_body, {
-                [styles.chartStyle]: chartName === 'circle',
-              })}
+              style={{ width: '100%' }}
+              className="position-relative d-flex flex-column align-items-center h-100"
             >
               <p>{question}</p>
-              <Chart
-                type={chartName}
-                labels={ChartData.map((a) => a.labels)}
-                data={ChartData.map((a) => a.data)}
+
+              <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
+                <CopyToClipboard text={presentationLink.value}>
+                  <Button
+                    onClick={() => {
+                      setPresentationLink({
+                        ...presentationLink,
+                        copied: true,
+                      });
+                    }}
+                    size="sm"
+                    className="p-1"
+                    variant={presentationLink.copied ? 'secondary' : 'primary'}
+                  >
+                    <BsBookmarks />{' '}
+                    {presentationLink.copied ? 'Copied' : 'Copy link'}
+                  </Button>
+                </CopyToClipboard>
+              </div>
+
+              <Bar
+                data={{
+                  labels: ChartData.map((i) => i.labels),
+                  datasets: [
+                    {
+                      label: 'Rating',
+                      data: ChartData.map((i) => i.data),
+                    },
+                  ],
+                }}
               />
             </div>
           </div>
@@ -314,7 +349,6 @@ export default React.memo(function Slide() {
           </div>
           <Question
             data={ChartData}
-            setChartName={setChartName}
             question={question}
             setQuestion={setQuestion}
             setData={setChartData}

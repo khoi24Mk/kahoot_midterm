@@ -11,7 +11,9 @@ export default function PresentationGroupToolBar({
   return (
     <Row className={`mb-5 ${hidden ? 'd-none' : ''}`}>
       <Col>
-        <Button onClick={handleAddPresentation}>+ New presentation</Button>
+        <Button variant="outline-secondary" onClick={handleAddPresentation}>
+          New presentation
+        </Button>
         <Button
           variant="danger"
           className="mx-2"

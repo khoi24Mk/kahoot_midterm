@@ -21,6 +21,7 @@ import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 import createPresentation from '~/api/group/createPresentation';
 import deletePresentation from '~/api/group/deletePresentation';
+import getPresentationInGroup from '~/api/group/getPresentationGroup';
 
 const schema = yup
   .object()
@@ -32,7 +33,12 @@ const schema = yup
   })
   .required();
 
-function PresentationGroup({ id, presentations, setPresentations, myRole }) {
+function PresentationGroup({
+  id: groupId,
+  presentations,
+  setPresentations,
+  myRole,
+}) {
   const [showCreate, setShowCreate] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [createResponse, setCreateResponse] = useState('');
@@ -53,10 +59,10 @@ function PresentationGroup({ id, presentations, setPresentations, myRole }) {
       const response = await createPresentation({
         presentationName: data.presentationName,
         description: data.description,
-        groupId: id,
+        groupId,
       });
-      const updatedPresentations = [...presentations, response.data.object];
-      setPresentations(updatedPresentations);
+      const retPresentationList = await getPresentationInGroup({ id: groupId });
+      setPresentations(retPresentationList);
 
       setShowAlert(true);
       setCreateResponse('success');
@@ -94,10 +100,8 @@ function PresentationGroup({ id, presentations, setPresentations, myRole }) {
         })
       );
 
-      const updatedPresentations = presentations.filter(
-        (presentation) => !deleteList.includes(presentation.id)
-      );
-      setPresentations(updatedPresentations);
+      const retPresentationList = await getPresentationInGroup({ id: groupId });
+      setPresentations(retPresentationList);
 
       setDeleteList([]);
     } catch (err) {
@@ -109,12 +113,17 @@ function PresentationGroup({ id, presentations, setPresentations, myRole }) {
 
   return (
     <>
-      <Container className="mt-5">
+      <Container fluid>
         {/* tool bar */}
         <Row className={`mb-5 ${myRole === 'MEMBER' ? 'd-none' : ''}`}>
           <Col>
-            <Button onClick={() => setShowCreate(true)} disabled={adding}>
-              {adding && <Spinner size="sm" />}+ New presentation
+            <Button
+              style={{ backgroundColor: '#C26407' }}
+              onClick={() => setShowCreate(true)}
+              disabled={adding}
+            >
+              {adding && <Spinner size="sm" />}
+              Add presentation
             </Button>
             <Button
               variant="danger"
@@ -146,7 +155,7 @@ function PresentationGroup({ id, presentations, setPresentations, myRole }) {
                   <Form.Check
                     inline
                     type="checkbox"
-                    checked={presentations.length === deleteList.length}
+                    checked={presentations?.length === deleteList?.length}
                     onChange={(event) => checkDeleteAll(event)}
                   />
                 </th>
@@ -159,7 +168,7 @@ function PresentationGroup({ id, presentations, setPresentations, myRole }) {
             </thead>
             <tbody>
               {presentations.map((presentation) => (
-                <tr>
+                <tr key={presentation.id}>
                   <td className="py-4">
                     <Form.Check
                       inline

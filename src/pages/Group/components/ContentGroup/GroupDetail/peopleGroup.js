@@ -1,32 +1,32 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/no-unstable-nested-components */
+import 'bootstrap/dist/css/bootstrap.css';
+import { forwardRef, useContext, useEffect, useState } from 'react';
 import {
   Button,
-  Card,
   Col,
   Container,
-  ListGroup,
-  Row,
-  Table,
   Dropdown,
   Modal,
   OverlayTrigger,
+  Row,
+  Spinner,
   Tooltip,
 } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.css';
-import 'react-multi-email/dist/style.css';
-import { forwardRef, useContext, useState } from 'react';
 import { BsClipboard } from 'react-icons/bs';
 import { ReactMultiEmail } from 'react-multi-email';
+import 'react-multi-email/dist/style.css';
 
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
-import { AuthContext } from '~/Context';
+import changeRole from '~/api/group/changeRole';
 import getGroupInvitationLink from '~/api/group/getGroupInvitationLink';
 import sendInviteEmails from '~/api/group/sendInviteEmails';
-import changeRole from '~/api/group/changeRole';
+import { AuthContext } from '~/Context';
 import './GroupDetail.css';
+import People from './People';
+import getUserInGroup from '~/api/group/getUserInGroup';
 
 const CustomToggle = forwardRef(({ children, onClick }, ref) => (
   <button
@@ -44,39 +44,70 @@ const CustomToggle = forwardRef(({ children, onClick }, ref) => (
   </button>
 ));
 
-function PeopleGroup({ members, id }) {
+function PeopleGroup({ members, setMembers, id: groupId, myRole }) {
   const context = useContext(AuthContext);
-  const [showCreate, setShowCreate] = useState(false);
-
+  // get link
+  const [showInvitationModal, setShowInvitationModal] = useState(false);
+  // confirm assign role
   const [showAssignRole, setShowAssignRole] = useState(false);
+  // assigned member
   const [memToAssign, setMemToAssign] = useState({});
+  // role to assing
   const [roleToAssign, setRoleToAssign] = useState('');
+  // email to invite
   const [emails, setEmails] = useState([]);
+  // link invitation
   const [inviteLink, setInvilink] = useState('');
-  const handleCloseCreate = () => setShowCreate(false);
-  const handleShowCreate = async () => {
-    const link = await getGroupInvitationLink({ id });
+
+  // submitting role/email
+  const [submitting, setSubmitting] = useState(false);
+
+  // owners, co-owners, members
+  const [peoples, setPeoples] = useState({
+    pOwners: [],
+    pCoOwners: [],
+    pMembers: [],
+  });
+
+  // profile contex
+  const { profile } = context;
+
+  // handle invitation modal
+  const handleHideInvitationModal = () => setShowInvitationModal(false);
+  const handleShowInvitationModal = async () => {
+    setShowInvitationModal(true);
+    const link = await getGroupInvitationLink({ groupId });
     setInvilink(link?.invitationLink);
-    setShowCreate(true);
   };
 
+  // handle send invitation
   const handleSendInviteByEmail = async () => {
-    await sendInviteEmails({ id, emails });
+    setSubmitting(true);
+    await sendInviteEmails({ groupId, emails });
+    setSubmitting(false);
+    setShowInvitationModal(false);
   };
 
+  // handle assign role
   const handleAssignRole = (member, role) => {
     setRoleToAssign(role);
     setMemToAssign(member);
     setShowAssignRole(true);
   };
 
+  // handle submit assign role
   const handleSubmitAssignRole = async () => {
+    setSubmitting(true);
     try {
       const response = await changeRole({
-        groupId: id,
-        userId: parseInt(memToAssign.id, 10),
+        groupId,
+        userId: memToAssign.id,
         role: roleToAssign,
       });
+
+      // refetching member
+      const retMemberList = await getUserInGroup({ id: groupId });
+      setMembers(retMemberList);
       setShowAssignRole(false);
       setRoleToAssign('');
       setMemToAssign({});
@@ -84,18 +115,26 @@ function PeopleGroup({ members, id }) {
       return response;
     } catch (err) {
       return null;
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const { profile } = context;
-  const owner = members.filter((member) => member.role === 'OWNER');
-  const coOwner = members.filter((mem) => mem.role === 'CO_OWNER');
-  const member = members.filter((me) => me.role === 'MEMBER');
-  // const kickOut = members.map((m) => m.role === 'KICK_OUT');
+  useEffect(() => {
+    const fOwner = members.filter((oMem) => oMem?.role === 'OWNER');
+    const fCoOwner = members.filter((cMem) => cMem?.role === 'CO_OWNER');
+    const fMember = members.filter((mem) => mem?.role === 'MEMBER');
+
+    setPeoples({
+      pCoOwners: [...fCoOwner],
+      pMembers: [...fMember],
+      pOwners: [...fOwner],
+    });
+  }, [members]);
 
   return (
     <>
-      <Container className={clsx('people_frame')}>
+      <Container fluid className={clsx('people_frame')}>
         <Row className="justify-content-center">
           <Col>
             <motion.div
@@ -103,196 +142,104 @@ function PeopleGroup({ members, id }) {
               transition={{ duration: 0.5 }}
               initial={{ x: -100 }}
             >
-              <Card className={clsx('people_card', 'mb-5')}>
-                <ListGroup variant="flush">
-                  <ListGroup.Item>
-                    <Card
-                      variant="flush"
-                      className={clsx('people_cardItem', 'mb-5')}
-                    >
-                      <Card.Header
-                        className={clsx(
-                          'people_cardHeader',
-                          'd-flex justify-content-between'
-                        )}
-                      >
-                        <span>Owner</span>
-                      </Card.Header>
-                      <Table>
-                        <tbody>
-                          {owner.map((mem) => (
-                            <tr
-                              key={mem.id}
-                              className="d-flex justify-content-flex-start"
-                            >
-                              <span
-                                className={clsx('people_userInfo', {
-                                  people_myGroup: profile.id === mem.id,
-                                })}
-                              >
-                                <img
-                                  className="people_img"
-                                  src={mem.avatar}
-                                  alt=""
-                                />
-                                <span>{mem.displayName}</span>
-                              </span>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </Table>
-                    </Card>
+              <div className="mb-5">
+                <h3 style={{ color: '#C26407' }}>OWNER</h3>
+                <hr style={{ color: '#C26407' }} />
+                {peoples?.pOwners?.map((mem) => (
+                  <People
+                    key={mem.id}
+                    me={mem.id === profile.id}
+                    img={mem.avatar}
+                    name={mem.displayName}
+                  />
+                ))}
+              </div>
+              <div className="mb-5">
+                <h3 style={{ color: '#C26407' }}>CO-OWNER</h3>
+                <hr style={{ color: '#C26407' }} />
 
-                    {coOwner.length > 0 ? (
-                      <Card
-                        variant="flush"
-                        className={clsx('people_cardItem', 'mb-5')}
-                      >
-                        <Card.Header
-                          className={clsx(
-                            'people_cardHeader',
-                            'd-flex justify-content-between'
-                          )}
-                        >
-                          <span>Co-Owner</span>
-                        </Card.Header>
-                        <Table>
-                          <tbody>
-                            {coOwner.map((mem) => (
-                              <tr
-                                key={mem.id}
-                                className="d-flex justify-content-between"
-                              >
-                                <span className={clsx('people_userInfo')}>
-                                  <img
-                                    className="people_img"
-                                    src={mem.avatar}
-                                    alt=""
-                                  />
-                                  <span>{mem.displayName}</span>
-                                </span>
-                                {profile.id === owner[0].id ? (
-                                  <Dropdown className={clsx('people_dropdown')}>
-                                    <Dropdown.Toggle as={CustomToggle} />
-                                    <Dropdown.Menu>
-                                      <Dropdown.Item
-                                        onClick={() =>
-                                          handleAssignRole(mem, 'MEMBER')
-                                        }
-                                      >
-                                        Remove Co-owner
-                                      </Dropdown.Item>
-                                      <Dropdown.Divider />
-                                      <Dropdown.Item
-                                        onClick={() =>
-                                          handleAssignRole(mem, 'KICK_OUT')
-                                        }
-                                      >
-                                        Kickout
-                                      </Dropdown.Item>
-                                    </Dropdown.Menu>
-                                  </Dropdown>
-                                ) : (
-                                  ''
-                                )}
-                              </tr>
-                            ))}
-                          </tbody>
-                        </Table>
-                      </Card>
-                    ) : undefined}
-
-                    <Card
-                      variant="flush"
-                      className={clsx('people_cardItem', 'mb-5')}
-                    >
-                      <Card.Header
-                        className={clsx(
-                          'people_cardHeader',
-                          'd-flex justify-content-between'
-                        )}
-                      >
-                        <span>Member</span>
-                        {profile.id === owner[0]?.id ? (
-                          <Button onClick={handleShowCreate}>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-person-plus"
-                              viewBox="0 0 16 16"
+                {peoples?.pCoOwners?.map((mem) => (
+                  <People
+                    key={mem.id}
+                    me={mem.id === profile.id}
+                    img={mem.avatar}
+                    name={mem.displayName}
+                    endElement={
+                      myRole === 'OWNER' && (
+                        <Dropdown className={clsx('people_dropdown')}>
+                          <Dropdown.Toggle as={CustomToggle} />
+                          <Dropdown.Menu>
+                            <Dropdown.Item
+                              onClick={() => handleAssignRole(mem, 'MEMBER')}
                             >
-                              <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
-                              <path
-                                fillRule="evenodd"
-                                d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"
-                              />
-                            </svg>
-                          </Button>
-                        ) : (
-                          ''
-                        )}
-                      </Card.Header>
-                      <Table>
-                        <tbody>
-                          {member.map((mem) => {
-                            return (
-                              <tr
-                                key={mem.id}
-                                className="d-flex justify-content-between"
+                              Remove Co-owner
+                            </Dropdown.Item>
+                            <Dropdown.Divider />
+                            <Dropdown.Item
+                              onClick={() => handleAssignRole(mem, 'KICK_OUT')}
+                            >
+                              Kickout
+                            </Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      )
+                    }
+                  />
+                ))}
+              </div>
+              <div className="mb-5">
+                <div className="d-flex justify-content-between">
+                  <h3 style={{ color: '#C26407' }}>MEMBER</h3>
+                  <Button
+                    style={{ backgroundColor: '#C26407' }}
+                    onClick={handleShowInvitationModal}
+                  >
+                    <b>Invite</b>
+                  </Button>
+                </div>
+                <hr style={{ color: '#C26407' }} />
+
+                {peoples?.pMembers.map((mem) => {
+                  return (
+                    <People
+                      key={mem.id}
+                      me={mem.id === profile.id}
+                      img={mem.avatar}
+                      name={mem.displayName}
+                      endElement={
+                        myRole === 'OWNER' && (
+                          <Dropdown className={clsx('people_dropdown')}>
+                            <Dropdown.Toggle as={CustomToggle} />
+                            <Dropdown.Menu>
+                              <Dropdown.Item
+                                onClick={() =>
+                                  handleAssignRole(mem, 'CO_OWNER')
+                                }
                               >
-                                <span
-                                  className={clsx('people_userInfo', {
-                                    people_myGroup: profile.id === mem.id,
-                                  })}
-                                >
-                                  <img
-                                    className="people_img"
-                                    src={mem.avatar}
-                                    alt=""
-                                  />
-                                  <span>{mem.displayName}</span>
-                                </span>
-                                {profile.id === owner[0].id ? (
-                                  <Dropdown className={clsx('people_dropdown')}>
-                                    <Dropdown.Toggle as={CustomToggle} />
-                                    <Dropdown.Menu>
-                                      <Dropdown.Item
-                                        onClick={() =>
-                                          handleAssignRole(mem, 'CO_OWNER')
-                                        }
-                                      >
-                                        Add Co-owner
-                                      </Dropdown.Item>
-                                      <Dropdown.Divider />
-                                      <Dropdown.Item
-                                        onClick={() =>
-                                          handleAssignRole(mem, 'KICK_OUT')
-                                        }
-                                      >
-                                        Kickout
-                                      </Dropdown.Item>
-                                    </Dropdown.Menu>
-                                  </Dropdown>
-                                ) : (
-                                  ''
-                                )}
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </Table>
-                    </Card>
-                  </ListGroup.Item>
-                </ListGroup>
-              </Card>
+                                Add Co-owner
+                              </Dropdown.Item>
+                              <Dropdown.Divider />
+                              <Dropdown.Item
+                                onClick={() =>
+                                  handleAssignRole(mem, 'KICK_OUT')
+                                }
+                              >
+                                Kickout
+                              </Dropdown.Item>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                        )
+                      }
+                    />
+                  );
+                })}
+              </div>
             </motion.div>
           </Col>
         </Row>
       </Container>
 
-      <Modal show={showCreate} onHide={handleCloseCreate}>
+      <Modal show={showInvitationModal} onHide={handleHideInvitationModal}>
         <Modal.Header closeButton>
           <Modal.Title>Create group</Modal.Title>
         </Modal.Header>
@@ -337,18 +284,20 @@ function PeopleGroup({ members, id }) {
           </OverlayTrigger>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseCreate}>
+          <Button variant="secondary" onClick={handleHideInvitationModal}>
             Close
           </Button>
           <Button
             variant="primary"
             type="submit"
             onClick={() => {
-              handleCloseCreate();
+              handleHideInvitationModal();
               handleSendInviteByEmail();
             }}
             form="createGroupForm"
+            disabled={submitting}
           >
+            {submitting && <Spinner size="sm" />}
             Create
           </Button>
         </Modal.Footer>
@@ -371,7 +320,12 @@ function PeopleGroup({ members, id }) {
           <Button variant="secondary" onClick={() => setShowAssignRole(false)}>
             Close
           </Button>
-          <Button variant="primary" onClick={() => handleSubmitAssignRole()}>
+          <Button
+            variant="primary"
+            onClick={() => handleSubmitAssignRole()}
+            disabled={submitting}
+          >
+            {submitting && <Spinner size="sm" />}
             {roleToAssign === 'KICK_OUT' ? 'Delete' : 'Change'}
           </Button>
         </Modal.Footer>

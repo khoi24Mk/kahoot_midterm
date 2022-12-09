@@ -1,6 +1,6 @@
-import clsx from 'clsx';
 import { useContext, useEffect, useState } from 'react';
-import { Col, Container, Row, Tab, Tabs } from 'react-bootstrap';
+import { Card, Col, Container, Nav, Row, Tab } from 'react-bootstrap';
+import { useParams } from 'react-router-dom';
 import getPresentationInGroup from '~/api/group/getPresentationGroup';
 import getUserInGroup from '~/api/group/getUserInGroup';
 import Loading from '~/components/Loading';
@@ -9,8 +9,9 @@ import './GroupDetail.css';
 import PeopleGroup from './peopleGroup';
 import PresentationGroup from './presentationGroup';
 
-function GroupDetail({ groupId }) {
-  const [keyTabs, setKeyTabs] = useState('people');
+function GroupDetail() {
+  const { id: groupId } = useParams();
+
   const [memberList, setMemberList] = useState([]);
   const [presentationList, setPresentationList] = useState([]);
   const [myRole, setMyRole] = useState('MEMBER');
@@ -21,20 +22,18 @@ function GroupDetail({ groupId }) {
   useEffect(() => {
     const asyncGetData = async () => {
       setLoading(true);
-
-      const retGroupList = await getUserInGroup({ id: groupId });
+      const retMemberList = await getUserInGroup({ id: groupId });
       const retPresentationList = await getPresentationInGroup({ id: groupId });
-      setMemberList(retGroupList);
+      setMemberList(retMemberList);
       setPresentationList(retPresentationList);
-
-      const members = retGroupList.filter((member) => {
+      const members = retMemberList.filter((member) => {
         return member.id === profile.id;
       });
 
       setMyRole(members[0].role);
       setLoading(false);
 
-      return retGroupList;
+      return retMemberList;
     };
     asyncGetData();
   }, []);
@@ -42,31 +41,62 @@ function GroupDetail({ groupId }) {
   return loading ? (
     <Loading />
   ) : (
-    <Container fluid>
-      <Row className="justify-content-center">
-        <Col xs={4} md={8}>
-          <Tabs
-            className={clsx('Tabs', 'mb-3')}
-            defaultActiveKey="profile"
-            activeKey={keyTabs}
-            onSelect={(k) => setKeyTabs(k)}
-            id="justify-tab-example"
-            justify
-          >
-            <Tab eventKey="stream" title="Presentation">
-              <PresentationGroup
-                myRole={myRole}
-                id={groupId}
-                presentations={presentationList}
-                setPresentations={setPresentationList}
-              />
-            </Tab>
-            <Tab className={clsx('tabsItem')} eventKey="people" title="People">
-              <PeopleGroup id={groupId} members={memberList} />
-            </Tab>
-          </Tabs>
-        </Col>
-      </Row>
+    <Container
+      fluid
+      className="pt-3"
+      style={{
+        fontSize: '1rem',
+        backgroundColor: '#FFFFFF',
+      }}
+    >
+      <Tab.Container id="left-tabs-example" defaultActiveKey="first">
+        <Row>
+          <Col sm={12} lg={2}>
+            <Card>
+              <Card.Body>
+                <Nav variant="pills" className="flex-column">
+                  <Nav.Item>
+                    <Nav.Link eventKey="first">Member</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="second">Presentation</Nav.Link>
+                  </Nav.Item>
+                </Nav>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col sm={12} lg={10}>
+            {/* Notification about presenting */}
+
+            <Tab.Content>
+              <Tab.Pane eventKey="first">
+                <Card>
+                  <Card.Body>
+                    <PeopleGroup
+                      myRole={myRole}
+                      id={groupId}
+                      members={memberList}
+                      setMembers={setMemberList}
+                    />
+                  </Card.Body>
+                </Card>
+              </Tab.Pane>
+              <Tab.Pane eventKey="second">
+                <Card>
+                  <Card.Body>
+                    <PresentationGroup
+                      myRole={myRole}
+                      id={groupId}
+                      presentations={presentationList}
+                      setPresentations={setPresentationList}
+                    />
+                  </Card.Body>
+                </Card>
+              </Tab.Pane>
+            </Tab.Content>
+          </Col>
+        </Row>
+      </Tab.Container>
     </Container>
   );
 }

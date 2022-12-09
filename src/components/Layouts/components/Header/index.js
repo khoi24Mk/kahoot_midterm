@@ -1,11 +1,8 @@
-/* eslint-disable indent */
-/* eslint-disable react/button-has-type */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable indent */
 import clsx from 'clsx';
-import { useContext, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useContext, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
@@ -19,26 +16,29 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 import Row from 'react-bootstrap/Row';
 import Toast from 'react-bootstrap/Toast';
 import { FaRegBell } from 'react-icons/fa';
-import { useQuery } from '@tanstack/react-query';
+import { Link, useParams } from 'react-router-dom';
 import logout from '~/api/auth/logout';
-import { AuthContext } from '~/Context';
-import { avt, menu } from '~/img';
-import styles from './Header.module.css';
 import getGroupList from '~/api/normal/group/getGroupList';
 import Loading from '~/components/Loading';
+import { AuthContext } from '~/Context';
+import { menu } from '~/img';
+import styles from './Header.module.css';
 
 function Header() {
   const { id } = useParams();
   const [groupList, setGroupList] = useState([]);
-  const asyncGetGroup = async () => {
-    const retGroupList = await getGroupList();
-    setGroupList(retGroupList);
-    return retGroupList;
-  };
-  const query = useQuery({
-    queryKey: ['Header'],
-    queryFn: asyncGetGroup,
-  });
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const asyncGetGroup = async () => {
+      setLoading(true);
+      const retGroupList = await getGroupList();
+      setGroupList(retGroupList);
+      setLoading(false);
+      return retGroupList;
+    };
+    asyncGetGroup();
+  }, []);
 
   const context = useContext(AuthContext);
   const { profile, setProfile } = context;
@@ -61,7 +61,7 @@ function Header() {
     localStorage.removeItem('refresh_token');
   };
 
-  return query.isLoading ? (
+  return loading ? (
     <Loading />
   ) : (
     <Navbar bg="light" expand="lg">
@@ -116,43 +116,24 @@ function Header() {
           </Offcanvas>
         </>
         <Navbar.Brand as={Link} to="/group">
-          KAHOOT
+          <h4>
+            <b>KAMEN</b>
+          </h4>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll">
           <Nav
-            className="me-auto my-2 my-lg-0"
+            className="me-auto my-2 my-lg-0 justify-content-end flex-grow-1 pe-3"
             style={{ maxHeight: '100px' }}
             navbarScroll
           >
-            {/* <Nav.Link href="#action1">Home</Nav.Link>
-            <Nav.Link href="#action2">Link</Nav.Link>
-            <NavDropdown title="Link" id="navbarScrollingDropdown">
-              <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
-              <NavDropdown.Item href="#action4">
-                Another action
-              </NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item href="#action5">
-                Something else here
-              </NavDropdown.Item>
-            </NavDropdown>
-            <Nav.Link href="#" disabled>
-              Link
-            </Nav.Link> */}
+            <Nav.Link as={Link} to="/group">
+              MY GROUP
+            </Nav.Link>
+            <Nav.Link as={Link} to="/presentation">
+              MY PRESENTATION
+            </Nav.Link>
           </Nav>
-          <Form className="d-flex">
-            <Form.Control
-              type="search"
-              placeholder="Search"
-              className="me-2"
-              aria-label="Search"
-            />
-
-            <Button className={styles.search_btn} variant="outline-success">
-              Search
-            </Button>
-          </Form>
           <Row className={clsx(styles.grNoty)}>
             <Col md={6} className="">
               <Button
@@ -166,24 +147,20 @@ function Header() {
                 show={showA}
                 onClose={toggleShowA}
               >
-                {[1, 2, 3].map((i) => {
-                  return (
-                    <Toast key={i}>
-                      <Toast.Header closeButton={false}>
-                        <img
-                          src="holder.js/20x20?text=%20"
-                          className="rounded me-2"
-                          alt=""
-                        />
-                        <strong className="me-auto">Bootstrap</strong>
-                        <small>11 mins ago</small>
-                      </Toast.Header>
-                      <Toast.Body>
-                        Woohoo, you're reading this text in a Toast!
-                      </Toast.Body>
-                    </Toast>
-                  );
-                })}
+                <Toast>
+                  <Toast.Header closeButton={false}>
+                    <img
+                      src="holder.js/20x20?text=%20"
+                      className="rounded me-2"
+                      alt=""
+                    />
+                    <strong className="me-auto">Bootstrap</strong>
+                    <small>11 mins ago</small>
+                  </Toast.Header>
+                  <Toast.Body>
+                    Woohoo, you are reading this text in a Toast!
+                  </Toast.Body>
+                </Toast>
               </Toast>
             </Col>
           </Row>
@@ -213,7 +190,7 @@ function Header() {
                   <Image
                     roundedCircle
                     className={clsx(styles.avt)}
-                    src={profile?.avatar || avt}
+                    src={profile?.avatar || '/defaultAvatar.png'}
                     alt=""
                   />
                 </Dropdown.Toggle>

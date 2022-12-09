@@ -1,21 +1,22 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AuthenticationLayout from './components/Layouts/AuthenticationLayout';
 
-import Group from './pages/Group';
 import DefaultLayout from './components/Layouts/DefaultLayout';
 import PrivateLayout from './components/Layouts/PrivateLayout';
 import ProfileLayout from './components/Layouts/ProfileLayout';
 import NotAuthentication from './pages/errors/NotAuthentication';
 import NotFound from './pages/errors/NotFound';
 import NotPermission from './pages/errors/NotPermisson';
+import GroupDetail from './pages/Group/components/ContentGroup/GroupDetail';
+import GroupList from './pages/Group/components/ContentGroup/GroupList';
 import Home from './pages/Home';
-import Slide from './pages/Slide';
 import Login from './pages/Login';
+import Presentation from './pages/presentation';
 import Profile from './pages/Profile';
 import Invitation from './pages/redirections/Invitation';
 import Verification from './pages/redirections/Verification';
 import Register from './pages/Register';
-import Presentation from './pages/presentation';
+import Slide from './pages/Slide';
 
 function App() {
   return (
@@ -34,8 +35,8 @@ function App() {
 
             <Route element={<PrivateLayout />}>
               <Route path="/invitation" element={<Invitation />} />
-              <Route path="/group" element={<Group />} />
-              <Route path="/group/:id" element={<Group />} />
+              <Route path="/group" element={<GroupList />} />
+              <Route path="/group/:id" element={<GroupDetail />} />
               <Route path="/presentation/:id/slide" element={<Slide />} />
               <Route path="/presentation/:id" element={<Presentation />} />
               <Route path="/profile" element={<Profile />} />

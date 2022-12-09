@@ -21,7 +21,7 @@ import React, { useState, useEffect } from 'react';
 
 // ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
 
-function Chart({ type, labels, data }) {
+function Chart({ type, labels, data, className }) {
   const [ChartData, setChartData] = useState({
     labels,
     datasets: [{ data }],
@@ -33,11 +33,11 @@ function Chart({ type, labels, data }) {
 
   const sth = () => {
     if (type === 'bar') {
-      return <Bar data={ChartData} />;
+      return <Bar className={className} data={ChartData} />;
     }
 
     if (type === 'circle') {
-      return <Doughnut data={ChartData} />;
+      return <Doughnut className={className} data={ChartData} />;
     }
   };
 

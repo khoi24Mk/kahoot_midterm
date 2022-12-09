@@ -2,16 +2,15 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
-import clsx from 'clsx';
 import { useState } from 'react';
-import { Modal } from 'react-bootstrap';
+import { Modal, Spinner } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useForm } from 'react-hook-form';
-import { AiOutlineAppstoreAdd } from 'react-icons/ai';
+import { BsFillPlusCircleFill } from 'react-icons/bs';
 import * as yup from 'yup';
 import createGroup from '~/api/group/createGroup';
-import styles from './AddingGroup.module.css';
+import getGroupList from '~/api/normal/group/getGroupList';
 
 const schema = yup
   .object()
@@ -21,12 +20,14 @@ const schema = yup
   })
   .required();
 
-function AddingGroup() {
+function AddingGroup({ setGroups }) {
   const [showCreate, setShowCreate] = useState(false);
   const handleCloseCreate = () => setShowCreate(false);
 
   const handleShowCreate = () => setShowCreate(true);
 
+  // submitting
+  const [submitting, setSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
@@ -36,23 +37,33 @@ function AddingGroup() {
   });
 
   const onSubmit = async (data) => {
+    setSubmitting(true);
     try {
       const response = await createGroup({
         groupName: data.groupName,
         description: data.description,
       });
+      const retGroupList = await getGroupList();
+      setGroups(retGroupList);
       handleCloseCreate();
       return response;
     } catch (error) {
       return null;
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
     <div>
-      <span className={clsx(styles.Adding)} onClick={handleShowCreate}>
-        <AiOutlineAppstoreAdd size={30} />
-      </span>
+      <Button
+        className="position-absolute p-3 fw-bold d-flex align-items-lg-center"
+        style={{ bottom: '30px', right: '30px' }}
+        onClick={handleShowCreate}
+      >
+        <BsFillPlusCircleFill className="me-1" size={20} />
+        ADD GROUP
+      </Button>
       <Modal show={showCreate} onHide={handleCloseCreate}>
         <Modal.Header closeButton>
           <Modal.Title className="fw-bold">Create classroom</Modal.Title>
@@ -97,6 +108,7 @@ function AddingGroup() {
             Close
           </Button>
           <Button
+            disabled={submitting}
             variant="primary"
             type="submit"
             onClick={() => {
@@ -104,6 +116,7 @@ function AddingGroup() {
             }}
             form="createGroupForm"
           >
+            {submitting && <Spinner size="sm" />}
             Create
           </Button>
         </Modal.Footer>
