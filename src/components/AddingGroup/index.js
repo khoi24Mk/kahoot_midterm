@@ -9,7 +9,7 @@ import Form from 'react-bootstrap/Form';
 import { useForm } from 'react-hook-form';
 import { BsFillPlusCircleFill } from 'react-icons/bs';
 import * as yup from 'yup';
-import createGroup from '~/api/group/createGroup';
+import createGroup from '~/api/normal/group/createGroup';
 import getGroupList from '~/api/normal/group/getGroupList';
 
 const schema = yup

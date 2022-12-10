@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { Button, Container, Spinner, Stack } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket';
 import getPresentation from '~/api/normal/presentation/getPresentation';
 import getPresentingSlide from '~/api/normal/slide/getPrentingSlide';
@@ -113,6 +114,7 @@ function Presentation() {
         setSlide(slideResponse.data.object);
         setPresentation(presentationRes.data.object);
       } catch (error) {
+        toast.error(error?.response?.data?.message);
         setSlide(null);
       } finally {
         setLoading(false);

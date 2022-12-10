@@ -1,11 +1,10 @@
-import privateAxios from '../PrivateAxios';
+import privateAxios from '~/api/PrivateAxios';
 
 export default async function createPresentation({
-  groupId,
   presentationName,
   description,
 }) {
-  const response = await privateAxios.post(`/group/${groupId}/presentation`, {
+  const response = await privateAxios.post(`/presentation`, {
     presentationName,
     description,
   });

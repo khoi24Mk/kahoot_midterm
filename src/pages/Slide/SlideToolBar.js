@@ -1,34 +1,26 @@
-import clsx from 'clsx';
-import React from 'react';
 import { Button, Spinner } from 'react-bootstrap';
-import { CiImport } from 'react-icons/ci';
-import { FcSettings } from 'react-icons/fc';
-import { GrFormAdd } from 'react-icons/gr';
-import { HiOutlineDocumentReport } from 'react-icons/hi';
-import styles from './slide.module.css';
+import { BsFillCaretRightFill, BsFillPlusCircleFill } from 'react-icons/bs';
 
-export default function SlideToolBar({ handleAddSlide, saving }) {
+export default function SlideToolBar({
+  handleAddSlide,
+  saving,
+  handleStartPresentation,
+}) {
   return (
-    <div className={clsx(styles.Presentation_operator)}>
-      <div className={clsx(styles.Presentation_operator_start)}>
+    <div className="d-flex justify-content-between p-3 px-5 border-bottom border-2 shadow">
+      <div>
         <Button
           onClick={async () => {
             await handleAddSlide();
           }}
+          className="fw-bold"
         >
-          <GrFormAdd color="white" size={20} />
+          <BsFillPlusCircleFill size={22} className="me-1" />
           New Slide
         </Button>
-        <Button>
-          <CiImport style={{ margin: '5' }} />
-          Import
-        </Button>
       </div>
-      <div
-        style={{ fontSize: '1rem' }}
-        className={clsx(styles.Presentation_operator_end)}
-      >
-        {saving ? (
+      <div>
+        {saving && (
           <span>
             <Spinner
               style={{ width: '1rem', height: '1rem' }}
@@ -36,16 +28,14 @@ export default function SlideToolBar({ handleAddSlide, saving }) {
             />
             Saving
           </span>
-        ) : (
-          <div />
         )}
-        <Button>
-          <FcSettings />
-          Seting
-        </Button>
-        <Button>
-          <HiOutlineDocumentReport />
-          Result
+
+        <Button
+          variant="primary"
+          onClick={handleStartPresentation}
+          className="fw-bold"
+        >
+          <BsFillCaretRightFill size={22} /> Present
         </Button>
       </div>
     </div>

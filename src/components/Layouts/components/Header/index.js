@@ -127,87 +127,99 @@ function Header() {
             style={{ maxHeight: '100px' }}
             navbarScroll
           >
-            <Nav.Link as={Link} to="/group">
-              MY GROUP
-            </Nav.Link>
-            <Nav.Link as={Link} to="/presentation">
-              MY PRESENTATION
-            </Nav.Link>
-          </Nav>
-          <Row className={clsx(styles.grNoty)}>
-            <Col md={6} className="">
-              <Button
-                onClick={toggleShowA}
-                className={clsx(styles.bell, 'mb-s')}
-              >
-                <FaRegBell />
-              </Button>
-              <Toast
-                className={clsx(styles.notification)}
-                show={showA}
-                onClose={toggleShowA}
-              >
-                <Toast>
-                  <Toast.Header closeButton={false}>
-                    <img
-                      src="holder.js/20x20?text=%20"
-                      className="rounded me-2"
-                      alt=""
-                    />
-                    <strong className="me-auto">Bootstrap</strong>
-                    <small>11 mins ago</small>
-                  </Toast.Header>
-                  <Toast.Body>
-                    Woohoo, you are reading this text in a Toast!
-                  </Toast.Body>
-                </Toast>
-              </Toast>
-            </Col>
-          </Row>
-          {unAuthenticated ? (
-            <div className={clsx(styles.unauth)}>
-              <Button as={Link} to="/login" variant="outline-info">
-                Log in
-              </Button>
-              <Button as={Link} to="/register" variant="outline-info">
-                Register
-              </Button>
-            </div>
-          ) : (
-            <div
-              onClick={() => {
-                hindeA();
-              }}
-              className={clsx(styles.user)}
-            >
-              <Dropdown className={clsx(styles.avtDropDown)}>
-                <Dropdown.Toggle
-                  className={clsx(styles.realAvt)}
-                  split
-                  variant="success"
-                  id="dropdown-split-basic"
+            {unAuthenticated ? (
+              <div>
+                <Button
+                  className="ms-5 me-2"
+                  as={Link}
+                  to="/login"
+                  variant="dark"
                 >
-                  <Image
-                    roundedCircle
-                    className={clsx(styles.avt)}
-                    src={profile?.avatar || '/defaultAvatar.png'}
-                    alt=""
-                  />
-                </Dropdown.Toggle>
-                <Dropdown.Menu className={clsx(styles.dropInfo)}>
-                  <Dropdown.Item as={Link} to="/profile">
-                    My profile
-                  </Dropdown.Item>
-                  <Dropdown.Item as={Link} to="/group">
-                    My group
-                  </Dropdown.Item>
-                  <Dropdown.Item as={Link} to="/login" onClick={handleLogout}>
-                    Log out
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
-          )}
+                  Log in
+                </Button>
+                <Button as={Link} to="/register" variant="dark">
+                  Register
+                </Button>
+              </div>
+            ) : (
+              <div className="d-flex align-items-center">
+                <Nav.Link as={Link} to="/group">
+                  <Button variant="outline-primary">MY GROUP</Button>
+                </Nav.Link>
+                <Nav.Link as={Link} to="/presentation">
+                  <Button variant="outline-primary">MY PRESENTATION</Button>
+                </Nav.Link>
+
+                <Row className={clsx(styles.grNoty)}>
+                  <Col md={6} className="">
+                    <Button
+                      onClick={toggleShowA}
+                      className={clsx(styles.bell, 'mb-s')}
+                    >
+                      <FaRegBell />
+                    </Button>
+                    <Toast
+                      className={clsx(styles.notification)}
+                      show={showA}
+                      onClose={toggleShowA}
+                    >
+                      <Toast>
+                        <Toast.Header closeButton={false}>
+                          <img
+                            src="holder.js/20x20?text=%20"
+                            className="rounded me-2"
+                            alt=""
+                          />
+                          <strong className="me-auto">Bootstrap</strong>
+                          <small>11 mins ago</small>
+                        </Toast.Header>
+                        <Toast.Body>
+                          Woohoo, you are reading this text in a Toast!
+                        </Toast.Body>
+                      </Toast>
+                    </Toast>
+                  </Col>
+                </Row>
+                <div
+                  onClick={() => {
+                    hindeA();
+                  }}
+                  className={clsx(styles.user)}
+                >
+                  <Dropdown className={clsx(styles.avtDropDown)}>
+                    <Dropdown.Toggle
+                      className={clsx(styles.realAvt)}
+                      split
+                      variant="success"
+                      id="dropdown-split-basic"
+                    >
+                      <Image
+                        roundedCircle
+                        className={clsx(styles.avt)}
+                        src={profile?.avatar || '/defaultAvatar.png'}
+                        alt=""
+                      />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu className={clsx(styles.dropInfo)}>
+                      <Dropdown.Item as={Link} to="/profile">
+                        My profile
+                      </Dropdown.Item>
+                      <Dropdown.Item as={Link} to="/group">
+                        My group
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        as={Link}
+                        to="/login"
+                        onClick={handleLogout}
+                      >
+                        Log out
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </div>
+              </div>
+            )}
+          </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>

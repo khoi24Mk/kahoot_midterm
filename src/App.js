@@ -1,4 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import AuthenticationLayout from './components/Layouts/AuthenticationLayout';
 
 import DefaultLayout from './components/Layouts/DefaultLayout';
@@ -11,6 +13,7 @@ import GroupDetail from './pages/Group/components/ContentGroup/GroupDetail';
 import GroupList from './pages/Group/components/ContentGroup/GroupList';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import MyPresentation from './pages/MyPresentation';
 import Presentation from './pages/presentation';
 import Profile from './pages/Profile';
 import Invitation from './pages/redirections/Invitation';
@@ -20,34 +23,38 @@ import Slide from './pages/Slide';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Navigate to="/home" />} />
-        <Route path="/verification" element={<Verification />} />
-        <Route element={<ProfileLayout />}>
-          <Route element={<AuthenticationLayout />}>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Route>
+    <div>
+      <ToastContainer />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Navigate to="/home" />} />
+          <Route path="/verification" element={<Verification />} />
+          <Route element={<ProfileLayout />}>
+            <Route element={<AuthenticationLayout />}>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Route>
 
-          <Route element={<DefaultLayout />}>
-            <Route path="/home" element={<Home />} />
+            <Route element={<DefaultLayout />}>
+              <Route path="/home" element={<Home />} />
 
-            <Route element={<PrivateLayout />}>
-              <Route path="/invitation" element={<Invitation />} />
-              <Route path="/group" element={<GroupList />} />
-              <Route path="/group/:id" element={<GroupDetail />} />
-              <Route path="/presentation/:id/slide" element={<Slide />} />
-              <Route path="/presentation/:id" element={<Presentation />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route element={<PrivateLayout />}>
+                <Route path="/presentation" element={<MyPresentation />} />
+                <Route path="/invitation" element={<Invitation />} />
+                <Route path="/group" element={<GroupList />} />
+                <Route path="/group/:id" element={<GroupDetail />} />
+                <Route path="/presentation/:id/slide" element={<Slide />} />
+                <Route path="/presentation/:id" element={<Presentation />} />
+                <Route path="/profile" element={<Profile />} />
+              </Route>
             </Route>
           </Route>
-        </Route>
-        <Route path="/notAuthentication" element={<NotAuthentication />} />
-        <Route path="/notPermission" element={<NotPermission />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+          <Route path="/notAuthentication" element={<NotAuthentication />} />
+          <Route path="/notPermission" element={<NotPermission />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </div>
   );
 }
 

@@ -1,15 +1,13 @@
+import 'chart.js/auto';
 import clsx from 'clsx';
 import React, { useEffect, useState } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { Bar } from 'react-chartjs-2';
+import { FullScreen, useFullScreenHandle } from 'react-full-screen';
 import { FaHackerrank } from 'react-icons/fa';
 import { FcBarChart } from 'react-icons/fc';
 import { RiArrowDropDownLine } from 'react-icons/ri';
 import { useParams } from 'react-router-dom';
-import { BsBookmarks } from 'react-icons/bs';
 import useWebSocket from 'react-use-websocket';
-import CopyToClipboard from 'react-copy-to-clipboard';
-import { Button } from 'react-bootstrap';
 import getPresentation from '~/api/normal/presentation/getPresentation';
 import createSlide from '~/api/normal/slide/createSlide';
 import deleteSlide from '~/api/normal/slide/deleteSlide';
@@ -18,10 +16,10 @@ import updateSlide from '~/api/normal/slide/updateSlide';
 import Loading from '~/components/Loading';
 import Question from '~/components/Questions';
 import Constant from '~/constants';
+import PresentingSlide from './PresentingSlide';
 import styles from './slide.module.css';
 import SlideItem from './SlideItem';
 import SlideToolBar from './SlideToolBar';
-import 'chart.js/auto';
 
 const CustomDropdown = React.forwardRef(({ children, onClick }, ref) => (
   <button
@@ -51,29 +49,41 @@ const SlideOption = [
 ];
 
 export default React.memo(function Slide() {
-  // get presentation
-  const [presentation, setPresentation] = useState(null);
-  const [saving, setSaving] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [ListSlide, setListSlide] = useState(undefined);
-  const [SlideEditing, setSlideEditing] = useState();
-
-  // const [chartName, setChartName] = useState('bar');
-  // important
-  const [question, setQuestion] = useState('Enter Your Question');
-  // important
-  const [SlideType, setSlideType] = useState(SlideOption[0]);
-  // important
+  // presentation ID
   const { id: presentationId } = useParams();
-  // important
-  const [ChartData, setChartData] = useState([]);
 
-  // link
-  const baseURL = window.location.href.replace(window.location.pathname, '');
-  const [presentationLink, setPresentationLink] = useState({
-    value: `${baseURL}/presentation/${presentationId}`,
-    copied: false,
-  });
+  // state for presentation
+  const [presentation, setPresentation] = useState(null);
+  // state for saving
+  const [saving, setSaving] = useState(false);
+  // state loading
+  const [loading, setLoading] = useState(false);
+  // state for slides
+  const [ListSlide, setListSlide] = useState(undefined);
+  // state editting slide
+  const [SlideEditing, setSlideEditing] = useState();
+  // state for presenting state
+  const [presenting, setPresenting] = useState(false);
+  // manage question
+  const [question, setQuestion] = useState('Enter Your Question');
+  // manage slide type
+  const [SlideType, setSlideType] = useState(SlideOption[0]);
+  // manage chart data
+  const [ChartData, setChartData] = useState([]);
+  // state for answer
+  const [answer, setAnswer] = useState(null);
+  // handle full screen
+  const fullScreen = useFullScreenHandle();
+  // handle start presentation
+  const handleStartPresentation = () => {
+    fullScreen.enter();
+    setPresenting(true);
+  };
+  // handle end presentation
+  const handleEndPresentation = () => {
+    fullScreen.exit();
+    setPresenting(false);
+  };
   // handle socket message
   const handleReceivedMessage = (event) => {
     const receivedEvent = JSON.parse(event);
@@ -111,6 +121,7 @@ export default React.memo(function Slide() {
     onMessage: (message) => handleReceivedMessage(message?.data),
   });
 
+  // join room with ws
   useEffect(() => {
     if (presentation == null) return;
     sendMessage(
@@ -136,7 +147,7 @@ export default React.memo(function Slide() {
       );
   }, [presentation]);
 
-  const [answer, setAnswer] = useState(null);
+  // get slide data
   useEffect(() => {
     const asyncGetSlide = async () => {
       try {
@@ -159,6 +170,7 @@ export default React.memo(function Slide() {
     asyncGetSlide();
   }, []);
 
+  // data for slide
   useEffect(() => {
     if (!SlideEditing) return;
 
@@ -182,11 +194,13 @@ export default React.memo(function Slide() {
     );
   }, [SlideEditing]);
 
+  // update if need
   const [isNeedUpdate, setIsNeedUpdate] = useState(false);
   const handleFlagUpdate = () => {
     setIsNeedUpdate(!isNeedUpdate);
   };
 
+  // handle for deleting slide
   const handleDeleteSlide = async (slideId) => {
     try {
       setSaving(true);
@@ -204,6 +218,7 @@ export default React.memo(function Slide() {
     }
   };
 
+  // handle when adding slide
   const handleAddSlide = async () => {
     try {
       setSaving(true);
@@ -216,6 +231,7 @@ export default React.memo(function Slide() {
     }
   };
 
+  // handle upadte slide
   const handleUpdateSlide = async () => {
     try {
       setSaving(true);
@@ -256,6 +272,7 @@ export default React.memo(function Slide() {
           await handleAddSlide();
         }}
         saving={saving}
+        handleStartPresentation={handleStartPresentation}
       />
       <div className={clsx(styles.Slide_workspace)}>
         <div className={clsx(styles.Slide_review)}>
@@ -274,45 +291,15 @@ export default React.memo(function Slide() {
           ))}
         </div>
         <div className={clsx(styles.Slide_editor)}>
-          <div className="relative bg-light p-2 rounded-1">
-            <div
-              style={{ width: '100%' }}
-              className="position-relative d-flex flex-column align-items-center h-100"
-            >
-              <p>{question}</p>
-
-              <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
-                <CopyToClipboard text={presentationLink.value}>
-                  <Button
-                    onClick={() => {
-                      setPresentationLink({
-                        ...presentationLink,
-                        copied: true,
-                      });
-                    }}
-                    size="sm"
-                    className="p-1"
-                    variant={presentationLink.copied ? 'secondary' : 'primary'}
-                  >
-                    <BsBookmarks />{' '}
-                    {presentationLink.copied ? 'Copied' : 'Copy link'}
-                  </Button>
-                </CopyToClipboard>
-              </div>
-
-              <Bar
-                data={{
-                  labels: ChartData.map((i) => i.labels),
-                  datasets: [
-                    {
-                      label: 'Rating',
-                      data: ChartData.map((i) => i.data),
-                    },
-                  ],
-                }}
-              />
-            </div>
-          </div>
+          <FullScreen handle={fullScreen}>
+            <PresentingSlide
+              question={question}
+              presenting={presenting}
+              handleEndPresentation={handleEndPresentation}
+              chartData={ChartData}
+              presentationId={presentationId}
+            />
+          </FullScreen>
         </div>
         <div className={clsx(styles.Slide_operator)}>
           <div className={clsx(styles.Slide_operator_type)}>

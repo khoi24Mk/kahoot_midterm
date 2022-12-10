@@ -20,13 +20,13 @@ import 'react-multi-email/dist/style.css';
 
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
-import changeRole from '~/api/group/changeRole';
-import getGroupInvitationLink from '~/api/group/getGroupInvitationLink';
-import sendInviteEmails from '~/api/group/sendInviteEmails';
 import { AuthContext } from '~/Context';
 import './GroupDetail.css';
 import People from './People';
-import getUserInGroup from '~/api/group/getUserInGroup';
+import getGroupInvitationLink from '~/api/normal/group/getGroupInvitationLink';
+import sendInviteEmails from '~/api/normal/group/sendInviteEmails';
+import changeRole from '~/api/normal/group/changeRole';
+import getUserInGroup from '~/api/normal/group/getUserInGroup';
 
 const CustomToggle = forwardRef(({ children, onClick }, ref) => (
   <button
