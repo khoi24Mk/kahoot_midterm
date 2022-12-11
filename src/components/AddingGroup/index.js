@@ -58,7 +58,7 @@ function AddingGroup({ setGroups }) {
     <div>
       <Button
         className="position-absolute p-3 fw-bold d-flex align-items-lg-center"
-        style={{ bottom: '30px', right: '30px' }}
+        style={{ bottom: '30px', right: '30px', zIndex: 10 }}
         onClick={handleShowCreate}
       >
         <BsFillPlusCircleFill className="me-1" size={20} />
