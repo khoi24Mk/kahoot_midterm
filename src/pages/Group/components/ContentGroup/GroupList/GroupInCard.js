@@ -142,10 +142,7 @@ function GroupInCard({ groupId, groupName, owner, description }) {
         <img
           className={clsx(styles.GroupInCard_img)}
           alt=""
-          src={
-            owner?.avatar ||
-            'https://cdn5.vectorstock.com/i/1000x1000/78/59/happy-grin-emoji-instant-messaging-icon-imag-vector-17067859.jpg'
-          }
+          src={owner?.avatar || '/defaultAvatar.png'}
         />
         <Card.Subtitle
           onClick={() => {

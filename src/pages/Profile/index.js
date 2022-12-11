@@ -159,7 +159,7 @@ function Profile() {
             >
               <div style={{ height: '100%', position: 'relative' }}>
                 <img
-                  src={profile.avatar || avt}
+                  src={profile.avatar || '/defaultAvatar.png'}
                   alt=""
                   className={clsx(styles.avt)}
                 />
