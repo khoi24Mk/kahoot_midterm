@@ -28,9 +28,9 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/home" />} />
-          <Route path="/verification" element={<Verification />} />
           <Route element={<ProfileLayout />}>
             <Route element={<AuthenticationLayout />}>
+              <Route path="/verification" element={<Verification />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
             </Route>

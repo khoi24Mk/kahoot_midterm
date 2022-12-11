@@ -45,6 +45,7 @@ const CustomToggle = forwardRef(({ children, onClick }, ref) => (
 ));
 
 function PeopleGroup({ members, setMembers, id: groupId, myRole }) {
+  console.log(groupId);
   const context = useContext(AuthContext);
   // get link
   const [showInvitationModal, setShowInvitationModal] = useState(false);
