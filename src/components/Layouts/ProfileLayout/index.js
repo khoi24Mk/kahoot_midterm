@@ -12,10 +12,13 @@ export default function ProfileLayout() {
 
   useEffect(() => {
     const asyncGetProfile = async () => {
-      const retProfile = await getProfile();
-      setProfile(retProfile);
-      setLoading(false);
-      return retProfile;
+      try {
+        const resProfile = await getProfile();
+        setProfile(resProfile?.data?.object);
+        setLoading(false);
+      } catch (err) {
+        setProfile(null);
+      }
     };
     asyncGetProfile();
   }, []);

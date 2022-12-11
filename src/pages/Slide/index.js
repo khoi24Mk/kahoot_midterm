@@ -1,12 +1,9 @@
 import 'chart.js/auto';
 import clsx from 'clsx';
 import React, { useEffect, useState } from 'react';
-import Dropdown from 'react-bootstrap/Dropdown';
 import { FullScreen, useFullScreenHandle } from 'react-full-screen';
-import { FaHackerrank } from 'react-icons/fa';
-import { FcBarChart } from 'react-icons/fc';
-import { RiArrowDropDownLine } from 'react-icons/ri';
 import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import useWebSocket from 'react-use-websocket';
 import getPresentation from '~/api/normal/presentation/getPresentation';
 import createSlide from '~/api/normal/slide/createSlide';
@@ -20,33 +17,6 @@ import PresentingSlide from './PresentingSlide';
 import styles from './slide.module.css';
 import SlideItem from './SlideItem';
 import SlideToolBar from './SlideToolBar';
-
-const CustomDropdown = React.forwardRef(({ children, onClick }, ref) => (
-  <button
-    type="button"
-    className={clsx(styles.slide_operator_dropButton)}
-    href=""
-    ref={ref}
-    onClick={(e) => {
-      e.preventDefault();
-      onClick(e);
-    }}
-  >
-    {children}
-    <RiArrowDropDownLine size={30} />
-  </button>
-));
-
-const SlideOption = [
-  {
-    Icon: FcBarChart,
-    Name: 'multiChoice',
-  },
-  {
-    Icon: FaHackerrank,
-    Name: 'ranking',
-  },
-];
 
 export default React.memo(function Slide() {
   // presentation ID
@@ -66,8 +36,6 @@ export default React.memo(function Slide() {
   const [presenting, setPresenting] = useState(false);
   // manage question
   const [question, setQuestion] = useState('Enter Your Question');
-  // manage slide type
-  const [SlideType, setSlideType] = useState(SlideOption[0]);
   // manage chart data
   const [ChartData, setChartData] = useState([]);
   // state for answer
@@ -152,17 +120,15 @@ export default React.memo(function Slide() {
     const asyncGetSlide = async () => {
       try {
         setLoading(true);
-
         // get presentation
         const presentationRes = await getPresentation(presentationId);
         setPresentation(presentationRes.data.object);
         // get slide
-        const listSlide = await getSlideOfPresent(presentationId);
-        setListSlide(listSlide);
-        setSlideEditing(listSlide[0]);
-        return listSlide;
-      } catch (e) {
-        return null;
+        const resListSlide = await getSlideOfPresent(presentationId);
+        setListSlide(resListSlide?.data?.object);
+        setSlideEditing(resListSlide?.data?.object[0]);
+      } catch (err) {
+        toast.error(err?.response?.data?.message);
       } finally {
         setLoading(false);
       }
@@ -302,44 +268,12 @@ export default React.memo(function Slide() {
           </FullScreen>
         </div>
         <div className={clsx(styles.Slide_operator)}>
-          <div className={clsx(styles.Slide_operator_type)}>
-            <p className="fw-bold">Slide type</p>
-            <div className={clsx(styles.Slide_operatorType_dropdown)}>
-              <p>
-                <span>
-                  <SlideType.Icon size={30} />
-                </span>
-                {SlideType.Name}
-              </p>
-              <Dropdown>
-                <Dropdown.Toggle as={CustomDropdown} />
-
-                <Dropdown.Menu className={clsx(styles.Slide_typeMenu)}>
-                  {SlideOption.map((item) => (
-                    <Dropdown.Item
-                      key={item.Name}
-                      onClick={() => {
-                        setSlideType(item);
-                      }}
-                      className={clsx(styles.Slide_typeItem)}
-                      href="#/action-1"
-                    >
-                      <p>
-                        <item.Icon size={30} />
-                        {item.Name}
-                      </p>
-                    </Dropdown.Item>
-                  ))}
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
-          </div>
           <Question
             data={ChartData}
             question={question}
             setQuestion={setQuestion}
             setData={setChartData}
-            SlideType={SlideType.Name}
+            slideType={SlideEditing.type}
             answer={answer}
             setAnswer={setAnswer}
             setIsNeedUpdate={handleFlagUpdate}

@@ -24,7 +24,7 @@ function Presentation() {
 
   // state for slide
   const [slide, setSlide] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // submitting
   const [submiting, setSubmitting] = useState(false);

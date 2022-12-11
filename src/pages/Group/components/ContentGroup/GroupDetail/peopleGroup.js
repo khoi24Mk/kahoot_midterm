@@ -19,6 +19,7 @@ import { ReactMultiEmail } from 'react-multi-email';
 import 'react-multi-email/dist/style.css';
 
 import clsx from 'clsx';
+import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
 import { AuthContext } from '~/Context';
 import './GroupDetail.css';
@@ -45,7 +46,6 @@ const CustomToggle = forwardRef(({ children, onClick }, ref) => (
 ));
 
 function PeopleGroup({ members, setMembers, id: groupId, myRole }) {
-  console.log(groupId);
   const context = useContext(AuthContext);
   // get link
   const [showInvitationModal, setShowInvitationModal] = useState(false);
@@ -76,17 +76,26 @@ function PeopleGroup({ members, setMembers, id: groupId, myRole }) {
   // handle invitation modal
   const handleHideInvitationModal = () => setShowInvitationModal(false);
   const handleShowInvitationModal = async () => {
-    setShowInvitationModal(true);
-    const link = await getGroupInvitationLink({ groupId });
-    setInvilink(link?.invitationLink);
+    try {
+      setShowInvitationModal(true);
+      const resLink = await getGroupInvitationLink({ groupId });
+      setInvilink(resLink?.data?.object?.invitationLink);
+    } catch (err) {
+      toast.error(err?.response?.data?.message);
+    }
   };
 
   // handle send invitation
   const handleSendInviteByEmail = async () => {
-    setSubmitting(true);
-    await sendInviteEmails({ groupId, emails });
-    setSubmitting(false);
-    setShowInvitationModal(false);
+    try {
+      setSubmitting(true);
+      await sendInviteEmails({ groupId, emails });
+    } catch (err) {
+      toast.error(err?.response?.data?.message);
+    } finally {
+      setSubmitting(false);
+      setShowInvitationModal(false);
+    }
   };
 
   // handle assign role
@@ -100,22 +109,21 @@ function PeopleGroup({ members, setMembers, id: groupId, myRole }) {
   const handleSubmitAssignRole = async () => {
     setSubmitting(true);
     try {
-      const response = await changeRole({
+      await changeRole({
         groupId,
         userId: memToAssign.id,
         role: roleToAssign,
       });
 
       // refetching member
-      const retMemberList = await getUserInGroup({ id: groupId });
-      setMembers(retMemberList);
+      const resMemberList = await getUserInGroup({ id: groupId });
+      setMembers(resMemberList?.data?.object);
       setShowAssignRole(false);
       setRoleToAssign('');
       setMemToAssign({});
       setShowAssignRole(false);
-      return response;
     } catch (err) {
-      return null;
+      toast.error(err?.response?.data?.message);
     } finally {
       setSubmitting(false);
     }

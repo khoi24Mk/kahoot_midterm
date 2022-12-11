@@ -1,8 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
-import { Card, Col, Container, Nav, Row, Tab } from 'react-bootstrap';
+import { Button, Card, Col, Container, Nav, Row, Tab } from 'react-bootstrap';
+import { FcInfo } from 'react-icons/fc';
 import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import getUserInGroup from '~/api/normal/group/getUserInGroup';
-import getPresentationInGroup from '~/api/normal/presentation/getPresentationGroup';
+import getPresentedPresentationInGroup from '~/api/normal/presentation/getPresentingPresentationGroup';
 import Loading from '~/components/Loading';
 import { AuthContext } from '~/Context';
 import './GroupDetail.css';
@@ -21,19 +23,25 @@ function GroupDetail() {
 
   useEffect(() => {
     const asyncGetData = async () => {
-      setLoading(true);
-      const retMemberList = await getUserInGroup({ id: groupId });
-      const retPresentationList = await getPresentationInGroup({ id: groupId });
-      setMemberList(retMemberList);
-      setPresentationList(retPresentationList);
-      const members = retMemberList.filter((member) => {
-        return member.id === profile.id;
-      });
+      try {
+        setLoading(true);
+        const resMemberList = await getUserInGroup({ id: groupId });
+        const resPresentationList = await getPresentedPresentationInGroup({
+          id: groupId,
+        });
+        setMemberList(resMemberList?.data?.object);
+        setPresentationList(resPresentationList?.data?.object);
+        const members = resMemberList?.data?.object.filter((member) => {
+          return member.id === profile.id;
+        });
 
-      setMyRole(members[0].role);
-      setLoading(false);
-
-      return retMemberList;
+        setMyRole(members[0].role);
+        setLoading(false);
+      } catch (err) {
+        toast.err(err?.response?.data?.message);
+      } finally {
+        setLoading(false);
+      }
     };
     asyncGetData();
   }, []);
@@ -67,6 +75,25 @@ function GroupDetail() {
           </Col>
           <Col sm={12} lg={10}>
             {/* Notification about presenting */}
+
+            <Card className="mb-3 shadow">
+              <Card.Body className="d-flex justify-content-between">
+                <div className="d-flex align-items-center">
+                  <FcInfo className="me-2" size={30} />
+                  <div className="fw-bold">
+                    There is an presentation in this group. Click to button to
+                    join or support
+                  </div>
+                </div>
+
+                <div className="d-flex">
+                  <Button className="me-2">Join</Button>
+                  {myRole !== 'MEMBER' && (
+                    <Button variant="secondary">Support</Button>
+                  )}
+                </div>
+              </Card.Body>
+            </Card>
 
             <Tab.Content>
               <Tab.Pane eventKey="first">

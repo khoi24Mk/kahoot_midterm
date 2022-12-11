@@ -17,9 +17,9 @@ import Row from 'react-bootstrap/Row';
 import Toast from 'react-bootstrap/Toast';
 import { FaRegBell } from 'react-icons/fa';
 import { Link, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import logout from '~/api/auth/logout';
 import getGroupList from '~/api/normal/group/getGroupList';
-import Loading from '~/components/Loading';
 import { AuthContext } from '~/Context';
 import { menu } from '~/img';
 import styles from './Header.module.css';
@@ -27,15 +27,15 @@ import styles from './Header.module.css';
 function Header() {
   const { id } = useParams();
   const [groupList, setGroupList] = useState([]);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const asyncGetGroup = async () => {
-      setLoading(true);
-      const retGroupList = await getGroupList();
-      setGroupList(retGroupList);
-      setLoading(false);
-      return retGroupList;
+      try {
+        const resGroupList = await getGroupList();
+        setGroupList(resGroupList?.data?.object);
+      } catch (err) {
+        toast.error(err?.response?.data?.message);
+      }
     };
     asyncGetGroup();
   }, []);
@@ -61,9 +61,7 @@ function Header() {
     localStorage.removeItem('refresh_token');
   };
 
-  return loading ? (
-    <Loading />
-  ) : (
+  return (
     <Navbar bg="light" expand="lg">
       <Container fluid>
         <>

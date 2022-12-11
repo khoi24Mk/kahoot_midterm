@@ -100,10 +100,7 @@ function MultipleChoice({
         <div className={clsx(styles.Slide_operator_answer)}>
           <div className={clsx(styles.Slide_operatorAns_header)}>
             <p className="fw-bold">Options</p>
-            <Button onClick={() => handleAddOption()}>
-              <GrFormAdd color="white" size={20} />
-              Add Option
-            </Button>
+            <Button onClick={() => handleAddOption()}>Add Option</Button>
           </div>
           <div className={clsx(styles.Slide_operatorAnswer_item)}>
             <DragDropContext onDragEnd={handleOnDragEnd}>
@@ -178,14 +175,6 @@ function MultipleChoice({
           </div>
         </div>
       </div>
-      {/* <Form>
-        <Form.Check
-          type="switch"
-          id="custom-switch"
-          label="Check this switch"
-          onClick={() => setIsShowAnswer(!isShowAnswer)}
-        />
-      </Form> */}
       <div className={clsx(styles.Slide_operator_layout)}>
         <p className="fw-bold">Result layout</p>
         <div className={clsx(styles.Slide_operatorLayout_dropdown)}>

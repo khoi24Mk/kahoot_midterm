@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Accordion } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
+import { toast } from 'react-toastify';
 import getGroupList from '~/api/normal/group/getGroupList';
 import AddingGroup from '~/components/AddingGroup';
 import Loading from '~/components/Loading';
@@ -13,11 +14,14 @@ function GroupList() {
 
   useEffect(() => {
     const asyncGetGroup = async () => {
-      setLoading(true);
-      const retGroupList = await getGroupList();
-      setGroupList(retGroupList);
-      setLoading(false);
-      return retGroupList;
+      try {
+        setLoading(true);
+        const resGroupList = await getGroupList();
+        setGroupList(resGroupList?.data?.object);
+        setLoading(false);
+      } catch (err) {
+        toast.error(err?.response?.data?.message);
+      }
     };
     asyncGetGroup();
   }, []);

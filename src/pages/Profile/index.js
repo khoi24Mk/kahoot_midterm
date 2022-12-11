@@ -13,6 +13,7 @@ import Carousel from 'react-bootstrap/Carousel';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
+import { toast } from 'react-toastify';
 import Modal from 'react-bootstrap/Modal';
 import Row from 'react-bootstrap/Row';
 import { useForm } from 'react-hook-form';
@@ -45,10 +46,10 @@ function Profile() {
   useEffect(() => {
     const asyncGroup = async () => {
       try {
-        const reponse = await getGroupList();
-        setMyGroups(reponse);
-      } catch (error) {
-        //
+        const resGroupList = await getGroupList();
+        setMyGroups(resGroupList?.data?.object);
+      } catch (err) {
+        toast.error(err?.response?.data?.message);
       }
     };
     asyncGroup();

@@ -1,6 +1,12 @@
-const BackEnd = process.env.REACT_APP_BACKEND;
+const BackEnd =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:8080/api/v1'
+    : process.env.REACT_APP_BACKEND;
 const GoogleClientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-const SocketURL = process.env.REACT_APP_SOCKET_URL;
+const SocketURL =
+  process.env.NODE_ENV === 'development'
+    ? 'ws://localhost:8080/socket'
+    : process.env.REACT_APP_SOCKET_URL;
 const ClientMessageType = {
   joinRoom: 'JOIN_ROOM',
   leaveRoom: 'LEAVE_ROOM',

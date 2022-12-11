@@ -8,6 +8,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useForm } from 'react-hook-form';
 import { BsFillPlusCircleFill } from 'react-icons/bs';
+import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import createGroup from '~/api/normal/group/createGroup';
 import getGroupList from '~/api/normal/group/getGroupList';
@@ -39,16 +40,15 @@ function AddingGroup({ setGroups }) {
   const onSubmit = async (data) => {
     setSubmitting(true);
     try {
-      const response = await createGroup({
+      await createGroup({
         groupName: data.groupName,
         description: data.description,
       });
-      const retGroupList = await getGroupList();
-      setGroups(retGroupList);
+      const resGroupList = await getGroupList();
+      setGroups(resGroupList?.data?.object);
       handleCloseCreate();
-      return response;
     } catch (error) {
-      return null;
+      toast.error(error?.response?.data?.message);
     } finally {
       setSubmitting(false);
     }

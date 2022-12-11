@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import MultipleChoice from './MultipleChoice';
 
 function Question({
-  SlideType,
+  slideType,
   data,
   setData,
   setChartName,
@@ -13,11 +13,9 @@ function Question({
   setAnswer,
   setIsNeedUpdate,
 }) {
-  if (SlideType === 'multiChoice') {
+  if (!slideType || !slideType === 'MULTIPLE_CHOICE') {
     return (
       <MultipleChoice
-        // // label={label}
-        // setLabels={setLabels}
         data={data}
         setData={setData}
         setChartName={setChartName}
@@ -28,7 +26,6 @@ function Question({
         setIsNeedUpdate={setIsNeedUpdate}
       />
     );
-    // return <MultipleChoice />;
   }
 }
 
