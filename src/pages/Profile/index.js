@@ -145,7 +145,7 @@ function Profile() {
   //     setEditable(false);
   //   };
   return (
-    <>
+    <div className="overflow-scroll h-100">
       <Notify notify={notify} setShow={setNotify} />
       {loading.flag ? (
         <Loading msg={loading?.msg} className={clsx(styles.loading)} />
@@ -407,7 +407,7 @@ function Profile() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
 

@@ -1,14 +1,36 @@
 import privateAxios from '~/api/PrivateAxios';
+import Constant from '~/constants';
 
-export default async function createSlide(id) {
+async function createDefaultMultipleChoiceSlide(id) {
   const response = await privateAxios.post(`/presentation/${id}/slide`, {
-    answer: 'This is another answer',
-    content: 'How old are you?',
-    options: [
-      'This is answer v1',
-      "This isn't answer v1",
-      'This is another answer v2',
-    ],
+    content: 'Question',
+    options: ['Option 1', 'Option 2', 'Option 3'],
+    type: Constant.SlideType.multipleChoie,
   });
   return response;
 }
+
+async function createDefaultHeadingSlide(id) {
+  const response = await privateAxios.post(`/presentation/${id}/slide`, {
+    content: 'Heading',
+    options: ['Sub Heading'],
+    type: Constant.SlideType.heading,
+  });
+  return response;
+}
+async function createDefaultParagraphSlide(id) {
+  const response = await privateAxios.post(`/presentation/${id}/slide`, {
+    content: 'Title',
+    options: ['Paragraph'],
+    type: Constant.SlideType.paragraph,
+  });
+  return response;
+}
+
+const SlideAction = {
+  createDefaultMultipleChoiceSlide,
+  createDefaultHeadingSlide,
+  createDefaultParagraphSlide,
+};
+
+export default SlideAction;

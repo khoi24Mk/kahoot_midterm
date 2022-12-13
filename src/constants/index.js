@@ -24,6 +24,12 @@ const ClientType = {
   member: 'MEMBER',
 };
 
+const SlideType = {
+  multipleChoie: 'MULTIPLE_CHOICE',
+  heading: 'HEADING',
+  paragraph: 'PARAGRAPH',
+};
+
 const Constant = {
   BackEnd,
   GoogleClientId,
@@ -31,5 +37,6 @@ const Constant = {
   ClientMessageType,
   ServerMessageType,
   ClientType,
+  SlideType,
 };
 export default Constant;

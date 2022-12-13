@@ -27,7 +27,6 @@
     "react-chartjs-2": "^5.0.1",
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18.2.0",
-    "react-full-screen": "^1.1.1",
     "react-hook-form": "^7.39.4",
     "react-icons": "^4.6.0",
     "react-multi-email": "^1.0.2",
@@ -38,6 +37,7 @@
     "react-toastify": "^9.1.1",
     "react-use-websocket": "^4.2.0",
     "recharts": "^2.1.16",
+    "screenfull": "^6.0.2",
     "socket.io": "^4.5.4",
     "web-vitals": "^2.1.4",
     "yup": "^0.32.11"

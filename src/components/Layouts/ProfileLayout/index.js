@@ -18,6 +18,8 @@ export default function ProfileLayout() {
         setLoading(false);
       } catch (err) {
         setProfile(null);
+      } finally {
+        setLoading(false);
       }
     };
     asyncGetProfile();

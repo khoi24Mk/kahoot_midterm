@@ -1,11 +1,11 @@
 import { Outlet } from 'react-router-dom';
-import Header from '~/components/Layouts/components/Header';
+import Header from '~/components/Layouts/DefaultLayout/patitials/Header';
 
 function DefaultLayout() {
   return (
-    <div>
+    <div className="d-flex flex-column vh-100">
       <Header />
-      <div className="">
+      <div className="flex-grow-1 overflow-hidden">
         <Outlet />
       </div>
     </div>

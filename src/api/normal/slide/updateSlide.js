@@ -1,18 +1,10 @@
 import privateAxios from '~/api/PrivateAxios';
 
-export default async function updateSlide(
-  id,
-  slideId,
-  answer,
-  content,
-  options
-) {
+export default async function updateSlide({ presentationId, editedSlide }) {
   const response = await privateAxios.put(
-    `/presentation/${id}/slide/${slideId}`,
+    `/presentation/${presentationId}/slide/${editedSlide.id}`,
     {
-      answer,
-      content,
-      options,
+      ...editedSlide,
     }
   );
   return response;
