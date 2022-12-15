@@ -26,6 +26,7 @@ function App() {
   return (
     <div>
       <ToastContainer />
+
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/home" />} />

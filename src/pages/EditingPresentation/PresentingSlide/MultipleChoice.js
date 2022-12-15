@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 
-export default function MultipleChoice({ editingSlide }) {
+export default function MultipleChoice({ currentSlide }) {
   // get chart data
   const [chartData, setChartData] = useState(null);
   useEffect(() => {
-    if (!editingSlide) return;
-    const SlideLabel = editingSlide.options;
+    if (!currentSlide) return;
+    const SlideLabel = currentSlide.options;
     const SlideData = SlideLabel.map((label) => {
-      const NumberRecord = editingSlide?.userRecords?.filter((record) => {
+      const NumberRecord = currentSlide?.userRecords?.filter((record) => {
         return record.answer === label;
       });
       return NumberRecord ? NumberRecord.length : 0;
@@ -24,7 +24,7 @@ export default function MultipleChoice({ editingSlide }) {
         };
       })
     );
-  }, [editingSlide]);
+  }, [currentSlide]);
   return (
     <Bar
       data={{

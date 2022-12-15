@@ -1,34 +1,41 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import 'chart.js/auto';
 import { useState } from 'react';
-import { Button, Stack } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import screenfull from 'screenfull';
 import {
+  BsArrowLeft,
+  BsArrowRight,
   BsBookmarks,
-  BsChatFill,
   BsFillCaretRightFill,
   BsFillPauseCircleFill,
-  BsQuestionCircleFill,
 } from 'react-icons/bs';
+import screenfull from 'screenfull';
+import HostBox from '~/components/BoxComponent/HostBox';
 import Constant from '~/constants';
-import ChatBox from './ChatBox';
 import Heading from './Heading';
 import MultipleChoice from './MultipleChoice';
 import Paragraph from './Paragraph';
-import QuestionBox from './QuestionBox';
 
 export default function PresentingSlide({
+  presentingSlide,
   editingSlide,
   handleEndPresentation,
   handleStartPresentation,
+  handlePrevPresentation,
+  handleNextPresentation,
   presentationId,
+  chats,
+  sendChat,
+  questions,
+  answerQuestion,
 }) {
   // manage presentation state
   const [presenting, setPresenting] = useState(false);
-  // manage chat
-  const [showChat, setShowChat] = useState(false);
-  // manage question
-  const [showQuestion, setShowQuestion] = useState(false);
+
+  // current slide
+  const currentSlide = presenting ? presentingSlide : editingSlide;
   // handle start and end
   const startPresentation = () => {
     setPresenting(true);
@@ -41,17 +48,10 @@ export default function PresentingSlide({
     screenfull.toggle();
   };
 
-  // handle show chat and question
-  const toggleShowChat = () => {
-    setShowChat(!showChat);
-  };
-  const toggleShowQuestion = () => {
-    setShowQuestion(!showQuestion);
-  };
   // link
   const baseURL = window.location.href.replace(window.location.pathname, '');
   const [presentationLink, setPresentationLink] = useState({
-    value: `${baseURL}/presentation/${presentationId}`,
+    value: `${baseURL}/presentation/${presentationId}/presenting`,
     copied: false,
   });
 
@@ -82,22 +82,14 @@ export default function PresentingSlide({
           </Button>
         )}
 
-        {/* button show chat */}
-        <Stack
-          style={{ position: 'absolute', bottom: '10px', right: '10px' }}
-          variant="secondary"
-          onClick={handleEndPresentation}
-          size="sm"
-          direction="horizontal"
-          gap={3}
-        >
-          <Button variant="secondary" onClick={toggleShowChat}>
-            <BsChatFill size={30} />
-          </Button>
-          <Button variant="secondary" onClick={toggleShowQuestion}>
-            <BsQuestionCircleFill size={30} />
-          </Button>
-        </Stack>
+        {/* chat box and question box */}
+        <HostBox
+          questions={questions}
+          chats={chats}
+          sendChat={sendChat}
+          answerQuestion={answerQuestion}
+        />
+        {/* end */}
         <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
           <CopyToClipboard text={presentationLink.value}>
             <Button
@@ -115,32 +107,49 @@ export default function PresentingSlide({
             </Button>
           </CopyToClipboard>
         </div>
-        {/* chat box */}
-        <ChatBox show={showChat} toggleShow={toggleShowChat} />
-        {/* chat box */}
-        <QuestionBox
-          show={showQuestion}
-          toggleShow={toggleShowQuestion}
-          questions={[
-            { content: 'How are you ?', username: 'Vo dinh phuc' },
-            { content: 'How old are you ?', username: 'Nguyen Khoi' },
-          ]}
-        />
 
         {/* presenting slide */}
         <h3 className="fw-bold px-5 text-center mb-5">
-          {editingSlide?.content}
+          {currentSlide?.content}
         </h3>
-        {/* render type of slide */}
-        {!editingSlide?.type ||
-          (editingSlide?.type === Constant.SlideType.multipleChoie && (
-            <MultipleChoice editingSlide={editingSlide} />
-          ))}
-        {editingSlide?.type === Constant.SlideType.heading && (
-          <Heading editingSlide={editingSlide} />
+        {presenting && (
+          <>
+            <div
+              className="p-3 d-flex rounded-circle position-absolute end-0 opacity-50"
+              style={{
+                height: '50px',
+                width: '50px',
+                background: 'lightgray',
+                cursor: 'pointer',
+              }}
+              onClick={handleNextPresentation}
+            >
+              <BsArrowRight />
+            </div>
+            <div
+              className="p-3 d-flex rounded-circle position-absolute start-0 opacity-50"
+              style={{
+                height: '50px',
+                width: '50px',
+                background: 'lightgray',
+                cursor: 'pointer',
+              }}
+              onClick={handlePrevPresentation}
+            >
+              <BsArrowLeft />
+            </div>
+          </>
         )}
-        {editingSlide?.type === Constant.SlideType.paragraph && (
-          <Paragraph editingSlide={editingSlide} />
+        {/* render type of slide */}
+        {!currentSlide?.type ||
+          (currentSlide?.type === Constant.SlideType.multipleChoie && (
+            <MultipleChoice currentSlide={currentSlide} />
+          ))}
+        {currentSlide?.type === Constant.SlideType.heading && (
+          <Heading currentSlide={currentSlide} />
+        )}
+        {currentSlide?.type === Constant.SlideType.paragraph && (
+          <Paragraph currentSlide={currentSlide} />
         )}
       </div>
     </div>

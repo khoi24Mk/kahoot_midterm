@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { AuthContext } from '~/Context';
 
 const renderTooltip = (props, time) => {
   return (
@@ -9,18 +10,22 @@ const renderTooltip = (props, time) => {
   );
 };
 
-export default function ChatItem({ content, avatar, fromMe, time, name }) {
+export default function ChatItem({ chat }) {
+  const { profile } = useContext(AuthContext);
+  const fromMe = profile?.id === chat?.user?.id;
+  const avatar = chat?.user?.avatar || '/defaultAvatar.png';
   return (
     <div
       className={`d-flex flex-row justify-content-${
         fromMe ? 'end' : 'start'
-      } mb-4`}
+      } align-items-center mb-4`}
     >
       {!fromMe && (
         <img
+          className="rounded-circle shadow"
           src={avatar}
           alt="avatar 1"
-          style={{ width: '45px', height: '100%' }}
+          style={{ width: '45px', height: '45px' }}
         />
       )}
       <div>
@@ -28,22 +33,27 @@ export default function ChatItem({ content, avatar, fromMe, time, name }) {
           <p
             style={{
               fontSize: '0.8rem',
-              margin: 0,
               paddingLeft: '10px',
               fontWeight: 'bold',
               color: 'gray',
             }}
+            className="m-0 ms-3"
           >
-            {name}
+            {chat?.user?.displayName}
           </p>
         )}
         <OverlayTrigger
           placement="bottom"
-          delay={{ show: 250, hide: 400 }}
-          overlay={(props) => renderTooltip(props, time)}
+          delay={{ show: 0, hide: 0 }}
+          overlay={(props) =>
+            renderTooltip(
+              props,
+              new Date(chat?.dateCreated).toLocaleString('en-US')
+            )
+          }
         >
           <div
-            className="p-3 me-3 border"
+            className="p-3 me-3 ms-3 border"
             style={{
               borderRadius: '15px',
               backgroundColor: `${
@@ -51,15 +61,16 @@ export default function ChatItem({ content, avatar, fromMe, time, name }) {
               }`,
             }}
           >
-            <p className="small mb-0">{content}</p>
+            <p className="small mb-0">{chat?.content}</p>
           </div>
         </OverlayTrigger>
       </div>
       {fromMe && (
         <img
+          className="rounded-circle shadow"
           src={avatar}
           alt="avatar 1"
-          style={{ width: '45px', height: '100%' }}
+          style={{ width: '45px', height: '45px' }}
         />
       )}
     </div>

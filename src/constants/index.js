@@ -8,15 +8,32 @@ const SocketURL =
     ? 'ws://localhost:8080/socket'
     : process.env.REACT_APP_SOCKET_URL;
 const ClientMessageType = {
+  // general
   joinRoom: 'JOIN_ROOM',
   leaveRoom: 'LEAVE_ROOM',
-  presentSlide: 'PRESENT_SLIDE',
+  chat: 'CHAT',
+
+  // host
+  start: 'START',
+  end: 'END',
+  nextSlide: 'NEXT_SLIDE',
+  prevSlide: 'PREV_SLIDE',
+  answerQuestion: 'ANSWER_QUESTION',
+
+  // member
   voteSlide: 'VOTE_SLIDE',
+  askQuestion: 'ASK_QUESTION',
 };
 
 const ServerMessageType = {
   presentedSlide: 'PRESENTED_SLIDE',
   updatedSlide: 'UPDATED_SLIDE',
+
+  askedQuestion: 'ASKED_QUESTION',
+  answeredQuestion: 'ANSWERED_QUESTION',
+  chat: 'CHAT',
+  joinRoom: 'JOIN_ROOM',
+  leaveRoom: 'LEAVE_ROOM',
 };
 
 const ClientType = {
