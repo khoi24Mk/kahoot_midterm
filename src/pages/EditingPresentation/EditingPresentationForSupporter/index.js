@@ -1,6 +1,6 @@
 import 'chart.js/auto';
 import React, { useContext, useEffect, useState } from 'react';
-import { Col, Row, Stack } from 'react-bootstrap';
+import { Card, Col, Row, Stack } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import useWebSocket from 'react-use-websocket';
@@ -307,6 +307,10 @@ export default React.memo(function EditingPresentationForSupporter() {
           />
         </Col>
         <Col style={{ overflowY: 'scroll' }} className="h-100 mt-3" xs={3}>
+          <Card className="fw-bold text-uppercase text-center bg-light">
+            <Card.Body>{presentation?.presentationName}</Card.Body>
+          </Card>
+          <hr />
           <Stack gap={3}>
             {(presentingSlide || editingSlide)?.userRecords?.map((record) => (
               <Record key={record?.dateCreated} record={record} />

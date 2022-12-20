@@ -135,6 +135,9 @@ function GroupDetail() {
       <Tab.Container id="left-tabs-example" defaultActiveKey="first">
         <Row className="h-100">
           <Col sm={12} lg={2}>
+            <Card className="fw-bold text-uppercase text-center bg-light">
+              <Card.Body>{group?.groupName}</Card.Body>
+            </Card>
             <Card>
               <Card.Body>
                 <Nav variant="pills" className="flex-column">
