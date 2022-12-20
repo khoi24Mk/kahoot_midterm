@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket';
 import getChatOfPresentation from '~/api/normal/presentation/getChatOfPresentation';
@@ -35,15 +35,21 @@ function PresentingPresentation() {
   const [slide, setSlide] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const asyncGetPresentingSlide = async (pId) => {
+  const navigate = useNavigate();
+  const asyncGetPresentation = async () => {
+    const presentationRes = await getPresentation(presentationId);
+    setPresentation(presentationRes.data.object);
+  };
+  const asyncGetPresentingSlide = async () => {
     try {
       setLoading(true);
-      const slideResponse = await getPresentingSlide(pId);
-      const presentationRes = await getPresentation(presentationId);
+      const slideResponse = await getPresentingSlide(presentationId);
       setSlide(slideResponse.data.object);
-      setPresentation(presentationRes.data.object);
     } catch (error) {
       toast.error(error?.response?.data?.message);
+      if (error?.response?.status === 403) {
+        navigate({ pathname: '/notPermission' });
+      }
       setSlide(null);
     } finally {
       setLoading(false);
@@ -52,6 +58,7 @@ function PresentingPresentation() {
   // handle socket message
   const handleReceivedMessage = (event) => {
     const receivedEvent = JSON.parse(event);
+    console.log(receivedEvent);
     // slide
     if (
       receivedEvent.metaData.messageType ===
@@ -59,7 +66,7 @@ function PresentingPresentation() {
       receivedEvent.metaData.messageType ===
         Constant.ServerMessageType.presentedSlide
     ) {
-      asyncGetPresentingSlide(presentationId);
+      asyncGetPresentingSlide();
       setLoading(false);
     }
     // update chats
@@ -71,7 +78,9 @@ function PresentingPresentation() {
     // update answered question
     if (
       receivedEvent.metaData.messageType ===
-      Constant.ServerMessageType.answeredQuestion
+        Constant.ServerMessageType.answeredQuestion ||
+      receivedEvent.metaData.messageType ===
+        Constant.ServerMessageType.votedQuestion
     ) {
       const updatedQuestion = receivedEvent.message;
       setQuestions([
@@ -94,17 +103,8 @@ function PresentingPresentation() {
 
   // connect socket
   const { sendMessage } = useWebSocket(Constant.SocketURL, {
-    onOpen: () => {
-      console.log('Open socket');
-    },
-    onClose: () => {
-      console.log('Close socket');
-    },
-    onError: () => {
-      console.log('Error socket');
-    },
-    shouldReconnect: () => true,
     onMessage: (message) => handleReceivedMessage(message?.data),
+    share: true,
   });
 
   // handle chat
@@ -118,6 +118,20 @@ function PresentingPresentation() {
       presentationId,
       userId: profile?.id,
       content,
+    };
+    sendMessage(socketUtilActions.getRawSocketMessage({ metaData, message }));
+  };
+
+  // handle answer question
+  const upvoteQuestion = (questionId) => {
+    const metaData = {
+      roomName: presentation?.roomName,
+      clientType: Constant.ClientType.member,
+      messageType: Constant.ClientMessageType.toggleVotingQuestion,
+    };
+    const message = {
+      questionId,
+      userId: profile?.id,
     };
     sendMessage(socketUtilActions.getRawSocketMessage({ metaData, message }));
   };
@@ -164,7 +178,8 @@ function PresentingPresentation() {
 
   // get presenting data
   useEffect(() => {
-    asyncGetPresentingSlide(presentationId);
+    asyncGetPresentation();
+    asyncGetPresentingSlide();
   }, []);
 
   // get chat and question data
@@ -185,11 +200,14 @@ function PresentingPresentation() {
     <Container fluid className="position-relative h-100">
       {/* chat box and question box */}
       <ParticipantBox
+        upvoteQuestion={upvoteQuestion}
         askQuestion={askQuestion}
         chats={chats}
         questions={questions}
         sendChat={sendChat}
       />
+
+      {slide?.userRecords?.length === 0}
       <Container style={{ maxWidth: '568px' }} className="py-4 h-100">
         <h2 className="mb-5 text-center fw-bold">KAMEN system</h2>
 
@@ -214,8 +232,8 @@ function PresentingPresentation() {
     </Container>
   ) : (
     <Error
-      title="Existing Voting"
-      error="You voted presenting slide. Plase, wait for host present another slide"
+      title="Presentation Error"
+      error="This presentation hasn't been started yet."
     />
   );
 }

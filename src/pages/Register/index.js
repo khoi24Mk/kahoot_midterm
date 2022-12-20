@@ -12,25 +12,32 @@ import { useForm } from 'react-hook-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import * as yup from 'yup';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
+import * as yup from 'yup';
 import registerAuth from '~/api/auth/register';
-import styles from './register.module.css';
-import Notify from '~/components/Notification';
 import Loading from '~/components/Loading';
+import Notify from '~/components/Notification';
+import styles from './register.module.css';
 
 const schema = yup
 
   .object()
 
   .shape({
-    username: yup.string().required(),
+    username: yup
+      .string()
+      .min(8, 'Your username must be longer than 8 characters')
+      .max(32, 'Your username must be shorter than 32 characters')
+      .required(),
 
     password: yup
 
       .string()
 
       .required('Please Enter your password')
+      .min(8, 'Your password must be longer than 8 characters')
+      .max(32, 'Your password must be shorter than 32 characters')
 
       .matches(
         // /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
@@ -49,6 +56,7 @@ const schema = yup
   .required();
 
 function Register() {
+  const [showPassword, setShowPassword] = useState(false);
   const {
     register,
 
@@ -74,17 +82,9 @@ function Register() {
         displayName: data.displayName,
         email: data.email,
       });
-      setNotify({
-        msg: 'Successfully. Check your email',
-        type: 'success',
-        show: true,
-      });
+      toast.success('Successfully. Check your email');
     } catch (error) {
-      setNotify({
-        msg: error?.response?.data?.message,
-        type: 'warning',
-        show: true,
-      });
+      toast.error(error?.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -119,16 +119,12 @@ function Register() {
               />
             </Form.Group>
 
-            <Form.Group
-              className={clsx(styles.group, 'mb-3')}
-
-              // controlId="formBasicPassword"
-            >
+            <Form.Group className={clsx(styles.group, 'mb-3')}>
               <Form.Label>Password</Form.Label>
 
               <Form.Control
                 {...register('password')}
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 placeholder="Password"
               />
 
@@ -143,17 +139,24 @@ function Register() {
               </Form.Text>
             </Form.Group>
 
-            <Form.Group
-              className={clsx(styles.group, 'mb-3')}
-
-              // controlId="formBasicPassword"
-            >
+            <Form.Group className={clsx(styles.group, 'mb-3')}>
               <Form.Label>Retype Password</Form.Label>
 
               <Form.Control
                 {...register('retypePassword')}
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 placeholder="retype password"
+              />
+
+              <Form.Check
+                style={{ fontSize: '0.9rem' }}
+                className="mt-3"
+                type="checkbox"
+                label="Show password"
+                onChange={() => {
+                  setShowPassword(!showPassword);
+                }}
+                checked={showPassword}
               />
 
               <Form.Text className="text-muted">

@@ -46,7 +46,7 @@ export default function MyPresentationList({
               </td>
             )}
             <td className="py-4">{presentation.presentationName}</td>
-            <td className="py-4">{presentation.ownerName}</td>
+            <td className="py-4">{presentation?.owner?.displayName}</td>
             <td className="py-4">
               {new Date(presentation.dateCreated).toLocaleString('en-US')}
             </td>

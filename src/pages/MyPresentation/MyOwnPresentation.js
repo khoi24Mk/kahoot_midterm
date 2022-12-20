@@ -12,6 +12,7 @@ import {
   Spinner,
 } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 import * as yup from 'yup';
@@ -42,6 +43,7 @@ function MyOwnPresentation() {
   const [presentations, setPresentations] = useState([]);
 
   // get presentations
+  const navigate = useNavigate();
   useEffect(() => {
     const asyncGetPresentations = async () => {
       try {
@@ -49,6 +51,9 @@ function MyOwnPresentation() {
         setPresentations(myPresentationRes.data.object);
       } catch (err) {
         toast.error(err?.response?.data?.message);
+        if (err?.response?.status === 403) {
+          navigate({ pathname: '/notPermission' });
+        }
       } finally {
         setLoading(false);
       }
@@ -76,6 +81,9 @@ function MyOwnPresentation() {
       toast.success(myPresentationRes?.data?.message);
       return response;
     } catch (err) {
+      if (err?.response?.status === 403) {
+        navigate({ pathname: '/notPermission' });
+      }
       toast.error(err?.response?.data?.message);
       return null;
     } finally {
@@ -114,6 +122,9 @@ function MyOwnPresentation() {
       setDeleteList([]);
     } catch (err) {
       toast.error(err?.response?.data?.message);
+      if (err?.response?.status === 403) {
+        navigate({ pathname: '/notPermission' });
+      }
     } finally {
       setDeleting(false);
     }

@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 import { useState } from 'react';
 import { Container, Form, Row, Table } from 'react-bootstrap';
-import { AiFillCaretRight, AiFillEdit } from 'react-icons/ai';
+import { AiFillEdit } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
 
 function PresentationGroup({ presentations, myRole }) {
@@ -68,7 +68,7 @@ function PresentationGroup({ presentations, myRole }) {
                 {myRole !== 'MEMBER' && (
                   <td>
                     <div className="py-4">
-                      <Link to={`/presentation/${presentation.id}/edting`}>
+                      <Link to={`/presentation/${presentation.id}/editing`}>
                         <AiFillEdit
                           className="p-1 rounded-circle"
                           style={{
@@ -81,20 +81,6 @@ function PresentationGroup({ presentations, myRole }) {
                     </div>
                   </td>
                 )}
-                <td>
-                  <div className="py-4">
-                    <Link to={`/presentation/${presentation.id}/presenting`}>
-                      <AiFillCaretRight
-                        className="p-1 rounded-circle"
-                        style={{
-                          backgroundColor: 'lightgray',
-                          cursor: 'pointer',
-                        }}
-                        size={30}
-                      />
-                    </Link>
-                  </div>
-                </td>
               </tr>
             ))}
           </tbody>

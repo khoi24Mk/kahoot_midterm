@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Button,
   Card,
   Carousel,
   Container,
+  Form,
   FormControl,
   Stack,
 } from 'react-bootstrap';
@@ -15,6 +16,7 @@ export default function QuestionBox({
   toggleShow,
   questions,
   askQuestion,
+  upvoteQuestion,
 }) {
   const [content, setContent] = useState('');
   // handle ask question
@@ -22,6 +24,22 @@ export default function QuestionBox({
     askQuestion(content);
     setContent('');
   };
+  // manage soted questions
+  const [sortedQuestions, setSortedQuestions] = useState([]);
+  const [field, setField] = useState('dateCreated');
+  const [order, setOrder] = useState('ascd');
+
+  useEffect(() => {
+    if (questions)
+      setSortedQuestions(
+        [...questions].sort((q1, q2) => {
+          if (order === 'ascd') {
+            return q1[field] - q2[field];
+          }
+          return q2[field] - q1[field];
+        })
+      );
+  }, [questions, field, order]);
   return (
     show && (
       <Container
@@ -39,7 +57,7 @@ export default function QuestionBox({
           style={{ borderRadius: '15px', borderColor: 'black' }}
         >
           <Card.Header
-            className="d-flex justify-content-between align-items-center p-3 bg-info text-white border-bottom-0"
+            className="d-flex justify-content-between align-items-center p-3 bg-dark text-white border-bottom-0"
             style={{
               borderTopLeftRadius: '15px',
               borderTopRightRadius: '15px',
@@ -51,19 +69,52 @@ export default function QuestionBox({
           </Card.Header>
 
           <Card.Body className="flex-grow-1">
+            <Stack direction="horizontal" gap={3}>
+              <Stack className="w-100" direction="horizontal">
+                <div className="w-50 fw-bold px-3 bg-light h-100 d-flex justify-content-center align-items-center border-1">
+                  Sort by
+                </div>
+                <Form.Select
+                  value={field}
+                  onChange={(e) => {
+                    setField(e.target.value);
+                  }}
+                >
+                  <option value="dateCreated">Asked Date</option>
+                  <option value="votes">Number of votes</option>
+                  <option value="answered">Answered</option>
+                </Form.Select>
+              </Stack>
+              <Stack className="w-100" direction="horizontal">
+                <div className="w-50 fw-bold px-3 bg-light h-100 d-flex justify-content-center align-items-center border-1">
+                  Order
+                </div>
+                <Form.Select
+                  placeholder="Sort By"
+                  value={order}
+                  onChange={(e) => {
+                    setOrder(e.target.value);
+                  }}
+                >
+                  <option value="ascd">Ascending</option>
+                  <option value="desc">Descending</option>
+                </Form.Select>
+              </Stack>
+            </Stack>
             <Carousel
               className="text-center d-flex flex-column justify-content-center h-75"
               variant="dark"
               indicators={false}
               interval={null}
             >
-              {questions?.map((question) => (
+              {sortedQuestions?.map((question, index) => (
                 <Carousel.Item key={question?.id} style={{ padding: '0 15%' }}>
                   <Stack gap={3}>
                     <h3 className="fw-bold">{question?.content}</h3>
 
                     <div className="d-flex align-items-center justify-content-center">
                       <img
+                        referrerPolicy="no-referrer"
                         className="rounded-circle shadow me-2"
                         src={question?.user?.avatar || '/defaultAvatar.png'}
                         alt=""
@@ -81,6 +132,27 @@ export default function QuestionBox({
                         Answered
                       </Button>
                     )}
+                    <div>
+                      <Button
+                        onClick={() => {
+                          upvoteQuestion(question?.id);
+                        }}
+                        className=" position-relative"
+                        variant="success"
+                      >
+                        <b>Vote</b>
+                        <Button
+                          variant="secondary"
+                          style={{ width: '35px', height: '35px' }}
+                          className="rounded-circle ms-2 fw-bold text-white"
+                        >
+                          {question?.votes}
+                        </Button>
+                      </Button>
+                    </div>
+                    <div style={{ fontSize: '1.4rem' }} className="fw-bold">
+                      {index + 1}/{sortedQuestions.length}
+                    </div>
                   </Stack>
                 </Carousel.Item>
               ))}

@@ -22,6 +22,7 @@ export default function ChatItem({ chat }) {
     >
       {!fromMe && (
         <img
+          referrerPolicy="no-referrer"
           className="rounded-circle shadow"
           src={avatar}
           alt="avatar 1"
@@ -67,6 +68,7 @@ export default function ChatItem({ chat }) {
       </div>
       {fromMe && (
         <img
+          referrerPolicy="no-referrer"
           className="rounded-circle shadow"
           src={avatar}
           alt="avatar 1"

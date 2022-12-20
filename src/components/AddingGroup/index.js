@@ -8,6 +8,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useForm } from 'react-hook-form';
 import { BsFillPlusCircleFill } from 'react-icons/bs';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import createGroup from '~/api/normal/group/createGroup';
@@ -36,6 +37,7 @@ function AddingGroup({ setGroups }) {
   } = useForm({
     resolver: yupResolver(schema),
   });
+  const navigate = useNavigate();
 
   const onSubmit = async (data) => {
     setSubmitting(true);
@@ -49,6 +51,9 @@ function AddingGroup({ setGroups }) {
       handleCloseCreate();
     } catch (error) {
       toast.error(error?.response?.data?.message);
+      if (error?.response?.status === 403) {
+        navigate({ pathname: '/notPermission' });
+      }
     } finally {
       setSubmitting(false);
     }

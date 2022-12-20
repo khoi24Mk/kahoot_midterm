@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { Link, Navigate, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import verifyAccount from '~/api/auth/verifyAccount';
 import Error from '~/components/Error';
 import Loading from '~/components/Loading';
@@ -16,6 +16,7 @@ export default function Verification() {
   const context = useContext(AuthContext);
   const { setProfile } = context;
 
+  const navigate = useNavigate();
   useEffect(() => {
     const asyncVerification = async () => {
       setLoading(true);
@@ -32,6 +33,9 @@ export default function Verification() {
         setProfile(response?.data?.object.profile);
       } catch (err) {
         setError(err?.response?.data?.message);
+        if (err?.response?.status === 403) {
+          navigate({ pathname: '/notPermission' });
+        }
       } finally {
         setLoading(false);
       }

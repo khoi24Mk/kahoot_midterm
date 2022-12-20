@@ -5,6 +5,7 @@ export default function People({ img, name, endElement, me }) {
     <div className="d-flex justify-content-between py-3 px-2">
       <div className="d-flex align-items-center">
         <img
+          referrerPolicy="no-referrer"
           style={{ height: '2rem', width: '2rem' }}
           className="rounded-circle"
           src={img || '/defaultAvatar.png'}

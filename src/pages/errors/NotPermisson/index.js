@@ -11,7 +11,7 @@ export default function NotPermission() {
       resolveElement={
         <Button
           onClick={() => {
-            navigate(-1);
+            navigate(-2);
           }}
           variant="primary"
         >

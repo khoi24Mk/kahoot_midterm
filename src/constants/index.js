@@ -19,6 +19,7 @@ const ClientMessageType = {
   nextSlide: 'NEXT_SLIDE',
   prevSlide: 'PREV_SLIDE',
   answerQuestion: 'ANSWER_QUESTION',
+  toggleVotingQuestion: 'TOGGLE_VOTING_QUESTION',
 
   // member
   voteSlide: 'VOTE_SLIDE',
@@ -28,9 +29,11 @@ const ClientMessageType = {
 const ServerMessageType = {
   presentedSlide: 'PRESENTED_SLIDE',
   updatedSlide: 'UPDATED_SLIDE',
+  presentingPresentationInGroup: 'PRESENTING_PRESENTATION_IN_GROUP',
 
   askedQuestion: 'ASKED_QUESTION',
   answeredQuestion: 'ANSWERED_QUESTION',
+  votedQuestion: 'VOTED_QUESTION',
   chat: 'CHAT',
   joinRoom: 'JOIN_ROOM',
   leaveRoom: 'LEAVE_ROOM',

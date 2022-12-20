@@ -25,7 +25,6 @@
     "react-beautiful-dnd": "^13.1.1",
     "react-bootstrap": "^2.6.0",
     "react-chartjs-2": "^5.0.1",
-    "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.39.4",
     "react-icons": "^4.6.0",

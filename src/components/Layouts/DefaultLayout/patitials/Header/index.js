@@ -66,7 +66,7 @@ function Header() {
       <Container fluid>
         <>
           <Button className={clsx(styles.menu)} onClick={handleShow}>
-            <img src={menu} alt="menu" />
+            <img referrerPolicy="no-referrer" src={menu} alt="menu" />
           </Button>
 
           <Offcanvas show={show} onHide={handleClose}>
@@ -164,6 +164,7 @@ function Header() {
                       <Toast>
                         <Toast.Header closeButton={false}>
                           <img
+                            referrerPolicy="no-referrer"
                             src="holder.js/20x20?text=%20"
                             className="rounded me-2"
                             alt=""

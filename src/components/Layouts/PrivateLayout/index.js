@@ -1,5 +1,7 @@
 import { useContext, useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket';
+import Constant from '~/constants';
 import { AuthContext } from '~/Context';
 
 export default function PrivateLayout() {
@@ -15,6 +17,21 @@ export default function PrivateLayout() {
       setProfile(null);
     }
   }, [pathname]);
+
+  // connect socket
+  useWebSocket(Constant.SocketURL, {
+    onOpen: () => {
+      console.log('Open socket');
+    },
+    onClose: () => {
+      console.log('Close socket');
+    },
+    onError: () => {
+      console.log('Error socket');
+    },
+    shouldReconnect: () => true,
+    share: true,
+  });
 
   return unAuthenticated ? (
     <Navigate

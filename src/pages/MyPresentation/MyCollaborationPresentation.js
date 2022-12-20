@@ -1,6 +1,7 @@
 /* eslint-disable indent */
 import { useEffect, useState } from 'react';
 import { Container, Row } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import getMyCollaborationPresentation from '~/api/normal/presentation/getMyCollaborationPresentation';
 
@@ -13,6 +14,7 @@ function MyCollaborationPresentation() {
   const [presentations, setPresentations] = useState([]);
 
   // get presentations
+  const navigate = useNavigate();
   useEffect(() => {
     const asyncGetPresentations = async () => {
       try {
@@ -20,6 +22,9 @@ function MyCollaborationPresentation() {
         setPresentations(myPresentationRes.data.object);
       } catch (err) {
         toast.error(err?.response?.data?.message);
+        if (err?.response?.status === 403) {
+          navigate({ pathname: '/notPermission' });
+        }
       } finally {
         setLoading(false);
       }

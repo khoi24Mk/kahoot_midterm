@@ -8,13 +8,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import login from '~/api/auth/login';
+import Loading from '~/components/Loading';
+import { AuthContext } from '~/Context';
 import useGoogleLogin from '~/hooks/useGoogleLogin';
 import styles from './login.module.css';
-import { AuthContext } from '~/Context';
-import Loading from '~/components/Loading';
-import Notify from '~/components/Notification';
 
 const schema = yup
   .object()
@@ -25,6 +25,7 @@ const schema = yup
   .required();
 
 function Login() {
+  const [showPassword, setShowPassword] = useState(false);
   const context = useContext(AuthContext);
   const { setProfile } = context;
 
@@ -37,11 +38,6 @@ function Login() {
   });
 
   const [loadingLogin, setLoading] = useState(false);
-  const [notify, setNotify] = useState({
-    show: false,
-    msg: '',
-    type: '',
-  });
 
   const { state } = useLocation();
   const redirectUrl = state?.redirectUrl || '/home';
@@ -60,7 +56,7 @@ function Login() {
       setProfile(loginRet.profile);
       navigate({ pathname: redirectUrl, search }, { replace: true });
     } else {
-      setNotify({ msg: 'Token is not found', type: 'warning', show: true });
+      toast.error('Token is not found');
     }
   };
 
@@ -74,11 +70,7 @@ function Login() {
       const loginRet = response?.data?.object;
       handleSuccessLogin(loginRet);
     } catch (error) {
-      setNotify({
-        msg: error?.response?.data?.message,
-        type: 'warning',
-        show: true,
-      });
+      toast.error(error?.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -86,7 +78,7 @@ function Login() {
 
   const { handleGoogle, error, loading } = useGoogleLogin((loginRet) => {
     handleSuccessLogin(loginRet);
-  }, setNotify);
+  });
 
   useEffect(() => {
     /* global google */
@@ -109,88 +101,85 @@ function Login() {
     }
   }, [handleGoogle]);
 
-  return (
-    <>
-      <Notify notify={notify} setShow={setNotify} />
-      {loading || loadingLogin ? (
-        <Loading />
-      ) : (
-        <div className={clsx(styles.container)}>
-          <Form
-            className={clsx(styles.content)}
-            onSubmit={handleSubmit(onSubmit)}
-          >
-            <h1>Login</h1>
-            <Form.Group
-              className={clsx(styles.group, 'mb-3')}
-              controlId="formBasicEmail"
-            >
-              <Form.Label>Username</Form.Label>
-              <Form.Control
-                {...register('username')}
-                placeholder="Username"
-                aria-label="Username"
-                aria-describedby="basic-addon1"
-              />
-              <Form.Text className="text-muted">
-                <ErrorMessage
-                  errors={errors}
-                  name="username"
-                  render={({ message }) => (
-                    <p className={clsx(styles.error)}>{message}</p>
-                  )}
-                />
-              </Form.Text>
-            </Form.Group>
-            <Form.Group
-              className={clsx(styles.group, 'mb-3')}
-              controlId="formBasicPassword"
-            >
-              {' '}
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                {...register('password')}
-                type="password"
-                placeholder="Password"
-              />{' '}
-              <Form.Text className="text-muted">
-                <ErrorMessage
-                  errors={errors}
-                  name="password"
-                  render={({ message }) => (
-                    <p className={clsx(styles.error)}>{message}</p>
-                  )}
-                />
-              </Form.Text>
-              <Form.Text className="text-muted">
-                <p className={clsx(styles.error)}>{error}</p>
-              </Form.Text>
-            </Form.Group>
-            {/* <Button
-              className={clsx(styles.signup_btn)}
-              variant="outline-info"
-              type="submit"
-            >
-              {' '}
-              Log In{' '}
-            </Button>{' '} */}
-            <Button type="submit" variant="dark" className="mb-3 v-75">
-              Submit
-            </Button>
-            <b style={{ fontSize: '1rem' }} className="mb-3">
-              Or login with Google
-            </b>{' '}
-            <div className={clsx(styles.alt_login)}>
-              <div id="btnLoginGoogle" />
-            </div>
-            <p className={clsx(styles.signup_opt)}>
-              {' '}
-              Not a member? <Link to="/register">Sign up now</Link>{' '}
-            </p>{' '}
-          </Form>{' '}
+  return loading || loadingLogin ? (
+    <Loading />
+  ) : (
+    <div className={clsx(styles.container)}>
+      <Form className={clsx(styles.content)} onSubmit={handleSubmit(onSubmit)}>
+        <h1>Login</h1>
+        <Form.Group
+          className={clsx(styles.group, 'mb-3')}
+          controlId="formBasicEmail"
+        >
+          <Form.Label>Username</Form.Label>
+          <Form.Control
+            {...register('username')}
+            placeholder="Username"
+            aria-label="Username"
+            aria-describedby="basic-addon1"
+          />
+          <Form.Text className="text-muted">
+            <ErrorMessage
+              errors={errors}
+              name="username"
+              render={({ message }) => (
+                <p className={clsx(styles.error)}>{message}</p>
+              )}
+            />
+          </Form.Text>
+        </Form.Group>
+        <Form.Group
+          className={clsx(styles.group, 'mb-3')}
+          controlId="formBasicPassword"
+        >
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            {...register('password')}
+            type={showPassword ? 'text' : 'password'}
+            placeholder="password"
+          />
+
+          <Form.Check
+            style={{ fontSize: '0.9rem' }}
+            className="mt-3"
+            type="checkbox"
+            label="Show password"
+            onChange={() => {
+              setShowPassword(!showPassword);
+            }}
+            checked={showPassword}
+          />
+          <Form.Text className="text-muted">
+            <ErrorMessage
+              errors={errors}
+              name="password"
+              render={({ message }) => (
+                <p className={clsx(styles.error)}>{message}</p>
+              )}
+            />
+          </Form.Text>
+          <Form.Text className="text-muted">
+            <p className={clsx(styles.error)}>{error}</p>
+          </Form.Text>
+        </Form.Group>
+
+        <Button type="submit" variant="dark" className="mb-3 v-75">
+          Submit
+        </Button>
+        <b style={{ fontSize: '1rem' }} className="mb-3">
+          Or login with Google
+        </b>
+        <div className={clsx(styles.alt_login)}>
+          <div id="btnLoginGoogle" />
         </div>
-      )}
-    </>
+        <p className={clsx(styles.signup_opt)}>
+          Forgot password? <Link to="/password/renew">Click here</Link>
+        </p>
+        <p className={clsx(styles.signup_opt)}>
+          Not a member? <Link to="/register">Sign up now</Link>
+        </p>
+      </Form>
+    </div>
   );
 }
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Spinner, Stack } from 'react-bootstrap';
 import Constant from '~/constants';
 import socketUtilActions from '~/socketUtils';
@@ -29,8 +29,16 @@ export default function MultipleChoice({
     };
     sendMessage(socketUtilActions.getRawSocketMessage({ metaData, message }));
   };
+  useEffect(() => {
+    setSubmitting(false);
+  }, [slide]);
   return (
     <Stack gap={3}>
+      {slide?.userRecords?.length > 0 && (
+        <div>
+          <b>Your answer:</b> {slide?.userRecords[0]?.answer}
+        </div>
+      )}
       {slide?.options.map((option, index) => {
         return (
           <Option
@@ -45,7 +53,14 @@ export default function MultipleChoice({
         );
       })}
 
-      <Button size="lg" onClick={handleVote} disabled={submiting}>
+      <Button
+        size="lg"
+        onClick={handleVote}
+        disabled={
+          submiting ||
+          (slide?.userRecords !== null && slide?.userRecords?.length > 0)
+        }
+      >
         {submiting && <Spinner size="sm" />}
         Submit
       </Button>

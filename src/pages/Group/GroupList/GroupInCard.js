@@ -28,15 +28,19 @@ const CustomToggle = forwardRef(({ children, onClick }, ref) => (
   </button>
 ));
 
-function GroupInCard({ groupId, groupName, owner, description }) {
+function GroupInCard({ group, handleDeleteGroup }) {
   return (
     <Card style={{ minWidth: '300px' }}>
       <Dropdown className={clsx(styles.dropdown)}>
         <Dropdown.Toggle as={CustomToggle} />
         <Dropdown.Menu className={clsx(styles.dropdown_menu)}>
-          <Dropdown.Item>Move</Dropdown.Item>
-          <Dropdown.Divider />
-          <Dropdown.Item>Unenroll</Dropdown.Item>
+          <Dropdown.Item
+            onClick={() => {
+              handleDeleteGroup(group?.id);
+            }}
+          >
+            Remove
+          </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
       <Card.Img
@@ -52,7 +56,7 @@ function GroupInCard({ groupId, groupName, owner, description }) {
         <div className="col-11">
           <Card.Title
             as={Link}
-            to={`/group/${groupId}`}
+            to={`/group/${group?.id}`}
             className="text-decoration-none text-white fw-bold"
           >
             <p
@@ -63,7 +67,7 @@ function GroupInCard({ groupId, groupName, owner, description }) {
                 textOverflow: 'ellipsis',
               }}
             >
-              {groupName}
+              {group?.groupName}
             </p>
           </Card.Title>
           <Card.Text
@@ -75,25 +79,19 @@ function GroupInCard({ groupId, groupName, owner, description }) {
               textOverflow: 'ellipsis',
             }}
           >
-            {owner?.displayName}
+            {group?.owner?.displayName}
           </Card.Text>
         </div>
       </Card.ImgOverlay>
 
       <Card.Body style={{ minHeight: '150px', position: 'relative' }}>
         <img
+          referrerPolicy="no-referrer"
           className={clsx(styles.GroupInCard_img)}
           alt=""
-          src={owner?.avatar || '/defaultAvatar.png'}
+          src={group?.owner?.avatar || '/defaultAvatar.png'}
         />
-        <Card.Subtitle
-          onClick={() => {
-            window.location.href = '/group/'.concat(groupId);
-          }}
-          role="button"
-        >
-          {description}
-        </Card.Subtitle>
+        <Card.Subtitle>{group?.description}</Card.Subtitle>
       </Card.Body>
     </Card>
   );

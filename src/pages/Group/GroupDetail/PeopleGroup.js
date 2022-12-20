@@ -18,6 +18,7 @@ import { BsClipboard } from 'react-icons/bs';
 import { ReactMultiEmail } from 'react-multi-email';
 import 'react-multi-email/dist/style.css';
 
+import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
@@ -72,6 +73,7 @@ function PeopleGroup({ members, setMembers, id: groupId, myRole }) {
   // profile contex
   const { profile } = context;
 
+  const navigate = useNavigate();
   // handle invitation modal
   const handleHideInvitationModal = () => setShowInvitationModal(false);
   const handleShowInvitationModal = async () => {
@@ -81,6 +83,9 @@ function PeopleGroup({ members, setMembers, id: groupId, myRole }) {
       setInvilink(resLink?.data?.object?.invitationLink);
     } catch (err) {
       toast.error(err?.response?.data?.message);
+      if (err?.response?.status === 403) {
+        navigate({ pathname: '/notPermission' });
+      }
     }
   };
 
@@ -91,6 +96,9 @@ function PeopleGroup({ members, setMembers, id: groupId, myRole }) {
       await sendInviteEmails({ groupId, emails });
     } catch (err) {
       toast.error(err?.response?.data?.message);
+      if (err?.response?.status === 403) {
+        navigate({ pathname: '/notPermission' });
+      }
     } finally {
       setSubmitting(false);
       setShowInvitationModal(false);
@@ -123,6 +131,9 @@ function PeopleGroup({ members, setMembers, id: groupId, myRole }) {
       setShowAssignRole(false);
     } catch (err) {
       toast.error(err?.response?.data?.message);
+      if (err?.response?.status === 403) {
+        navigate({ pathname: '/notPermission' });
+      }
     } finally {
       setSubmitting(false);
     }
@@ -198,12 +209,14 @@ function PeopleGroup({ members, setMembers, id: groupId, myRole }) {
               <div className="mb-5">
                 <div className="d-flex justify-content-between">
                   <h3 style={{ color: '#C26407' }}>MEMBER</h3>
-                  <Button
-                    style={{ backgroundColor: '#C26407' }}
-                    onClick={handleShowInvitationModal}
-                  >
-                    <b>Invite</b>
-                  </Button>
+                  {myRole !== 'MEMBER' && (
+                    <Button
+                      style={{ backgroundColor: '#C26407' }}
+                      onClick={handleShowInvitationModal}
+                    >
+                      <b>Invite</b>
+                    </Button>
+                  )}
                 </div>
                 <hr style={{ color: '#C26407' }} />
 
@@ -249,7 +262,9 @@ function PeopleGroup({ members, setMembers, id: groupId, myRole }) {
 
       <Modal show={showInvitationModal} onHide={handleHideInvitationModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Create group</Modal.Title>
+          <Modal.Title>
+            <b>Invitation</b>
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <ReactMultiEmail
@@ -306,7 +321,7 @@ function PeopleGroup({ members, setMembers, id: groupId, myRole }) {
             disabled={submitting}
           >
             {submitting && <Spinner size="sm" />}
-            Create
+            Send email
           </Button>
         </Modal.Footer>
       </Modal>

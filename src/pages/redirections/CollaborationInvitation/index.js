@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { Link, Navigate, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import joinPresentation from '~/api/normal/presentation/joinPresentation';
 import Error from '~/components/Error';
 import Loading from '~/components/Loading';
@@ -11,6 +11,7 @@ export default function CollaborationInvitation() {
   const [error, setError] = useState(code == null ? 'Code is not found' : null);
   const [loading, setLoading] = useState(true);
 
+  const navigate = useNavigate();
   useEffect(() => {
     const asyncJoinPresentation = async () => {
       setLoading(true);
@@ -18,6 +19,9 @@ export default function CollaborationInvitation() {
         await joinPresentation(code);
       } catch (err) {
         setError(err?.response?.data?.message);
+        if (err?.response?.status === 403) {
+          navigate({ pathname: '/notPermission' });
+        }
       } finally {
         setLoading(false);
       }

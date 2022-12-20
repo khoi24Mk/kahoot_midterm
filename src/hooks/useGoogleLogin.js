@@ -1,9 +1,10 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import publicAxios from '~/api/PublicAxios';
 
-const useGoogleLogin = (handleSuccess, setNotify) => {
+const useGoogleLogin = (handleSuccess) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -24,11 +25,7 @@ const useGoogleLogin = (handleSuccess, setNotify) => {
       handleSuccess(loginResponse?.data?.object);
     } catch (err) {
       setError(err?.response?.data?.message);
-      setNotify({
-        msg: err?.response?.data?.message,
-        type: 'warning',
-        show: true,
-      });
+      toast.error(err?.response?.data?.message);
     } finally {
       setLoading(false);
     }

@@ -21,7 +21,12 @@ function Notify({ notify, setShow }) {
       autohide
     >
       <Toast.Header className="text-black fw-bold">
-        <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
+        <img
+          referrerPolicy="no-referrer"
+          src="holder.js/20x20?text=%20"
+          className="rounded me-2"
+          alt=""
+        />
         <strong className="me-auto">{notify.type}</strong>
       </Toast.Header>
       <Toast.Body className="text-white">{notify.msg}</Toast.Body>

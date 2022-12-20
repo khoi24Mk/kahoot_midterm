@@ -1,12 +1,13 @@
 import 'chart.js/auto';
 import clsx from 'clsx';
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Tab, Tabs } from 'react-bootstrap';
-import CopyToClipboard from 'react-copy-to-clipboard';
+import { Button, Stack, Tab, Tabs } from 'react-bootstrap';
 import { BsBookmarks } from 'react-icons/bs';
-import { useParams } from 'react-router-dom';
+import { FaTimes } from 'react-icons/fa';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import useWebSocket from 'react-use-websocket';
+import deleteCollaboratorOfPresentation from '~/api/normal/presentation/deleteCollaboratorsOfPresentation';
 import getChatOfPresentation from '~/api/normal/presentation/getChatOfPresentation';
 import getCollaborationLink from '~/api/normal/presentation/getCollaborationLink';
 import getCollaboratorsOfPresentation from '~/api/normal/presentation/getCollaboratorsOfPresentation';
@@ -21,13 +22,14 @@ import People from '~/components/People';
 import Constant from '~/constants';
 import { AuthContext } from '~/Context';
 import socketUtilActions from '~/socketUtils';
+import PresentingSlide from '../PresentingSlide';
+import Record from '../Record';
 import EditingContent from './EditingContent';
-import PresentingSlide from './PresentingSlide';
 import styles from './slide.module.css';
 import SlideItem from './SlideItem';
 import SlideToolBar from './SlideToolBar';
 
-export default React.memo(function EditingPresentation() {
+export default React.memo(function EditingPresentationForCreator() {
   // presentation ID
   const { id: presentationId } = useParams();
   // profile
@@ -52,8 +54,6 @@ export default React.memo(function EditingPresentation() {
     value: '',
     copied: false,
   });
-  // manage presented group ids
-  // const [groupIds, setGroupIds] = useState([]);
   // manage chats
   const [chats, setChats] = useState(null);
   // manage questions
@@ -63,7 +63,6 @@ export default React.memo(function EditingPresentation() {
   // handle socket message
   const handleReceivedMessage = (event) => {
     const receivedEvent = JSON.parse(event);
-    console.log(receivedEvent);
     if (
       receivedEvent.metaData.messageType ===
       Constant.ServerMessageType.presentedSlide
@@ -93,7 +92,9 @@ export default React.memo(function EditingPresentation() {
     // update answered question
     if (
       receivedEvent.metaData.messageType ===
-      Constant.ServerMessageType.answeredQuestion
+        Constant.ServerMessageType.answeredQuestion ||
+      receivedEvent.metaData.messageType ===
+        Constant.ServerMessageType.votedQuestion
     ) {
       const updatedQuestion = receivedEvent.message;
       setQuestions([
@@ -116,21 +117,12 @@ export default React.memo(function EditingPresentation() {
 
   // connect socket
   const { sendMessage } = useWebSocket(Constant.SocketURL, {
-    onOpen: () => {
-      console.log('Open socket');
-    },
-    onClose: () => {
-      console.log('Close socket');
-    },
-    onError: () => {
-      console.log('Error socket');
-    },
-    shouldReconnect: () => true,
     onMessage: (message) => handleReceivedMessage(message?.data),
+    share: true,
   });
 
   // handle start presentation
-  const handleStartPresentation = () => {
+  const handleStartPresentation = (groupId) => {
     const metaData = {
       roomName: presentation?.roomName,
       clientType: Constant.ClientType.host,
@@ -138,7 +130,7 @@ export default React.memo(function EditingPresentation() {
     };
     const message = {
       presentationId,
-      groupIds: [7, 8],
+      groupId: groupId > 0 ? groupId : 0,
     };
     sendMessage(socketUtilActions.getRawSocketMessage({ metaData, message }));
   };
@@ -179,172 +171,6 @@ export default React.memo(function EditingPresentation() {
     sendMessage(socketUtilActions.getRawSocketMessage({ metaData, message }));
   };
 
-  // join room with ws
-  useEffect(() => {
-    if (presentation == null) return;
-    sendMessage(
-      JSON.stringify({
-        metaData: {
-          roomName: presentation.roomName,
-          clientType: Constant.ClientType.host,
-          messageType: Constant.ClientMessageType.joinRoom,
-        },
-        message: null,
-      })
-    );
-    // eslint-disable-next-line consistent-return
-    return () =>
-      sendMessage(
-        JSON.stringify({
-          metaData: {
-            roomName: presentation.roomName,
-            clientType: Constant.ClientType.host,
-            messageType: Constant.ClientMessageType.leaveRoom,
-          },
-        })
-      );
-  }, [presentation]);
-
-  // get slide data
-  useEffect(() => {
-    const asyncGetData = async () => {
-      try {
-        setLoading(true);
-        // get presentation
-        const presentationRes = await getPresentation(presentationId);
-        setPresentation(presentationRes.data.object);
-        // get slide
-        const resListSlide = await getSlideOfPresent(presentationId);
-        setSlides(resListSlide?.data?.object);
-        setEditingSlide(resListSlide?.data?.object[0]);
-        // get collaborator
-        const resListCollbaoration = await getCollaboratorsOfPresentation(
-          presentationId
-        );
-        setCollaborators(resListCollbaoration?.data?.object);
-        // get collaboration link
-        const resCollaborationLink = await getCollaborationLink(presentationId);
-        setCollaborationLink({
-          ...collaborationLink,
-          value: resCollaborationLink?.data?.object?.invitationLink,
-        });
-        // get chats
-        const chatsRes = await getChatOfPresentation(presentationId);
-        setChats(chatsRes?.data?.object);
-        // get questions
-        const questionsRes = await getQuestionOfPresentation(presentationId);
-        setQuestions(questionsRes?.data?.object);
-      } catch (err) {
-        toast.error(err?.response?.data?.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    asyncGetData();
-  }, []);
-
-  // get presenting slide
-  useEffect(() => {
-    const currentPresentingSlides = slides?.filter(
-      (slide) => slide.presenting === true
-    );
-    if (currentPresentingSlides?.length > 0) {
-      setPresentingSlide({ ...currentPresentingSlides[0] });
-    }
-  }, [slides]);
-
-  // update if need
-  const handleFlagUpdate = () => {
-    setPingUpdate(!pingUpdate);
-  };
-
-  // handle for deleting slide
-  const handleDeleteSlide = async (slideId) => {
-    try {
-      setSaving(true);
-      const response = await deleteSlide(presentationId, slideId);
-      setSaving(false);
-
-      setSlides(
-        slides.filter((item) => {
-          return item.id !== slideId;
-        })
-      );
-      return response;
-    } catch (err) {
-      return null;
-    }
-  };
-
-  // handle when adding slide
-  const handleAddDefaultMultipleChoiceSlide = async () => {
-    try {
-      setSaving(true);
-      const response = await SlideAction.createDefaultMultipleChoiceSlide(
-        presentationId
-      );
-      setSaving(false);
-      setEditingSlide(response.data.object);
-      setSlides([...slides, response.data.object]);
-      return response;
-    } catch (err) {
-      return null;
-    }
-  };
-
-  const handleAddDefaultHeadingSlide = async () => {
-    try {
-      setSaving(true);
-      const response = await SlideAction.createDefaultHeadingSlide(
-        presentationId
-      );
-      setSaving(false);
-      setEditingSlide(response.data.object);
-      setSlides([...slides, response.data.object]);
-      return response;
-    } catch (err) {
-      return null;
-    }
-  };
-
-  const handleAddDefaultParagraphSlide = async () => {
-    try {
-      setSaving(true);
-      const response = await SlideAction.createDefaultParagraphSlide(
-        presentationId
-      );
-      setSaving(false);
-      setEditingSlide(response.data.object);
-      setSlides([...slides, response.data.object]);
-      return response;
-    } catch (err) {
-      return null;
-    }
-  };
-
-  // handle upadte slide
-  const handleUpdateSlide = async () => {
-    try {
-      setSaving(true);
-      const response = await updateSlide({
-        presentationId,
-        editedSlide: { ...editingSlide },
-      });
-      const updatedSlide = response.data.object;
-      const updatedList = slides.map((slide) => {
-        if (slide.id === updatedSlide.id) return updatedSlide;
-        return slide;
-      });
-      setEditingSlide(updatedSlide);
-      setSlides(updatedList);
-      return response;
-    } catch (err) {
-      return null;
-    } finally {
-      setSaving(false);
-    }
-  };
-
   // handle chat
   const sendChat = (content) => {
     const metaData = {
@@ -373,15 +199,253 @@ export default React.memo(function EditingPresentation() {
     sendMessage(socketUtilActions.getRawSocketMessage({ metaData, message }));
   };
 
+  // handle answer question
+  const upvoteQuestion = (questionId) => {
+    const metaData = {
+      roomName: presentation?.roomName,
+      clientType: Constant.ClientType.host,
+      messageType: Constant.ClientMessageType.toggleVotingQuestion,
+    };
+    const message = {
+      questionId,
+      userId: profile?.id,
+    };
+    sendMessage(socketUtilActions.getRawSocketMessage({ metaData, message }));
+  };
+
+  // join room with ws
+  useEffect(() => {
+    if (presentation == null) return;
+    sendMessage(
+      JSON.stringify({
+        metaData: {
+          roomName: presentation.roomName,
+          clientType: Constant.ClientType.host,
+          messageType: Constant.ClientMessageType.joinRoom,
+        },
+        message: null,
+      })
+    );
+    // eslint-disable-next-line consistent-return
+    return () =>
+      sendMessage(
+        JSON.stringify({
+          metaData: {
+            roomName: presentation.roomName,
+            clientType: Constant.ClientType.host,
+            messageType: Constant.ClientMessageType.leaveRoom,
+          },
+        })
+      );
+  }, [presentation]);
+
+  const navigate = useNavigate();
+  // get slide data
+  useEffect(() => {
+    const asyncGetData = async () => {
+      try {
+        setLoading(true);
+        // get presentation
+        const presentationRes = await getPresentation(presentationId);
+        setPresentation(presentationRes.data.object);
+        // get slide
+        const resListSlide = await getSlideOfPresent(presentationId);
+        setSlides(resListSlide?.data?.object);
+        setEditingSlide(resListSlide?.data?.object[0]);
+        // get collaborator
+        const resListCollbaoration = await getCollaboratorsOfPresentation(
+          presentationId
+        );
+        setCollaborators(resListCollbaoration?.data?.object);
+        // get chats
+        const chatsRes = await getChatOfPresentation(presentationId);
+        setChats(chatsRes?.data?.object);
+        // get questions
+        const questionsRes = await getQuestionOfPresentation(presentationId);
+        setQuestions(questionsRes?.data?.object);
+      } catch (err) {
+        toast.error(err?.response?.data?.message);
+        if (err?.response?.status === 403) {
+          navigate({ pathname: '/notPermission' });
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    const asyncCollaborationLink = async () => {
+      try {
+        // get collaboration link
+        const resCollaborationLink = await getCollaborationLink(presentationId);
+        setCollaborationLink({
+          ...collaborationLink,
+          value: resCollaborationLink?.data?.object?.invitationLink,
+        });
+        return null;
+      } catch (err) {
+        return null;
+      }
+    };
+    asyncGetData();
+    asyncCollaborationLink();
+  }, []);
+
+  // get presenting slide
+  useEffect(() => {
+    const currentPresentingSlides = slides?.filter(
+      (slide) => slide.presenting === true
+    );
+    if (currentPresentingSlides?.length > 0) {
+      setPresentingSlide({ ...currentPresentingSlides[0] });
+    } else {
+      setPresentingSlide(undefined);
+    }
+
+    if (editingSlide) {
+      const currentEditingSlide = slides?.filter(
+        (slide) => slide.id === editingSlide.id
+      )[0];
+      setEditingSlide({ ...currentEditingSlide });
+    }
+  }, [slides]);
+
+  // update if need
+  const handleFlagUpdate = () => {
+    setPingUpdate(!pingUpdate);
+  };
+
+  // handle for deleting slide
+  const handleDeleteSlide = async (slideId) => {
+    setSaving(true);
+    try {
+      await deleteSlide(presentationId, slideId);
+      setSaving(false);
+
+      setSlides(
+        slides.filter((item) => {
+          return item.id !== slideId;
+        })
+      );
+    } catch (err) {
+      toast.error(err?.response?.data?.message);
+      if (err?.response?.status === 403) {
+        navigate({ pathname: '/notPermission' });
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // handle when adding slide
+  const handleAddDefaultMultipleChoiceSlide = async () => {
+    setSaving(true);
+    try {
+      const response = await SlideAction.createDefaultMultipleChoiceSlide(
+        presentationId
+      );
+      setSaving(false);
+      setEditingSlide(response.data.object);
+      setSlides([...slides, response.data.object]);
+    } catch (err) {
+      toast.error(err?.response?.data?.message);
+      if (err?.response?.status === 403) {
+        navigate({ pathname: '/notPermission' });
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAddDefaultHeadingSlide = async () => {
+    setSaving(true);
+    try {
+      const response = await SlideAction.createDefaultHeadingSlide(
+        presentationId
+      );
+      setSaving(false);
+      setEditingSlide(response.data.object);
+      setSlides([...slides, response.data.object]);
+    } catch (err) {
+      toast.error(err?.response?.data?.message);
+      if (err?.response?.status === 403) {
+        navigate({ pathname: '/notPermission' });
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAddDefaultParagraphSlide = async () => {
+    setSaving(true);
+    try {
+      const response = await SlideAction.createDefaultParagraphSlide(
+        presentationId
+      );
+      setSaving(false);
+      setEditingSlide(response.data.object);
+      setSlides([...slides, response.data.object]);
+    } catch (err) {
+      toast.error(err?.response?.data?.message);
+      if (err?.response?.status === 403) {
+        navigate({ pathname: '/notPermission' });
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // handle upadte slide
+  const handleUpdateSlide = async () => {
+    setSaving(true);
+    try {
+      const response = await updateSlide({
+        presentationId,
+        editedSlide: { ...editingSlide },
+      });
+      const updatedSlide = response.data.object;
+      const updatedList = slides.map((slide) => {
+        if (slide.id === updatedSlide.id) return updatedSlide;
+        return slide;
+      });
+      setEditingSlide(updatedSlide);
+      setSlides(updatedList);
+    } catch (err) {
+      toast.error(err?.response?.data?.message);
+      if (err?.response?.status === 403) {
+        navigate({ pathname: '/notPermission' });
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
   // update when needing
   useEffect(() => {
-    handleUpdateSlide();
+    if (editingSlide) handleUpdateSlide();
   }, [pingUpdate]);
 
   // handle active slide
   const activeSlide = async (slide) => {
     setEditingSlide(slide);
   };
+
+  // handle delete collaborator
+  const handleDeleteCollaborator = async (collaboratorId) => {
+    try {
+      deleteCollaboratorOfPresentation(collaboratorId, presentationId);
+      const newCollaborators = collaborators.filter(
+        (c) => c.id !== collaboratorId
+      );
+      setCollaborators([...newCollaborators]);
+    } catch (err) {
+      toast.error(err?.response?.data?.message);
+      if (err?.response?.status === 403) {
+        navigate({ pathname: '/notPermission' });
+      }
+    }
+  };
+
+  // check creator
+  const isCreator = profile?.id === presentation?.owner?.id;
 
   return (
     <div className={clsx(styles.Presentation_container)}>
@@ -407,7 +471,7 @@ export default React.memo(function EditingPresentation() {
               <SlideItem
                 slide={slide}
                 handleActive={() => activeSlide(slide)}
-                active={slide.id === editingSlide.id}
+                active={slide.id === (presentingSlide?.id || editingSlide.id)}
                 index={index}
                 handleDeleteSlide={handleDeleteSlide}
               />
@@ -433,6 +497,9 @@ export default React.memo(function EditingPresentation() {
             // for question
             questions={questions}
             answerQuestion={answerQuestion}
+            upvoteQuestion={upvoteQuestion}
+            // next and prev
+            slides={slides}
           />
         </div>
         {/* right */}
@@ -451,9 +518,10 @@ export default React.memo(function EditingPresentation() {
               />
             </Tab>
             <Tab eventKey="collaboration" title="Collaboration">
-              <CopyToClipboard text={collaborationLink.value}>
+              {isCreator && (
                 <Button
                   onClick={() => {
+                    navigator.clipboard.writeText(collaborationLink?.value);
                     setCollaborationLink({
                       ...collaborationLink,
                       copied: true,
@@ -468,15 +536,36 @@ export default React.memo(function EditingPresentation() {
                     ? 'Copied'
                     : 'Copy collaboration link'}
                 </Button>
-              </CopyToClipboard>
+              )}
               <hr />
               {collaborators?.map((collaborator) => (
                 <People
                   key={collaborator.id}
                   img={collaborator.avatar}
                   name={collaborator.displayName}
+                  endElement={
+                    isCreator && (
+                      <Button
+                        variant="light"
+                        onClick={() =>
+                          handleDeleteCollaborator(collaborator?.id)
+                        }
+                      >
+                        <FaTimes />
+                      </Button>
+                    )
+                  }
                 />
               ))}
+            </Tab>
+            <Tab eventKey="result" title="Result">
+              <Stack gap={3}>
+                {(presentingSlide || editingSlide)?.userRecords?.map(
+                  (record) => (
+                    <Record key={record?.dateCreated} record={record} />
+                  )
+                )}
+              </Stack>
             </Tab>
           </Tabs>
         </div>
