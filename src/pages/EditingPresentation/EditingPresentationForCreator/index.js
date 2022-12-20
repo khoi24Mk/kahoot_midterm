@@ -1,7 +1,7 @@
 import 'chart.js/auto';
 import clsx from 'clsx';
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Stack, Tab, Tabs } from 'react-bootstrap';
+import { Button, Card, Stack, Tab, Tabs } from 'react-bootstrap';
 import { BsBookmarks } from 'react-icons/bs';
 import { FaTimes } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -504,6 +504,10 @@ export default React.memo(function EditingPresentationForCreator() {
         </div>
         {/* right */}
         <div className={clsx(styles.Slide_operator)}>
+          <Card className="fw-bold text-uppercase text-center bg-light">
+            <Card.Body>{presentation?.presentationName}</Card.Body>
+          </Card>
+          <hr />
           <Tabs
             defaultActiveKey="content"
             id="uncontrolled-tab-example"
