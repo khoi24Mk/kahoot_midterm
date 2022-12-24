@@ -297,6 +297,7 @@ export default React.memo(function EditingPresentationForSupporter() {
             handlePrevPresentation={handlePrevPresentation}
             // for chat box
             chats={chats}
+            setChats={setChats}
             sendChat={sendChat}
             // for question
             questions={questions}

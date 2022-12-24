@@ -58,7 +58,6 @@ function PresentingPresentation() {
   // handle socket message
   const handleReceivedMessage = (event) => {
     const receivedEvent = JSON.parse(event);
-    console.log(receivedEvent);
     // slide
     if (
       receivedEvent.metaData.messageType ===
@@ -200,9 +199,11 @@ function PresentingPresentation() {
     <Container fluid className="position-relative h-100">
       {/* chat box and question box */}
       <ParticipantBox
+        presentationId={presentationId}
         upvoteQuestion={upvoteQuestion}
         askQuestion={askQuestion}
         chats={chats}
+        setChats={setChats}
         questions={questions}
         sendChat={sendChat}
       />

@@ -4,11 +4,13 @@ import ToolBar from '../ToolBar';
 import QuestionBox from './QuestionBox';
 
 export default function HostBox({
+  setChats,
   chats,
   questions,
   sendChat,
   answerQuestion,
   upvoteQuestion,
+  presentationId,
 }) {
   // manage new chat
   const [newChat, setNewChat] = useState(false);
@@ -36,6 +38,8 @@ export default function HostBox({
         toggleShowQuestion={toggleShowQuestion}
       />
       <ChatBox
+        presentationId={presentationId}
+        setChats={setChats}
         chats={chats}
         sendChat={sendChat}
         show={showChat}

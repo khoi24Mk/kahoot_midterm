@@ -5,10 +5,12 @@ import ToolBar from '../ToolBar';
 
 export default function ParticipantBox({
   chats,
+  setChats,
   questions,
   sendChat,
   askQuestion,
   upvoteQuestion,
+  presentationId,
 }) {
   // manage new chat
   const [newChat, setNewChat] = useState(false);
@@ -36,9 +38,11 @@ export default function ParticipantBox({
         toggleShowQuestion={toggleShowQuestion}
       />
       <ChatBox
+        setChats={setChats}
         sendChat={sendChat}
         chats={chats}
         show={showChat}
+        presentationId={presentationId}
         toggleShow={toggleShowChat}
       />
 

@@ -29,6 +29,7 @@ export default function PresentingSlide({
   handlePrevPresentation,
   handleNextPresentation,
   presentationId,
+  setChats,
   chats,
   sendChat,
   questions,
@@ -135,6 +136,8 @@ export default function PresentingSlide({
 
         {/* chat box and question box */}
         <HostBox
+          presentationId={presentationId}
+          setChats={setChats}
           questions={questions}
           chats={chats}
           sendChat={sendChat}

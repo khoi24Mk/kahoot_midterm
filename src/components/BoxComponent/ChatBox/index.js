@@ -1,17 +1,46 @@
+/* eslint-disable no-unsafe-optional-chaining */
+/* eslint-disable react/jsx-no-bind */
 import { useEffect, useRef, useState } from 'react';
-import { Button, Card, Container, FormControl } from 'react-bootstrap';
+import { Button, Card, Container, FormControl, Spinner } from 'react-bootstrap';
 import { FaAngleRight, FaTimes } from 'react-icons/fa';
 import { IoSendSharp } from 'react-icons/io5';
+import { toast } from 'react-toastify';
+import loadMoreChatOfPresentation from '~/api/normal/presentation/loadMoreChatOfPresentation';
 import ChatItem from './ChatItem';
 
-export default function ChatBox({ show, toggleShow, chats, sendChat }) {
+export default function ChatBox({
+  show,
+  toggleShow,
+  setChats,
+  chats,
+  sendChat,
+  presentationId,
+}) {
   const [message, setMessage] = useState('');
+  const [loadMore, setLoadMore] = useState(false);
   const chatRef = useRef(null);
 
   // scroll to end
   useEffect(() => {
     chatRef?.current?.scrollIntoView({ behavior: 'smooth' });
-  });
+  }, [show]);
+
+  async function handleScroll(e) {
+    if (e.target.scrollTop === 0 && !loadMore) {
+      setLoadMore(true);
+      try {
+        const chatsRes = await loadMoreChatOfPresentation({
+          presentationId,
+          fromChat: chats[0]?.id,
+        });
+        setChats([...chatsRes?.data?.object, ...chats]);
+      } catch (err) {
+        toast.error(err?.response?.data?.message);
+      } finally {
+        setLoadMore(false);
+      }
+    }
+  }
 
   // handle send chat
   const handleSendChat = () => {
@@ -47,7 +76,17 @@ export default function ChatBox({ show, toggleShow, chats, sendChat }) {
             <FaTimes style={{ cursor: 'pointer' }} onClick={toggleShow} />
           </Card.Header>
 
-          <Card.Body style={{ overflowY: 'scroll' }} className="flex-grow-1">
+          <Card.Body
+            style={{ overflowY: 'scroll' }}
+            className="flex-grow-1"
+            onScroll={handleScroll.bind(this)}
+          >
+            {loadMore && (
+              <div className="text-center" style={{ color: 'gray' }}>
+                <Spinner size="sm" className="me-2" />
+                <span>Loading...</span>
+              </div>
+            )}
             {chats?.map((chat) => (
               <ChatItem chat={chat} key={chat.id} />
             ))}

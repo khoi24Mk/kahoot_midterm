@@ -23,7 +23,10 @@ function Paragraph({ editingSlide, setEditingSlide, pingUpdate }) {
         <h5 className="fw-bold mb-3">Paragraph</h5>
         {editingSlide?.options?.map((option, index) => {
           return (
-            <div className="d-flex justify-content-around align-items-center mb-2">
+            <div
+              key={option}
+              className="d-flex justify-content-around align-items-center mb-2"
+            >
               <Form.Control
                 as="textarea"
                 rows={4}
