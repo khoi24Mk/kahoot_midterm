@@ -35,14 +35,14 @@ const schema = yup
 function MyOwnPresentation() {
   const [showCreate, setShowCreate] = useState(false);
   const [deleteList, setDeleteList] = useState([]);
-  // manage adding and deleting state
+  // Manage adding and deleting state
   const [deleting, setDeleting] = useState(false);
   const [adding, setAdding] = useState(false);
   const [loading, setLoading] = useState(true);
-  // manage presentations
+  // Manage presentations
   const [presentations, setPresentations] = useState([]);
 
-  // get presentations
+  // Get presentations
   const navigate = useNavigate();
   useEffect(() => {
     const asyncGetPresentations = async () => {
