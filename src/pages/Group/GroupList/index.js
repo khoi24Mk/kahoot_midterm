@@ -13,6 +13,7 @@ function GroupList() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  // check permission
   useEffect(() => {
     const asyncGetGroup = async () => {
       try {
