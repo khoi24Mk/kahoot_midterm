@@ -14,6 +14,7 @@ function Home() {
   const { profile } = context;
   const unAuthenticated = profile === null || profile === undefined;
 
+  // check authenticate
   return unAuthenticated ? (
     <div className="overflow-scroll h-100">
       <div className={clsx(styles.intro)}>
