@@ -69,14 +69,18 @@ function AddingGroup({ setGroups }) {
         <BsFillPlusCircleFill className="me-1" size={20} />
         ADD GROUP
       </Button>
-      <Modal show={showCreate} onHide={handleCloseCreate}>
+      <Modal
+        style={{ fontSize: '1rem' }}
+        show={showCreate}
+        onHide={handleCloseCreate}
+      >
         <Modal.Header closeButton>
-          <Modal.Title className="fw-bold">Create classroom</Modal.Title>
+          <Modal.Title className="fw-bold">Create group</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit(onSubmit)} id="createGroupForm">
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>Class Name</Form.Label>
+              <Form.Label>Group Name</Form.Label>
               <Form.Control
                 {...register('groupName')}
                 type="text"

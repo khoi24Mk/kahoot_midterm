@@ -180,9 +180,15 @@ function MyOwnPresentation() {
         </Row>
       </Container>
 
-      <Modal show={showCreate} onHide={() => setShowCreate(false)}>
+      <Modal
+        style={{ fontSize: '1rem' }}
+        show={showCreate}
+        onHide={() => setShowCreate(false)}
+      >
         <Modal.Header closeButton>
-          <Modal.Title>Create group</Modal.Title>
+          <Modal.Title className="text-center fw-bold">
+            Create presentation
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form
