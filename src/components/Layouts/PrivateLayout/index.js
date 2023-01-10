@@ -19,7 +19,7 @@ export default function PrivateLayout() {
   }, [pathname]);
 
   // connect socket
-  useWebSocket(Constant.SocketURL, {
+  const { sendMessage } = useWebSocket(Constant.SocketURL, {
     onOpen: () => {
       console.log('Open socket');
     },
@@ -31,6 +31,25 @@ export default function PrivateLayout() {
     },
     shouldReconnect: () => true,
     share: true,
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      sendMessage(
+        JSON.stringify({
+          metaData: {
+            roomName: 'pingPong',
+            clientType: Constant.ClientType.member,
+            messageType: Constant.ClientMessageType.joinRoom,
+          },
+          message: null,
+        })
+      );
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+    };
   });
 
   return unAuthenticated ? (
