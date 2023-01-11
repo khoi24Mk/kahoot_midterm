@@ -24,7 +24,8 @@ function Heading({ editingSlide, setEditingSlide, pingUpdate }) {
         {editingSlide?.options?.map((option, index) => {
           return (
             <div
-              key={option}
+              // eslint-disable-next-line react/no-array-index-key
+              key={index}
               className="d-flex justify-content-around align-items-center mb-2"
             >
               <Form.Control
